@@ -8,7 +8,7 @@ This is based off of the book, "Systematic design of Analog CMOS Circuits"
 by Paul G.A. Jespers and Boris Murmann. The big idea behind the book is that
 for many circuits, we can make our design process systematic and
 straight-forward by using pre-computed lookup tables of transistor characterization
-data and some simple functions to perform a $\{frac}{g_m}{I_d}$ methodology.
+data and some simple functions to perform a $\frac{g_m}{I_d}$ methodology.
 
 Each page will walk through one of the examples in the book. Instead
 of using Matlab functions as shown in the book, we'll be using a handful
