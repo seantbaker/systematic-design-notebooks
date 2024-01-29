@@ -9,8 +9,8 @@ execute:
   execute_notebooks: auto
 
 html:
-  # use_repository_button: true
-  # use_issues_button: true
+  use_repository_button: true
+  use_issues_button: true
 
 # use this to point to a local extension, which
 # removes all code cells by default
@@ -18,5 +18,5 @@ html:
 #   local_extensions:
 #     extensions: ./sphinxext/
 
-# repository:
-  # url: https://github.com/seantbaker
+repository:
+  url: https://github.com/seantbaker/systematic-design-notebooks

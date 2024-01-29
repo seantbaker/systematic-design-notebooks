@@ -21,6 +21,3 @@ examples in the next two weeks or so.
 
 If you see any bugs, or have an suggestions, please stop by the Discussions
 section of the GitHub repository behind this page.
-
-Cheers!
-Sean
