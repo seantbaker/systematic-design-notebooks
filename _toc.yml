@@ -1,0 +1,9 @@
+# table of contents for jupyter book on systematic analog ic design
+format: jb-book
+root: intro
+chapters:
+- file: chap3_basic_sizing/ex3.1_igs
+- file: chap3_basic_sizing/ex3.2_igs_const_gmid
+- file: chap3_basic_sizing/ex3.3_igs_const_ft
+- file: chap3_basic_sizing/ex3.4_igs_const_gain
+- file: chap3_basic_sizing/ex3.5_igs_weak_invrsn

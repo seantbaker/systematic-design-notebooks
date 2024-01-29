@@ -1,0 +1,3 @@
+Index      V(GATE)          V(DRAIN)         N(MDUT:VGS)       N(MDUT:VDS)       I(VMEASIDS)         {DUT_L}           {DUT_W}         N(MDUT:VTH)       N(MDUT:GM)        N(MDUT:GDS)       N(MDUT:CGS)       N(MDUT:CGD)   
+0        6.00000000e-01    6.00000000e-01    6.00000000e-01    6.00000000e-01    4.09508972e-04    1.80000000e-07    3.66300000e-05    4.88072809e-01    6.14756621e-03    1.65050784e-04    0.00000000e+00    0.00000000e+00
+End of Xyce(TM) Simulation

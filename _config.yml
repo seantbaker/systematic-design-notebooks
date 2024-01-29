@@ -1,0 +1,22 @@
+# config for jupyter book on systematic analog ic design
+title: Systematic analog IC design with Python and Jupyter
+author: Sean Baker
+exclude_patterns: [_build, __pycache__, "**.ipynb_checkpoints", ]
+# logo: logo.png
+only_build_toc_files: true
+
+execute:
+  execute_notebooks: auto
+
+html:
+  # use_repository_button: true
+  # use_issues_button: true
+
+# use this to point to a local extension, which
+# removes all code cells by default
+# sphinx:
+#   local_extensions:
+#     extensions: ./sphinxext/
+
+# repository:
+  # url: https://github.com/seantbaker
