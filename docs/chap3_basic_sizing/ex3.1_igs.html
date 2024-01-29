@@ -1,0 +1,1283 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Example 3.1: Intrinsic Gain Stage &#8212; Systematic analog IC design with Python and Jupyter</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=949a1ff5" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=ff8fa330"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=afe5de03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chap3_basic_sizing/ex3.1_igs';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Example 3.2: Intrinsic Gain Stage, with constant \(g_m / I_d\)" href="ex3.2_igs_const_gmid.html" />
+    <link rel="prev" title="Systematic design of analog ICs with Python and Jupyter" href="../intro.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Systematic analog IC design with Python and Jupyter</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Systematic design of analog ICs with Python and Jupyter
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Example 3.1: Intrinsic Gain Stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex3.2_igs_const_gmid.html">Example 3.2: Intrinsic Gain Stage, with constant <span class="math notranslate nohighlight">\(g_m / I_d\)</span></a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex3.3_igs_const_ft.html">Example 3.3: Intrinsic Gain Stage, with constant <span class="math notranslate nohighlight">\(f_t\)</span></a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex3.4_igs_const_gain.html">Example 3.4: Intrinsic Gain Stage, with constant <span class="math notranslate nohighlight">\(A_{v0}\)</span></a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex3.5_igs_weak_invrsn.html">Example 3.5: Sizing in weak inversion with a width constraint</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chap3_basic_sizing/ex3.1_igs.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Example 3.1: Intrinsic Gain Stage</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#circuit-analysis">Circuit analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sizing-considerations">Sizing considerations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sizing-for-given-l-and-g-m-over-i-d">Sizing for given L and <span class="math notranslate nohighlight">\(g_m\over{I_d}\)</span></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-basic-igs-sizing">Example: basic IGS sizing</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solution">Solution:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tradeoff-exploration">Tradeoff exploration</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">schemdraw</span>
+
+<span class="c1"># use engineering format in pandas tables</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_eng_float_format</span><span class="p">(</span><span class="n">accuracy</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">use_eng_prefix</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># import my helper functions</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../helpers&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">xtor_data_helpers</span> <span class="kn">import</span> <span class="n">load_mat_data</span><span class="p">,</span> <span class="n">lookup</span><span class="p">,</span> <span class="n">scale</span>
+<span class="kn">import</span> <span class="nn">bokeh_helpers</span> <span class="k">as</span> <span class="nn">bh</span>
+<span class="kn">from</span> <span class="nn">pandas_helpers</span> <span class="kn">import</span> <span class="n">pretty_table</span>
+
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="kn">import</span> <span class="n">output_notebook</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="kn">import</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">LinearAxis</span><span class="p">,</span> <span class="n">Range1d</span>
+<span class="kn">from</span> <span class="nn">bokeh.palettes</span> <span class="kn">import</span> <span class="n">Turbo10</span>
+<span class="kn">from</span> <span class="nn">bokeh.transform</span> <span class="kn">import</span> <span class="n">linear_cmap</span>
+<span class="n">output_notebook</span><span class="p">(</span><span class="n">hide_banner</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<script type="application/javascript">(function(root) {
+  function now() {
+    return new Date();
+  }
+
+  const force = true;
+
+  if (typeof root._bokeh_onload_callbacks === "undefined" || force === true) {
+    root._bokeh_onload_callbacks = [];
+    root._bokeh_is_loading = undefined;
+  }
+
+const JS_MIME_TYPE = 'application/javascript';
+  const HTML_MIME_TYPE = 'text/html';
+  const EXEC_MIME_TYPE = 'application/vnd.bokehjs_exec.v0+json';
+  const CLASS_NAME = 'output_bokeh rendered_html';
+
+  /**
+   * Render data to the DOM node
+   */
+  function render(props, node) {
+    const script = document.createElement("script");
+    node.appendChild(script);
+  }
+
+  /**
+   * Handle when an output is cleared or removed
+   */
+  function handleClearOutput(event, handle) {
+    const cell = handle.cell;
+
+    const id = cell.output_area._bokeh_element_id;
+    const server_id = cell.output_area._bokeh_server_id;
+    // Clean up Bokeh references
+    if (id != null && id in Bokeh.index) {
+      Bokeh.index[id].model.document.clear();
+      delete Bokeh.index[id];
+    }
+
+    if (server_id !== undefined) {
+      // Clean up Bokeh references
+      const cmd_clean = "from bokeh.io.state import curstate; print(curstate().uuid_to_server['" + server_id + "'].get_sessions()[0].document.roots[0]._id)";
+      cell.notebook.kernel.execute(cmd_clean, {
+        iopub: {
+          output: function(msg) {
+            const id = msg.content.text.trim();
+            if (id in Bokeh.index) {
+              Bokeh.index[id].model.document.clear();
+              delete Bokeh.index[id];
+            }
+          }
+        }
+      });
+      // Destroy server and session
+      const cmd_destroy = "import bokeh.io.notebook as ion; ion.destroy_server('" + server_id + "')";
+      cell.notebook.kernel.execute(cmd_destroy);
+    }
+  }
+
+  /**
+   * Handle when a new output is added
+   */
+  function handleAddOutput(event, handle) {
+    const output_area = handle.output_area;
+    const output = handle.output;
+
+    // limit handleAddOutput to display_data with EXEC_MIME_TYPE content only
+    if ((output.output_type != "display_data") || (!Object.prototype.hasOwnProperty.call(output.data, EXEC_MIME_TYPE))) {
+      return
+    }
+
+    const toinsert = output_area.element.find("." + CLASS_NAME.split(' ')[0]);
+
+    if (output.metadata[EXEC_MIME_TYPE]["id"] !== undefined) {
+      toinsert[toinsert.length - 1].firstChild.textContent = output.data[JS_MIME_TYPE];
+      // store reference to embed id on output_area
+      output_area._bokeh_element_id = output.metadata[EXEC_MIME_TYPE]["id"];
+    }
+    if (output.metadata[EXEC_MIME_TYPE]["server_id"] !== undefined) {
+      const bk_div = document.createElement("div");
+      bk_div.innerHTML = output.data[HTML_MIME_TYPE];
+      const script_attrs = bk_div.children[0].attributes;
+      for (let i = 0; i < script_attrs.length; i++) {
+        toinsert[toinsert.length - 1].firstChild.setAttribute(script_attrs[i].name, script_attrs[i].value);
+        toinsert[toinsert.length - 1].firstChild.textContent = bk_div.children[0].textContent
+      }
+      // store reference to server id on output_area
+      output_area._bokeh_server_id = output.metadata[EXEC_MIME_TYPE]["server_id"];
+    }
+  }
+
+  function register_renderer(events, OutputArea) {
+
+    function append_mime(data, metadata, element) {
+      // create a DOM node to render to
+      const toinsert = this.create_output_subarea(
+        metadata,
+        CLASS_NAME,
+        EXEC_MIME_TYPE
+      );
+      this.keyboard_manager.register_events(toinsert);
+      // Render to node
+      const props = {data: data, metadata: metadata[EXEC_MIME_TYPE]};
+      render(props, toinsert[toinsert.length - 1]);
+      element.append(toinsert);
+      return toinsert
+    }
+
+    /* Handle when an output is cleared or removed */
+    events.on('clear_output.CodeCell', handleClearOutput);
+    events.on('delete.Cell', handleClearOutput);
+
+    /* Handle when a new output is added */
+    events.on('output_added.OutputArea', handleAddOutput);
+
+    /**
+     * Register the mime type and append_mime function with output_area
+     */
+    OutputArea.prototype.register_mime_type(EXEC_MIME_TYPE, append_mime, {
+      /* Is output safe? */
+      safe: true,
+      /* Index of renderer in `output_area.display_order` */
+      index: 0
+    });
+  }
+
+  // register the mime type if in Jupyter Notebook environment and previously unregistered
+  if (root.Jupyter !== undefined) {
+    const events = require('base/js/events');
+    const OutputArea = require('notebook/js/outputarea').OutputArea;
+
+    if (OutputArea.prototype.mime_types().indexOf(EXEC_MIME_TYPE) == -1) {
+      register_renderer(events, OutputArea);
+    }
+  }
+  if (typeof (root._bokeh_timeout) === "undefined" || force === true) {
+    root._bokeh_timeout = Date.now() + 5000;
+    root._bokeh_failed_load = false;
+  }
+
+  const NB_LOAD_WARNING = {'data': {'text/html':
+     "<div style='background-color: #fdd'>\n"+
+     "<p>\n"+
+     "BokehJS does not appear to have successfully loaded. If loading BokehJS from CDN, this \n"+
+     "may be due to a slow or bad network connection. Possible fixes:\n"+
+     "</p>\n"+
+     "<ul>\n"+
+     "<li>re-rerun `output_notebook()` to attempt to load from CDN again, or</li>\n"+
+     "<li>use INLINE resources instead, as so:</li>\n"+
+     "</ul>\n"+
+     "<code>\n"+
+     "from bokeh.resources import INLINE\n"+
+     "output_notebook(resources=INLINE)\n"+
+     "</code>\n"+
+     "</div>"}};
+
+  function display_loaded() {
+    const el = document.getElementById(null);
+    if (el != null) {
+      el.textContent = "BokehJS is loading...";
+    }
+    if (root.Bokeh !== undefined) {
+      if (el != null) {
+        el.textContent = "BokehJS " + root.Bokeh.version + " successfully loaded.";
+      }
+    } else if (Date.now() < root._bokeh_timeout) {
+      setTimeout(display_loaded, 100)
+    }
+  }
+
+  function run_callbacks() {
+    try {
+      root._bokeh_onload_callbacks.forEach(function(callback) {
+        if (callback != null)
+          callback();
+      });
+    } finally {
+      delete root._bokeh_onload_callbacks
+    }
+    console.debug("Bokeh: all callbacks have finished");
+  }
+
+  function load_libs(css_urls, js_urls, callback) {
+    if (css_urls == null) css_urls = [];
+    if (js_urls == null) js_urls = [];
+
+    root._bokeh_onload_callbacks.push(callback);
+    if (root._bokeh_is_loading > 0) {
+      console.debug("Bokeh: BokehJS is being loaded, scheduling callback at", now());
+      return null;
+    }
+    if (js_urls == null || js_urls.length === 0) {
+      run_callbacks();
+      return null;
+    }
+    console.debug("Bokeh: BokehJS not loaded, scheduling load and callback at", now());
+    root._bokeh_is_loading = css_urls.length + js_urls.length;
+
+    function on_load() {
+      root._bokeh_is_loading--;
+      if (root._bokeh_is_loading === 0) {
+        console.debug("Bokeh: all BokehJS libraries/stylesheets loaded");
+        run_callbacks()
+      }
+    }
+
+    function on_error(url) {
+      console.error("failed to load " + url);
+    }
+
+    for (let i = 0; i < css_urls.length; i++) {
+      const url = css_urls[i];
+      const element = document.createElement("link");
+      element.onload = on_load;
+      element.onerror = on_error.bind(null, url);
+      element.rel = "stylesheet";
+      element.type = "text/css";
+      element.href = url;
+      console.debug("Bokeh: injecting link tag for BokehJS stylesheet: ", url);
+      document.body.appendChild(element);
+    }
+
+    for (let i = 0; i < js_urls.length; i++) {
+      const url = js_urls[i];
+      const element = document.createElement('script');
+      element.onload = on_load;
+      element.onerror = on_error.bind(null, url);
+      element.async = false;
+      element.src = url;
+      console.debug("Bokeh: injecting script tag for BokehJS library: ", url);
+      document.head.appendChild(element);
+    }
+  };
+
+  function inject_raw_css(css) {
+    const element = document.createElement("style");
+    element.appendChild(document.createTextNode(css));
+    document.body.appendChild(element);
+  }
+
+  const js_urls = ["https://cdn.bokeh.org/bokeh/release/bokeh-3.0.3.min.js", "https://cdn.bokeh.org/bokeh/release/bokeh-gl-3.0.3.min.js", "https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.0.3.min.js", "https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.0.3.min.js", "https://cdn.bokeh.org/bokeh/release/bokeh-mathjax-3.0.3.min.js"];
+  const css_urls = [];
+
+  const inline_js = [    function(Bokeh) {
+      Bokeh.set_log_level("info");
+    },
+function(Bokeh) {
+    }
+  ];
+
+  function run_inline_js() {
+    if (root.Bokeh !== undefined || force === true) {
+          for (let i = 0; i < inline_js.length; i++) {
+      inline_js[i].call(root, root.Bokeh);
+    }
+} else if (Date.now() < root._bokeh_timeout) {
+      setTimeout(run_inline_js, 100);
+    } else if (!root._bokeh_failed_load) {
+      console.log("Bokeh: BokehJS failed to load within specified timeout.");
+      root._bokeh_failed_load = true;
+    } else if (force !== true) {
+      const cell = $(document.getElementById(null)).parents('.cell').data().cell;
+      cell.output_area.append_execute_result(NB_LOAD_WARNING)
+    }
+  }
+
+  if (root._bokeh_is_loading === 0) {
+    console.debug("Bokeh: BokehJS loaded, going straight to plotting");
+    run_inline_js();
+  } else {
+    load_libs(css_urls, js_urls, function() {
+      console.debug("Bokeh: BokehJS plotting callback run at", now());
+      run_inline_js();
+    });
+  }
+}(window));</script></div>
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="example-3-1-intrinsic-gain-stage">
+<h1>Example 3.1: Intrinsic Gain Stage<a class="headerlink" href="#example-3-1-intrinsic-gain-stage" title="Link to this heading">#</a></h1>
+<p>We’ll use an IGS as a way to walk through the systematic design flow. Since the IGS
+is the root of both common-source amplifiers and differential amplifiers, we should
+be able to leverage what we learn here for more complex circuits.</p>
+<figure class="align-center" id="igs-schematic">
+<a class="reference internal image-reference" href="../_images/fig_igs_schem.png"><img alt="circuit diagram of an intrinsic gain stage" src="../_images/fig_igs_schem.png" style="width: 500px;" /></a>
+</figure>
+<section id="circuit-analysis">
+<h2>Circuit analysis<a class="headerlink" href="#circuit-analysis" title="Link to this heading">#</a></h2>
+<p>If we insert the small signal model of the transitor into the above schematic, we get:</p>
+<!-- ![igs_small_signal](./fig_small_sig_model_igs.png) -->
+<p>We’ll use some simplifiying assumptions:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(C_{db} &lt;&lt; C_L\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(C_{gd} &lt;&lt; C_L\)</span></p></li>
+<li><p>Junction capacitances can be ignored (for now)</p></li>
+</ul>
+<p>Under those conditions, the frequency response can be approximated by:</p>
+<div class="math notranslate nohighlight">
+\[ A_v(j\omega) = \frac{v_{out}}{v_{in}} \cong \frac{A_{v0}}{1 + j \frac{\omega}{\omega_c}} \]</div>
+<p>Where:</p>
+<div class="math notranslate nohighlight">
+\[ A_{v0} = - \frac{g_m}{g_{ds}} = -A_{intr} \]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[ \omega_c = \frac{g_{ds}}{C_L} \]</div>
+<p>Another thing to note is the unity gain frequency (<span class="math notranslate nohighlight">\(\omega_u\)</span>), given by:</p>
+<div class="math notranslate nohighlight">
+\[ \omega_u = \frac{g_m}{C_L} \]</div>
+<p>It’s useful to measure the IGS’ fanout (FO), or the ratio of the capacitance it
+can drive to it’s input capacitance:</p>
+<div class="math notranslate nohighlight">
+\[ FO = \frac{C_L}{C_{gs} + C_{gd} + C_{gb}} = \frac{C_L}{C_{gg}} \]</div>
+<p>We could rewrite this as:</p>
+<div class="math notranslate nohighlight">
+\[ FO = \frac{g_m / C_{gg}}{g_m / C_L} = \frac{\omega_T}{\omega_u} \]</div>
+<p>Because the quasi-static transistor model used above breaks down as frequency approaches about 1/10th of <span class="math notranslate nohighlight">\(f_t\)</span> in moderate or strong inversion, we want to keep FO &gt; 10. (i.e., keep <span class="math notranslate nohighlight">\(\omega_u\)</span> under 1/10th of <span class="math notranslate nohighlight">\(\omega_t\)</span>)</p>
+</section>
+<section id="sizing-considerations">
+<h2>Sizing considerations<a class="headerlink" href="#sizing-considerations" title="Link to this heading">#</a></h2>
+<p>So if we know the gain and frequency response, we want to do the following for some
+given combination of <span class="math notranslate nohighlight">\(C_L\)</span> and <span class="math notranslate nohighlight">\(f_u\)</span> target:</p>
+<ul class="simple">
+<li><p>Find drain current</p></li>
+<li><p>Find device length</p></li>
+<li><p>Find device width</p></li>
+</ul>
+<p>We can use this flow:</p>
+<ol class="arabic simple">
+<li><p>Determine <span class="math notranslate nohighlight">\(g_m\)</span> (from design specs)</p></li>
+<li><p>Pick L:</p>
+<ol class="arabic simple">
+<li><p>Short channel: high speed, low area</p></li>
+<li><p>Long channel: high intrinsic gain, improved matching</p></li>
+</ol>
+</li>
+<li><p>Pick <span class="math notranslate nohighlight">\(g_m\over{I_d}\)</span>:</p>
+<ol class="arabic simple">
+<li><p>large <span class="math notranslate nohighlight">\(g_m\over{I_d}\)</span>: low mpower, large signal swing (low <span class="math notranslate nohighlight">\(V_{dsat}\)</span>)</p></li>
+<li><p>small <span class="math notranslate nohighlight">\(g_m\over{I_d}\)</span>: high speed, small area</p></li>
+</ol>
+</li>
+<li><p>Determine <span class="math notranslate nohighlight">\(I_d\)</span> (from <span class="math notranslate nohighlight">\(g_m\)</span> and <span class="math notranslate nohighlight">\(g_m\over{I_d}\)</span>)</p></li>
+<li><p>Determine W (from <span class="math notranslate nohighlight">\(I_d\over{W}\)</span>)</p></li>
+</ol>
+<p>If we are given a spec for <span class="math notranslate nohighlight">\(\omega_u\)</span>, then <span class="math notranslate nohighlight">\(g_m\)</span> is fixed by <span class="math notranslate nohighlight">\(\omega_u = \frac{g_m}{C_L}\)</span>.</p>
+<p>But, we need more constraints to pick L and <span class="math notranslate nohighlight">\(\frac{g_m}{I_d}\)</span>.</p>
+<p>We could say that <span class="math notranslate nohighlight">\(I_d = \frac{g_m}{g_m / I_d}\)</span>. Based on that, maybe we’d say we want to
+maximize <span class="math notranslate nohighlight">\({g_m / I_d}\)</span> to minimize drain current. But doing that requires a large
+device and a low <span class="math notranslate nohighlight">\(f_t\)</span>, which may lead to violating the guideline that FO &lt; 10.</p>
+<p>This leads to the following: determining the right inversion level is complicated, and
+we need to take a lot of different factors into account. So we’re going to have to
+work out different constraints to help us pick a suitable inversion level.</p>
+<p>For now, let’s talk about how to pick W given a L and <span class="math notranslate nohighlight">\(g_m\over{I_d}\)</span>.</p>
+<section id="sizing-for-given-l-and-g-m-over-i-d">
+<h3>Sizing for given L and <span class="math notranslate nohighlight">\(g_m\over{I_d}\)</span><a class="headerlink" href="#sizing-for-given-l-and-g-m-over-i-d" title="Link to this heading">#</a></h3>
+<p>If we know those, finding W becomes:</p>
+<div class="math notranslate nohighlight">
+\[ W = \frac{I_d}{J_d} = \frac{I_d}{I_d / W} \]</div>
+<p>We can call this flow “denormalization”, and it looks like this:</p>
+<figure class="align-center" id="denormalization-flow">
+<a class="reference internal image-reference" href="../_images/denorm_flow.png"><img alt="denormalization flow" src="../_images/denorm_flow.png" style="width: 600px;" /></a>
+</figure>
+<p>Once we know <span class="math notranslate nohighlight">\(g_m / I_d\)</span>, L, <span class="math notranslate nohighlight">\(V_{ds}\)</span> and <span class="math notranslate nohighlight">\(V_{sb}\)</span>, we can plug those into our
+lookup table and find the correpsonding <span class="math notranslate nohighlight">\(J_d = I_d / W \)</span>. And when we know <span class="math notranslate nohighlight">\(I_d\)</span>
+from the required <span class="math notranslate nohighlight">\(\omega_u\)</span>, <span class="math notranslate nohighlight">\(C_L\)</span> and <span class="math notranslate nohighlight">\(g_m / I_d\)</span>, we can scale the W appropriately.</p>
+<p>Note that we’re assuming that drain current scales linearly with width, which ignores
+narrow-width effects. If that doesn’t hold, we’d ideally have lookup tables with different
+widths and corresponding drain currents, or some non-linear scaling formula. This could
+be a good place to insert some ML; we could train a model to predict device performance
+based on physical parameters.</p>
+<p>Let’s look at a concrete example…</p>
+</section>
+</section>
+<section id="example-basic-igs-sizing">
+<h2>Example: basic IGS sizing<a class="headerlink" href="#example-basic-igs-sizing" title="Link to this heading">#</a></h2>
+<p>Suppose we want to design an IGS with:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(f_u\)</span> = 1 GHz</p></li>
+<li><p><span class="math notranslate nohighlight">\(C_L\)</span> = 1 pF</p></li>
+</ul>
+<p>Assume:</p>
+<ul class="simple">
+<li><p>L = 180nm</p></li>
+<li><p><span class="math notranslate nohighlight">\(g_m / I_d\)</span> = 15 S/A (moderate inversion)</p></li>
+<li><p><span class="math notranslate nohighlight">\(V_{ds}\)</span> = 0.6 V</p></li>
+<li><p><span class="math notranslate nohighlight">\(V_{sb}\)</span> = 0 V</p></li>
+</ul>
+<p>Find the low frequency gain and the Early voltage of the transistor.</p>
+<section id="solution">
+<h3>Solution:<a class="headerlink" href="#solution" title="Link to this heading">#</a></h3>
+<p>We’ll start by loading in our transitor data, supplied by Professor Murmann through
+his GitHub repo:</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># first, load up the nch dataset</span>
+<span class="n">nch_data_df</span> <span class="o">=</span> <span class="n">load_mat_data</span><span class="p">(</span><span class="s2">&quot;../../Book-on-gm-ID-design-main/starter_kit/180nch.mat&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Loading data from ../../Book-on-gm-ID-design-main/starter_kit/180nch.mat
+Found the following columns: [&#39;ID&#39;, &#39;VT&#39;, &#39;GM&#39;, &#39;GMB&#39;, &#39;GDS&#39;, &#39;CGG&#39;, &#39;CGS&#39;, &#39;CGD&#39;, &#39;CGB&#39;, &#39;CDD&#39;, &#39;CSS&#39;, &#39;STH&#39;, &#39;SFL&#39;, &#39;INFO&#39;, &#39;CORNER&#39;, &#39;TEMP&#39;, &#39;VGS&#39;, &#39;VDS&#39;, &#39;VSB&#39;, &#39;L&#39;, &#39;W&#39;, &#39;NFING&#39;]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/sean/.pyenv/versions/3.10.4/lib/python3.10/site-packages/pandas/core/internals/construction.py:576: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify &#39;dtype=object&#39; when creating the ndarray.
+  values = np.array([convert(v) for v in values])
+</pre></div>
+</div>
+</div>
+</div>
+<p>With that in place, we can look in our dataset to find transitors that
+match our givens, and interpolate for <span class="math notranslate nohighlight">\(\frac{g_m}{I_d}\)</span> = 15:</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># since we&#39;re given values for L, gm/Id, Vds and Vsb, I can lookup the associated Jd</span>
+<span class="c1"># first, grab the subsection of data that matches the givens</span>
+<span class="n">biasing_mask</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="n">nch_data_df</span><span class="p">[</span><span class="s1">&#39;VDS&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.6</span><span class="p">)</span> <span class="o">&amp;</span>
+    <span class="p">(</span><span class="n">nch_data_df</span><span class="p">[</span><span class="s1">&#39;VSB&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">&amp;</span>
+    <span class="p">(</span><span class="n">nch_data_df</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.18</span><span class="p">)</span>
+    <span class="p">)</span>
+
+<span class="c1"># now interpolate at gm/id = 15</span>
+<span class="n">lookup_df</span><span class="p">,</span><span class="n">interp_df</span> <span class="o">=</span> <span class="n">lookup</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">nch_data_df</span><span class="p">[</span><span class="n">biasing_mask</span><span class="p">],</span> <span class="n">param</span><span class="o">=</span><span class="s1">&#39;GM_ID&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+
+<span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;W&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="s1">&#39;GM&#39;</span><span class="p">,</span> <span class="s1">&#39;GM_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;JD&#39;</span><span class="p">,</span> <span class="s1">&#39;VGS&#39;</span><span class="p">,</span> <span class="s1">&#39;VDS&#39;</span><span class="p">,</span> <span class="s1">&#39;VSB&#39;</span><span class="p">]</span>
+<span class="n">caption</span> <span class="o">=</span> <span class="s2">&quot;NMOS device data matching givens&quot;</span>
+
+<span class="n">display</span><span class="p">(</span>
+    <span class="n">pretty_table</span><span class="p">(</span>
+        <span class="n">df</span><span class="o">=</span><span class="n">lookup_df</span><span class="p">,</span>
+        <span class="n">cols</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span>
+        <span class="n">caption</span><span class="o">=</span><span class="n">caption</span>
+    <span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_html"><style type="text/css">
+</style>
+<table id="T_abd35">
+  <caption>NMOS device data matching givens</caption>
+  <thead>
+    <tr>
+      <th id="T_abd35_level0_col0" class="col_heading level0 col0" >W</th>
+      <th id="T_abd35_level0_col1" class="col_heading level0 col1" >L</th>
+      <th id="T_abd35_level0_col2" class="col_heading level0 col2" >ID</th>
+      <th id="T_abd35_level0_col3" class="col_heading level0 col3" >GM</th>
+      <th id="T_abd35_level0_col4" class="col_heading level0 col4" >GM_ID</th>
+      <th id="T_abd35_level0_col5" class="col_heading level0 col5" >JD</th>
+      <th id="T_abd35_level0_col6" class="col_heading level0 col6" >VGS</th>
+      <th id="T_abd35_level0_col7" class="col_heading level0 col7" >VDS</th>
+      <th id="T_abd35_level0_col8" class="col_heading level0 col8" >VSB</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td id="T_abd35_row0_col0" class="data row0 col0" >5.000000</td>
+      <td id="T_abd35_row0_col1" class="data row0 col1" >0.180</td>
+      <td id="T_abd35_row0_col2" class="data row0 col2" >56.78u</td>
+      <td id="T_abd35_row0_col3" class="data row0 col3" >850.55u</td>
+      <td id="T_abd35_row0_col4" class="data row0 col4" >15</td>
+      <td id="T_abd35_row0_col5" class="data row0 col5" >11.36u</td>
+      <td id="T_abd35_row0_col6" class="data row0 col6" >599.15m</td>
+      <td id="T_abd35_row0_col7" class="data row0 col7" >600.00m</td>
+      <td id="T_abd35_row0_col8" class="data row0 col8" >0.00m</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Since we know that <span class="math notranslate nohighlight">\(f_u\)</span> is 1 GHz and <span class="math notranslate nohighlight">\(C_L\)</span> is 1pF, we can derive the required <span class="math notranslate nohighlight">\(g_m\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[ \omega_u = \frac{g_m}{C_L} \]</div>
+<div class="math notranslate nohighlight">
+\[ 2\pi * 1e9 = \frac{g_m}{1e-12} \]</div>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gm_spec</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="mf">3.14159</span> <span class="o">*</span> <span class="mf">1e9</span> <span class="o">*</span> <span class="mf">1e-12</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The required gm is </span><span class="si">{</span><span class="n">gm_spec</span><span class="o">*</span><span class="mf">1e3</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> mS&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The required gm is 6.28 mS
+</pre></div>
+</div>
+</div>
+</div>
+<p>Given a <span class="math notranslate nohighlight">\(g_m\over{I_d}\)</span> of 15 and a <span class="math notranslate nohighlight">\(g_m\)</span> of 6.283e-3, our required drain current is:</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">id_spec</span> <span class="o">=</span> <span class="n">gm_spec</span> <span class="o">/</span> <span class="n">lookup_df</span><span class="p">[</span><span class="s1">&#39;GM_ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The required drain current is </span><span class="si">{</span><span class="n">id_spec</span><span class="o">*</span><span class="mf">1e6</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> uA&quot;</span><span class="p">)</span>
+
+<span class="n">scale_factor</span> <span class="o">=</span> <span class="n">id_spec</span> <span class="o">/</span> <span class="n">lookup_df</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This means we&#39;ll need to scale the device by </span><span class="si">{</span><span class="n">scale_factor</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The required drain current is 418.88 uA
+This means we&#39;ll need to scale the device by 7.38
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scaled_df</span> <span class="o">=</span> <span class="n">scale</span><span class="p">(</span>
+    <span class="n">df</span><span class="o">=</span><span class="n">lookup_df</span><span class="p">,</span>
+    <span class="n">scale_factor</span><span class="o">=</span><span class="n">scale_factor</span>
+<span class="p">)</span>
+<span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;W&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="s1">&#39;GM&#39;</span><span class="p">,</span> <span class="s1">&#39;GM_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;JD&#39;</span><span class="p">,</span> <span class="s1">&#39;GDS&#39;</span><span class="p">,</span> 
+      <span class="s1">&#39;CGG&#39;</span><span class="p">,</span> <span class="s1">&#39;CGS&#39;</span><span class="p">,</span> <span class="s1">&#39;CGD&#39;</span><span class="p">,</span> <span class="s1">&#39;VGS&#39;</span><span class="p">,</span> <span class="s1">&#39;VDS&#39;</span><span class="p">]</span>
+<span class="n">caption</span> <span class="o">=</span> <span class="s2">&quot;Scaled device dimensions and parameters&quot;</span>
+<span class="n">display</span><span class="p">(</span><span class="n">pretty_table</span><span class="p">(</span>
+    <span class="n">df</span><span class="o">=</span><span class="n">scaled_df</span><span class="p">,</span>
+    <span class="n">cols</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span>
+    <span class="n">caption</span><span class="o">=</span><span class="n">caption</span><span class="p">,</span>
+    <span class="n">transpose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_html"><style type="text/css">
+</style>
+<table id="T_4fa87">
+  <caption>Scaled device dimensions and parameters</caption>
+  <thead>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_4fa87_level0_row0" class="row_heading level0 row0" >W</th>
+      <td id="T_4fa87_row0_col0" class="data row0 col0" > 36.88</td>
+    </tr>
+    <tr>
+      <th id="T_4fa87_level0_row1" class="row_heading level0 row1" >L</th>
+      <td id="T_4fa87_row1_col0" class="data row1 col0" > 180.00m</td>
+    </tr>
+    <tr>
+      <th id="T_4fa87_level0_row2" class="row_heading level0 row2" >ID</th>
+      <td id="T_4fa87_row2_col0" class="data row2 col0" > 418.88u</td>
+    </tr>
+    <tr>
+      <th id="T_4fa87_level0_row3" class="row_heading level0 row3" >GM</th>
+      <td id="T_4fa87_row3_col0" class="data row3 col0" > 6.27m</td>
+    </tr>
+    <tr>
+      <th id="T_4fa87_level0_row4" class="row_heading level0 row4" >GM_ID</th>
+      <td id="T_4fa87_row4_col0" class="data row4 col0" > 15.00</td>
+    </tr>
+    <tr>
+      <th id="T_4fa87_level0_row5" class="row_heading level0 row5" >JD</th>
+      <td id="T_4fa87_row5_col0" class="data row5 col0" > 11.36u</td>
+    </tr>
+    <tr>
+      <th id="T_4fa87_level0_row6" class="row_heading level0 row6" >GDS</th>
+      <td id="T_4fa87_row6_col0" class="data row6 col0" > 170.57u</td>
+    </tr>
+    <tr>
+      <th id="T_4fa87_level0_row7" class="row_heading level0 row7" >CGG</th>
+      <td id="T_4fa87_row7_col0" class="data row7 col0" > 74.44f</td>
+    </tr>
+    <tr>
+      <th id="T_4fa87_level0_row8" class="row_heading level0 row8" >CGS</th>
+      <td id="T_4fa87_row8_col0" class="data row8 col0" > 52.80f</td>
+    </tr>
+    <tr>
+      <th id="T_4fa87_level0_row9" class="row_heading level0 row9" >CGD</th>
+      <td id="T_4fa87_row9_col0" class="data row9 col0" > 17.84f</td>
+    </tr>
+    <tr>
+      <th id="T_4fa87_level0_row10" class="row_heading level0 row10" >VGS</th>
+      <td id="T_4fa87_row10_col0" class="data row10 col0" > 599.15m</td>
+    </tr>
+    <tr>
+      <th id="T_4fa87_level0_row11" class="row_heading level0 row11" >VDS</th>
+      <td id="T_4fa87_row11_col0" class="data row11 col0" > 600.00m</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Ok, now let’s calculate what the question actually asked for; intrinsic gain and early voltage:</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Av0</span> <span class="o">=</span> <span class="o">-</span><span class="n">scaled_df</span><span class="p">[</span><span class="s1">&#39;GM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">scaled_df</span><span class="p">[</span><span class="s1">&#39;GDS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The low frequency gain is </span><span class="si">{</span><span class="n">Av0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">ft</span> <span class="o">=</span> <span class="n">scaled_df</span><span class="p">[</span><span class="s1">&#39;GM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">scaled_df</span><span class="p">[</span><span class="s1">&#39;CGG&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="mf">3.14159</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The transit frequency is </span><span class="si">{</span><span class="n">ft</span><span class="o">/</span><span class="mf">1e9</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> GHz&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The low frequency gain is -36.78
+The transit frequency is 13.41 GHz
+</pre></div>
+</div>
+</div>
+</div>
+<p>And remember that Early voltage is defined as:</p>
+<div class="math notranslate nohighlight">
+\[ V_A = \frac{I_d}{g_{ds}} \]</div>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">early_voltage</span> <span class="o">=</span> <span class="n">scaled_df</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">scaled_df</span><span class="p">[</span><span class="s1">&#39;GDS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The early voltage is </span><span class="si">{</span><span class="n">early_voltage</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The early voltage is 2.46
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="tradeoff-exploration">
+<h2>Tradeoff exploration<a class="headerlink" href="#tradeoff-exploration" title="Link to this heading">#</a></h2>
+<p>What happens if we <strong>don’t</strong> assume <span class="math notranslate nohighlight">\(g_m\over{I_d}\)</span> and L?</p>
+<p>Let’s plot intrinsic gain and transit frequency vs. <span class="math notranslate nohighlight">\(g_m\over{I_d}\)</span> and L:</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">TOOLTIPS</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;$x&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;$y&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
+
+<span class="c1"># first, select the data that we want:</span>
+<span class="n">length_filter</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.180</span><span class="p">,</span> <span class="mf">0.240</span><span class="p">,</span> <span class="mf">0.300</span><span class="p">,</span> <span class="mf">0.360</span><span class="p">]</span>
+<span class="n">length_colors</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mf">0.180</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+    <span class="mf">0.240</span><span class="p">:</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span>
+    <span class="mf">0.300</span><span class="p">:</span> <span class="s2">&quot;yellow&quot;</span><span class="p">,</span>
+    <span class="mf">0.360</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span>
+<span class="p">}</span>
+<span class="n">tradeoff_mask</span> <span class="o">=</span> <span class="p">((</span><span class="n">nch_data_df</span><span class="p">[</span><span class="s1">&#39;VDS&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.6</span><span class="p">)</span> <span class="o">&amp;</span> 
+                 <span class="p">(</span><span class="n">nch_data_df</span><span class="p">[</span><span class="s1">&#39;VSB&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span>
+                 <span class="p">(</span><span class="n">nch_data_df</span><span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">length_filter</span><span class="p">))</span>
+                 <span class="p">)</span>
+<span class="n">tradeoff_df</span> <span class="o">=</span> <span class="n">nch_data_df</span><span class="p">[</span><span class="n">tradeoff_mask</span><span class="p">]</span>
+
+<span class="c1"># create a figure</span>
+<span class="n">tradeoff_plot</span> <span class="o">=</span> <span class="n">bh</span><span class="o">.</span><span class="n">create_bokeh_plot</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Intrinsic gain and transit frequency vs. gm/Id and L&quot;</span><span class="p">,</span>
+    <span class="n">x_axis_label</span><span class="o">=</span><span class="s2">&quot;gm / Id (S/A)&quot;</span><span class="p">,</span>
+    <span class="n">y_axis_label</span><span class="o">=</span><span class="s2">&quot;ft (GHz)&quot;</span><span class="p">,</span>
+    <span class="n">tooltips</span><span class="o">=</span><span class="n">TOOLTIPS</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># create a secondary y-axis</span>
+<span class="n">tradeoff_plot</span><span class="o">.</span><span class="n">extra_y_ranges</span><span class="p">[</span><span class="s1">&#39;gain&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Range1d</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">LinearAxis</span><span class="p">(</span><span class="n">y_range_name</span><span class="o">=</span><span class="s1">&#39;gain&#39;</span><span class="p">,</span> <span class="n">axis_label</span><span class="o">=</span><span class="s2">&quot;Intrinsic Gain&quot;</span><span class="p">)</span>
+<span class="n">tradeoff_plot</span><span class="o">.</span><span class="n">add_layout</span><span class="p">(</span><span class="n">ax2</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">)</span>
+
+<span class="c1"># plot lines for each of the gate lengths we selected</span>
+
+<span class="k">for</span> <span class="nb">len</span><span class="p">,</span> <span class="n">len_group</span> <span class="ow">in</span> <span class="n">tradeoff_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">len_group</span><span class="p">)</span>
+    
+    <span class="n">tradeoff_plot</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;GM_ID&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;GM_CGG&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> 
+                       <span class="n">legend_label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;l=</span><span class="si">{</span><span class="nb">len</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">line_color</span><span class="o">=</span><span class="n">length_colors</span><span class="p">[</span><span class="nb">len</span><span class="p">])</span>
+    
+    <span class="n">tradeoff_plot</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;GM_ID&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;GM_GDS&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> 
+                       <span class="n">y_range_name</span><span class="o">=</span><span class="s1">&#39;gain&#39;</span><span class="p">,</span> <span class="n">line_dash</span><span class="o">=</span><span class="s2">&quot;dashed&quot;</span><span class="p">,</span> 
+                       <span class="n">line_color</span><span class="o">=</span><span class="n">length_colors</span><span class="p">[</span><span class="nb">len</span><span class="p">])</span>
+
+<span class="n">show</span><span class="p">(</span><span class="n">tradeoff_plot</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_html">
+  <div id="a07f558a-a414-4ba2-8e9b-5e55e6b0e34a" data-root-id="p1001" style="display: contents;"></div>
+</div><script type="application/javascript">(function(root) {
+  function embed_document(root) {
+  const docs_json = {"afafbdb0-9428-4372-91ef-4f47bb50fff2":{"version":"3.0.3","title":"Bokeh Application","defs":[],"roots":[{"type":"object","name":"Figure","id":"p1001","attributes":{"width":800,"x_range":{"type":"object","name":"DataRange1d","id":"p1003"},"y_range":{"type":"object","name":"DataRange1d","id":"p1002"},"x_scale":{"type":"object","name":"LinearScale","id":"p1015"},"y_scale":{"type":"object","name":"LinearScale","id":"p1017"},"extra_y_ranges":{"type":"map","entries":[["gain",{"type":"object","name":"Range1d","id":"p1050","attributes":{"end":100}}]]},"title":{"type":"object","name":"Title","id":"p1004","attributes":{"text":"Intrinsic gain and transit frequency vs. gm/Id and L"}},"renderers":[{"type":"object","name":"GlyphRenderer","id":"p1064","attributes":{"data_source":{"type":"object","name":"ColumnDataSource","id":"p1055","attributes":{"selected":{"type":"object","name":"Selection","id":"p1056","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1057"},"data":{"type":"map","entries":[["index",{"type":"ndarray","array":{"type":"bytes","data":"CAEAACsEAABOBwAAcQoAAJQNAAC3EAAA2hMAAP0WAAAgGgAAQx0AAGYgAACJIwAArCYAAM8pAADyLAAAFTAAADgzAABbNgAAfjkAAKE8AADEPwAA50IAAApGAAAtSQAAUEwAAHNPAACWUgAAuVUAANxYAAD/WwAAIl8AAEViAABoZQAAi2gAAK5rAADRbgAA9HEAABd1AAA6eAAAXXsAAIB+AACjgQAAxoQAAOmHAAAMiwAAL44AAFKRAAB1lAAAmJcAALuaAADenQAAAaEAACSkAABHpwAAaqoAAI2tAACwsAAA07MAAPa2AAAZugAAPL0AAF/AAACCwwAApcYAAMjJAADrzAAADtAAADHTAABU1gAAd9kAAJrcAAC93wAA4OIAAA=="},"shape":[73],"dtype":"int32","order":"little"}],["ID",{"type":"ndarray","array":{"type":"bytes","data":"AAAAwKOOuD0AAADAGJjHPQAAAACU9dY9AAAAgFd85j0AAADgkBb2PQAAAAC7uAU+AAAAwEFcFT4AAADAxPwkPgAAAMColjQ+AAAAgFImRD4AAABAwKdTPgAAAABpFmM+AAAAIGZtcj4AAABAAqiBPgAAAAC/wpA+AAAAIGl5nz4AAAAAeTGtPgAAAICduro+AAAAICUkyD4AAADAvHfVPgAAAEBlteI+AAAAwJe17z4AAABgSuX5PgAAAOAgOgQ/AAAA4G8bDj8AAAAAjFoVPwAAAICz9hw/AAAAYOXgIj8AAACAdMknPwAAAAC/IC0/AAAAIJZqMT8AAACgVWw0PwAAAGBEkDc/AAAAwGbSOj8AAACgxC8+PwAAAIAM00A/AAAA4MmZQj8AAADAVmtEPwAAAOAER0Y/AAAAoDIsSD8AAACgRRpKPwAAAECnEEw/AAAAwMMOTj8AAADgBApQPwAAAED1D1E/AAAAwOwYUj8AAAAApyRTPwAAAADhMlQ/AAAAwFlDVT8AAABg0lVWPwAAAKANalc/AAAAgNB/WD8AAADg4ZZZPwAAAKAKr1o/AAAAQBXIWz8AAABAzuFcPwAAAGAD/F0/AAAAQIQWXz8AAADAkBhgPwAAAGDWpWA/AAAAwPwyYT8AAACg7b9hPwAAAICTTGI/AAAAwNjYYj8AAABgqGRjPwAAAIDt72M/AAAAAJN6ZD8AAABAhARlPwAAAICsjWU/AAAAoPYVZj8AAADATZ1mPwAAAOCcI2c/AAAAoM6oZz8="},"shape":[73],"dtype":"float64","order":"little"}],["VT",{"type":"ndarray","array":{"type":"bytes","data":"AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8AAAAgjirfPwAAACCOKt8/AAAAII4q3z8="},"shape":[73],"dtype":"float64","order":"little"}],["GM",{"type":"ndarray","array":{"type":"bytes","data":"AAAAwFHBAz4AAACgxn0TPgAAAGBQOSM+AAAAoEfzMj4AAACgyKpCPgAAAACgXlI+AAAAYDINYj4AAAAgYbRxPgAAAGBuUYE+AAAAAOvgkD4AAACAu16gPgAAAGChjK8+AAAAQHEmvj4AAABATYTMPgAAAIDUpNo+AAAAwKqO6D4AAACAx1D2PgAAAKBp/QM/AAAAYOufET8AAAAAm2oePwAAACDLZik/AAAAoAs9ND8AAABAgWI+PwAAACCZWUU/AAAAQK8ZTD8AAADgnG1RPwAAAIBCkVQ/AAAAIOBUVz8AAABAva9ZPwAAAMCaqls/AAAAYCVWXT8AAACgLsRePwAAAIATAmA/AAAAIPmQYD8AAAAgAhNhPwAAAEACi2E/AAAAIMb6YT8AAADgZGNiPwAAAMCBxWI/AAAAwHghYz8AAACgfndjPwAAAKCzx2M/AAAAYDASZD8AAABADFdkPwAAAOBglmQ/AAAAIEvQZD8AAAAA7ARlPwAAACBnNGU/AAAAgOJeZT8AAACghYRlPwAAAIB4pWU/AAAAwOLBZT8AAAAA69llPwAAAKC27WU/AAAA4Gj9ZT8AAADgIglmPwAAAGADEWY/AAAAICYVZj8AAABgpBVmPwAAAGCUEmY/AAAAgAkMZj8AAABAFAJmPwAAAEDC9GU/AAAAIB7kZT8AAADAL9BlPwAAAKD8uGU/AAAAgIeeZT8AAAAA0YBlPwAAAGDXX2U/AAAAoJc7ZT8AAAAADRRlPwAAAEAy6WQ/AAAAoAG7ZD8="},"shape":[73],"dtype":"float64","order":"little"}],["GMB",{"type":"ndarray","array":{"type":"bytes","data":"AAAAoI+k6T0AAADgL/34PQAAACDNVgg+AAAAwKCwFz4AAABApAknPgAAAIB+YDY+AAAA4GyzRT4AAAAAKwBVPgAAAMDdQ2Q+AAAAwAp7cz4AAABgrqGCPgAAAMCLs5E+AAAAgNmsoD4AAADgyxavPgAAAOAvoLw+AAAAoGsAyj4AAABgYkrXPgAAAEAuk+Q+AAAAYCPn8T4AAABgEIX+PgAAAICZMwk/AAAAQHDfEz8AAAAA+Y4dPwAAAAAlmSQ/AAAA4AnrKj8AAACgepgwPwAAAGB3fTM/AAAAgC8GNj8AAADgVSw4PwAAAOAZ+Tk/AAAAoFt8Oz8AAACgqMY8PwAAAMA65j0/AAAAgA7mPj8AAADAEM4/PwAAAADdUUA/AAAAwFq1QD8AAABAuRJBPwAAAADIakE/AAAAwBW+QT8AAABACQ1CPwAAAEDyV0I/AAAAgBOfQj8AAAAgqOJCPwAAAEDnIkM/AAAAQAVgQz8AAACgNJpDPwAAAECm0UM/AAAAoIgGRD8AAADgCDlEPwAAAIBRaUQ/AAAAAIuXRD8AAACg28NEPwAAAEBn7kQ/AAAAwE8XRT8AAAAAtT5FPwAAAIC0ZEU/AAAAoGqJRT8AAACg8axFPwAAAMBiz0U/AAAAwNXwRT8AAACAYRFGPwAAAAAcMUY/AAAAgBpQRj8AAADAcW5GPwAAACA2jEY/AAAAoHupRj8AAAAAVsZGPwAAAADZ4kY/AAAAQBj/Rj8AAAAgJxtHPwAAAMAYN0c/AAAAIABTRz8="},"shape":[73],"dtype":"float64","order":"little"}],["GDS",{"type":"ndarray","array":{"type":"bytes","data":"AAAAQEwPsD0AAABgZrK/PQAAAEBPRc89AAAAYHvW3j0AAABAxWTuPQAAAGCe7v09AAAAoO1xDT4AAACg5uscPgAAAODbWCw+AAAAwBO0Oz4AAACArvdKPgAAAMC4HFo+AAAAYJQbaT4AAADg6Ox3PgAAAAAzi4Y+AAAAAK/0lD4AAABAsCyjPgAAAOD0OrE+AAAAYPFQvj4AAADgFPnJPgAAAOC4ftU+AAAAAMcE4T4AAADANJPpPgAAAODwK/I+AAAAgK11+D4AAABgdV3/PgAAAGC+TgM/AAAAoK4BBz8AAADgtbkKPwAAAEAbcg4/AAAAAPQVET8AAABAjPUSPwAAAABl2hQ/AAAAwCDHFj8AAACAQL4YPwAAAIAUwho/AAAAoMDUHD8AAABAR/gePwAAAGBKlyA/AAAAoMW8IT8AAABghu0iPwAAAECBKiQ/AAAAYLJ0JT8AAAAgIM0mPwAAAODdNCg/AAAAwA6tKT8AAABA5zYrPwAAAGCw0yw/AAAAYMmELj8AAABA1SUwPwAAAGDzFDE/AAAAwJcQMj8AAAAAqxkzPwAAAAAnMTQ/AAAA4BhYNT8AAABAoY82PwAAAOD22Dc/AAAAwGY1OT8AAABAVqY6PwAAAMBDLTw/AAAAIMjLPT8AAADgloM/PwAAAIA/q0A/AAAAQDWjQT8AAAAgr6pCPwAAAGC8wkM/AAAAQHfsRD8AAABABClGPwAAAMCOeUc/AAAAYEbfSD8AAABAWltKPwAAACD07ks/AAAAYDGbTT8="},"shape":[73],"dtype":"float64","order":"little"}],["CGG",{"type":"ndarray","array":{"type":"bytes","data":"AAAAYECj/jwAAAAAMob+PAAAAIBBav48AAAAoF9P/jwAAADgfzX+PAAAAKCaHP48AAAAILAE/jwAAADgzu39PAAAACAh2P08AAAAQAbE/TwAAADARrL9PAAAAEB3pP08AAAAwLud/TwAAAAANqT9PAAAAACZw/08AAAAQE8R/jwAAAAggbH+PAAAAGDK1/88AAAAQK/aAD0AAAAAoyMCPQAAAKD7kwM9AAAAYHbdBD0AAAAAY84FPQAAAGDcZQY9AAAAQC68Bj0AAACgj+oGPQAAAOCeAgc9AAAAoM0OBz0AAACA1BQHPQAAACC3Fwc9AAAAAAQZBz0AAAAAhxkHPQAAAOCnGQc9AAAAYJsZBz0AAABAfBkHPQAAAEBYGQc9AAAAgDYZBz0AAADgGhkHPQAAAGAHGQc9AAAAgP0YBz0AAAAg/hgHPQAAAEAKGQc9AAAA4CIZBz0AAADASBkHPQAAAEB9GQc9AAAAgMEZBz0AAADgFhoHPQAAACB/Ggc9AAAA4PsaBz0AAABgjxsHPQAAAAA8HAc9AAAAYAQdBz0AAACA6x0HPQAAAMD0Hgc9AAAAACQgBz0AAACAfSEHPQAAAMAFIwc9AAAAIMIkBz0AAABAuCYHPQAAAEDuKAc9AAAAwGorBz0AAADgNC4HPQAAAMBTMQc9AAAAIM80Bz0AAACgrjgHPQAAAID5PAc9AAAAwLZBBz0AAACg7EYHPQAAAACgTAc9AAAAoNRSBz0AAAAgjFkHPQAAACDGYAc9AAAA4H9oBz0="},"shape":[73],"dtype":"float64","order":"little"}],["CGS",{"type":"ndarray","array":{"type":"bytes","data":"AAAAQLAR5jwAAACgtBHmPAAAAMC9EeY8AAAAYNAR5jwAAACA9RHmPAAAAMA/EuY8AAAA4NIS5jwAAABA9hPmPAAAAAA3FuY8AAAAYKsa5jwAAAAgeCPmPAAAAEDUNOY8AAAAAP5W5jwAAADg6pnmPAAAACDhG+c8AAAAoAoU6DwAAACgG9/pPAAAAOCeAO08AAAAADr68DwAAABAoVf0PAAAAODbFPg8AAAAYKVp+zwAAAAgn9j9PAAAAOB7Yf88AAAAQMghAD0AAACA418APQAAACCcgQA9AAAAQEGUAD0AAACAFp8APQAAAEDspQA9AAAAILmqAD0AAAAAfa4APQAAAKC5sQA9AAAAoLC0AD0AAACggrcAPQAAACBAugA9AAAAAPG8AD0AAAAAmb8APQAAAIA5wgA9AAAA4NLEAD0AAADgZMcAPQAAAKDuyQA9AAAAYG/MAD0AAADA5c4APQAAAGBQ0QA9AAAAoK3TAD0AAABg+9UAPQAAAMA32AA9AAAA4F/aAD0AAABAcdwAPQAAAEBo3gA9AAAAIEHgAD0AAADg9+EAPQAAAECH4wA9AAAAwOnkAD0AAABAGeYAPQAAAEAO5wA9AAAAAMHnAD0AAABAKOgAPQAAAAA66AA9AAAAIOvnAD0AAACAL+cAPQAAACD65QA9AAAAoDzkAD0AAACA6OEAPQAAAEDu3gA9AAAAoD7bAD0AAACAytYAPQAAAKCD0QA9AAAAAF3LAD0AAAAgTMQAPQAAAOBIvAA9AAAAYE6zAD0="},"shape":[73],"dtype":"float64","order":"little"}],["CGD",{"type":"ndarray","array":{"type":"bytes","data":"AAAA4IUR5jwAAADAhRHmPAAAAMCFEeY8AAAAoIUR5jwAAABghRHmPAAAAOCEEeY8AAAA4IMR5jwAAAAAghHmPAAAAEB+EeY8AAAAwHYR5jwAAAAAaBHmPAAAAMBKEeY8AAAA4BAR5jwAAABgnxDmPAAAACDCD+Y8AAAAgBoO5jwAAACgCAvmPAAAAACpBeY8AAAAACX95TwAAABgkPHlPAAAAAC35OU8AAAAIFfZ5TwAAAAAK9HlPAAAAGA2zOU8AAAAYJzJ5TwAAABAecjlPAAAAGAuyOU8AAAAoF7I5TwAAADg18jlPAAAAECAyeU8AAAA4EvK5TwAAADANcvlPAAAAIA8zOU8AAAAQGHN5TwAAAAgps7lPAAAACAO0OU8AAAAIJ3R5TwAAACAV9PlPAAAAABC1eU8AAAAoGLX5TwAAADAv9nlPAAAAIBg3OU8AAAAYE3f5TwAAACgj+LlPAAAAAAy5uU8AAAAgEDq5TwAAADAyO7lPAAAAGDa8+U8AAAAAIf55TwAAACg4v/lPAAAAMADB+Y8AAAAQAQP5jwAAAAAARjmPAAAAKAaIuY8AAAAQHYt5jwAAAAgPTrmPAAAAICdSOY8AAAAAMtY5jwAAABA/mrmPAAAACB2f+Y8AAAAwHaW5jwAAABASbDmPAAAAAA8zeY8AAAA4KDt5jwAAAAgzBHnPAAAAGASOuc8AAAAYMZm5zwAAAAANpjnPAAAAGCmzuc8AAAAAFEK6DwAAAAgX0voPAAAAADnkeg8AAAAoOfd6Dw="},"shape":[73],"dtype":"float64","order":"little"}],["CGB",{"type":"ndarray","array":{"type":"bytes","data":"AAAAwEoj4TwAAACAKengPAAAAIA/seA8AAAAQGl74DwAAADAhEfgPAAAAKBwFeA8AAAAwBLK3zwAAADASmzfPAAAAKAZEd88AAAA4NS33jwAAACgWl/ePAAAACCfBd48AAAAYNGm3TwAAADAwzvdPAAAAIAdt9w8AAAAwPIA3DwAAAAgvPHaPAAAAKCZUtk8AAAAoEfy1jwAAABgctvTPAAAAKD/gtA8AAAAIN8kyzwAAADAi9zGPAAAAEAOIcQ8AAAAYO9/wjwAAADA3IjBPAAAAEBy78A8AAAAoEuHwDwAAAAggTjAPAAAAMBZ7b88AAAAAP92vzwAAABgkwe/PAAAAODhm748AAAAgEwyvjwAAADgAMq9PAAAAICSYr08AAAAIMj7vDwAAADggZW8PAAAACCtL7w8AAAAoD3KuzwAAADgKmW7PAAAAGBuALs8AAAAgAKcujwAAADg4je6PAAAAIAL1Lk8AAAAAHlwuTwAAACgKA25PAAAACAYqrg8AAAAIEZHuDwAAADgseS3PAAAAEBbgrc8AAAAwEMgtzwAAABgbb62PAAAAODbXLY8AAAAgJT7tTwAAACAnpq1PAAAACADOrU8AAAAgM7ZtDwAAABAD3q0PAAAAADYGrQ8AAAA4D68szwAAABAXl6zPAAAAMBVAbM8AAAAwEmlsjwAAACAZEqyPAAAAIDV8LE8AAAAINKYsTwAAADAlEKxPAAAAIBc7rA8AAAAwGucsDwAAADgBk2wPAAAAIByALA8AAAAoOJtrzw="},"shape":[73],"dtype":"float64","order":"little"}],["CDD",{"type":"ndarray","array":{"type":"bytes","data":"AAAAYMFb/DwAAABgwVv8PAAAAGDBW/w8AAAAYMFb/DwAAABgwVv8PAAAAGDBW/w8AAAAYMFb/DwAAABgwVv8PAAAAGDBW/w8AAAAgMFb/DwAAACgwVv8PAAAAADCW/w8AAAAgMJb/DwAAADAw1v8PAAAACDGW/w8AAAAoMpb/DwAAABg01v8PAAAAMDjW/w8AAAAgAFc/DwAAADgM1z8PAAAAGCCXPw8AAAAYPFc/DwAAABggV38PAAAAMAvXvw8AAAAgPpe/DwAAABA4F/8PAAAAADhYPw8AAAAQP5h/DwAAADgOWP8PAAAAMCWZPw8AAAAABhm/DwAAABgwWf8PAAAAICXafw8AAAAAJ9r/DwAAACg3W38PAAAAIBZcPw8AAAAwBlz/DwAAAAgJnb8PAAAAMCHefw8AAAAwEh9/DwAAABgdIH8PAAAAKAXhvw8AAAAIEGL/DwAAACAAZH8PAAAAGBrl/w8AAAAQJSe/DwAAAAglKb8PAAAAKCGr/w8AAAAoIq5/DwAAABgw8T8PAAAACBZ0fw8AAAAIHnf/DwAAABgVu/8PAAAAMAqAf08AAAAgDcV/TwAAACAxSv9PAAAAIAmRf08AAAAYLVh/TwAAACg1oH9PAAAAMD4pf08AAAAAJTO/TwAAAAAKvz9PAAAAMBEL/48AAAAoHRo/jwAAACgTqj+PAAAAABo7/48AAAAAFM+/zwAAADgmJX/PAAAAAC09f88AAAAwIQvAD0AAABA8WgAPQAAAAAzpwA9AAAAYEnqAD0="},"shape":[73],"dtype":"float64","order":"little"}],["CSS",{"type":"ndarray","array":{"type":"bytes","data":"AAAAQGF8/zwAAAAgZHz/PAAAAKBpfP88AAAAoHR8/zwAAAAginz/PAAAAKC0fP88AAAAIAh9/zwAAADArH3/PAAAAKDwfv88AAAAQG6B/zwAAABAVIb/PAAAAMDzj/88AAAAgNCi/zwAAAAAoMf/PAAAAABsBwA9AAAAYC1LAD0AAAAAGMgAPQAAAACAoQE9AAAA4GH4Aj0AAABgD8kEPQAAAOAhzAY9AAAAgMiVCD0AAADg6uIJPQAAAEDEswo9AAAAoKUqCz0AAADgmmoLPQAAAID1iws9AAAAQA6dCz0AAACAuaULPQAAACATqgs9AAAAgDisCz0AAABgPa0LPQAAAGCtrQs9AAAAgM6tCz0AAADAw60LPQAAAECerQs9AAAAAGatCz0AAABgHq0LPQAAAEDIrAs9AAAAIGOsCz0AAACA7asLPQAAAMBlqws9AAAAQMmqCz0AAABgFaoLPQAAAOBGqQs9AAAA4FmoCz0AAAAgSqcLPQAAAMASpgs9AAAAAK6kCz0AAABAFaMLPQAAAEBBoQs9AAAAQCmfCz0AAACAw5wLPQAAAAAFmgs9AAAAAOGWCz0AAAAgSZMLPQAAAAAtjws9AAAAYHqKCz0AAACgHIULPQAAAOD8fgs9AAAAAAJ4Cz0AAABAEHALPQAAAKAJZws9AAAAYM5cCz0AAADgPFELPQAAAKAyRAs9AAAAoIw1Cz0AAAAAKSULPQAAAMDnEgs9AAAAgKz+Cj0AAACAX+gKPQAAAIDvzwo9AAAAQFO1Cj0="},"shape":[73],"dtype":"float64","order":"little"}],["STH",{"type":"ndarray","array":{"type":"bytes","data":"AAAAAJK+5TkAAADg/2P1OQAAAMDeCAU6AAAAwHqsFDoAAAAg4U0kOgAAAKDL6zM6AAAAYIiEQzoAAAAg3RVTOgAAAODsnGI6AAAAwCUWcjoAAACgSX2BOgAAAECtzZA6AAAAINICoDoAAABA+jKuOgAAAAB3Irw6AAAAQJ/byToAAACglm7XOgAAAEC97uQ6AAAAABNo8joAAACgJq//OgAAAACdZQo7AAAAoJr8FDsAAAAAyXMfOwAAACAAEiY7AAAAAN8FLTsAAADAQf4xOwAAACA7PDU7AAAAgJMZODsAAACgi406OwAAAAAHoTw7AAAAwOFkPjsAAADgHOs/OwAAAICroUA7AAAAwNA8QTsAAACgT8tBOwAAAAAUUEI7AAAAIAPNQjsAAABgTUNDOwAAAICus0M7AAAAAJseRDsAAAAgX4REOwAAAOAx5UQ7AAAA4EFBRTsAAACAu5hFOwAAAODM60U7AAAAQKc6RjsAAABAf4VGOwAAAOCMzEY7AAAAgAoQRzsAAACgNFBHOwAAAABJjUc7AAAAYIbHRzsAAADgK/9HOwAAAIB4NEg7AAAAgKtnSDsAAADAA5lIOwAAAOC/yEg7AAAAYB73SDsAAACgXSRJOwAAAAC8UEk7AAAAgHd8STsAAADgzqdJOwAAAMAA00k7AAAAQEz+STsAAACg8ClKOwAAAMAtVko7AAAAgEODSjsAAADgcbFKOwAAAOD44Eo7AAAAoBcSSzsAAABADEVLOwAAAOASeks7AAAA4GSxSzs="},"shape":[73],"dtype":"float64","order":"little"}],["SFL",{"type":"ndarray","array":{"type":"bytes","data":"AAAAgDKG9DkAAAAA5/0TOgAAAOCrdjM6AAAAoKPvUjoAAACgqmdyOgAAAIBA3ZE6AAAA4GtOsToAAABgmrjQOgAAAGB9GPA6AAAAwNzTDjsAAADAz08tOwAAAMBimUs7AAAAoNikaTsAAACghGiHOwAAAIDL4KQ7AAAAIEcVwjsAAABAqzjeOwAAAGBsMfg7AAAAYNFhEjwAAAAAQiIqPAAAAAASCUE8AAAAoN33UzwAAADAoNhkPAAAAED9enM8AAAAALWHgDwAAABgPuSJPAAAAGDs/JI8AAAA4PdkmjwAAACgz46hPAAAAKCuiaY8AAAAIIoYrDwAAABg0RixPAAAAABaZrQ8AAAAoIHxtzwAAAAgj7e7PAAAAOBAtr88AAAAANH1wTwAAABA8yrEPAAAAECpecY8AAAAQBThyDwAAAAAUGDLPAAAAEBv9s08AAAA4D1R0DwAAADAurHRPAAAAEAqHNM8AAAAQASQ1DwAAAAAvgzWPAAAAADKkdc8AAAAAJke2TwAAABAmrLaPAAAAAA8Tdw8AAAAQOzt3TwAAABAGJTfPAAAAKCWn+A8AAAAQEx34TwAAADA41DiPAAAAIATLOM8AAAAYJII5DwAAADgFubkPAAAAKBXxOU8AAAAoAqj5jwAAABA5oHnPAAAAACgYOg8AAAA4Ow+6TwAAADAgRzqPAAAACAS+eo8AAAAQFHU6zwAAADg8K3sPAAAAECihe08AAAAIBVb7jwAAAAg+C3vPAAAAAD5/e88AAAAAGJl8Dw="},"shape":[73],"dtype":"float64","order":"little"}],["INFO",{"type":"ndarray","array":["Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3"],"shape":[73],"dtype":"object","order":"little"}],["CORNER",{"type":"ndarray","array":["NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM"],"shape":[73],"dtype":"object","order":"little"}],["TEMP",{"type":"ndarray","array":{"type":"bytes","data":"LAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAAA=="},"shape":[73],"dtype":"int32","order":"little"}],["VGS",{"type":"ndarray","array":{"type":"bytes","data":"AAAAAAAAAACamZmZmZmZP5qZmZmZmak/MzMzMzMzsz+amZmZmZm5PwAAAAAAAMA/MzMzMzMzwz9mZmZmZmbGP5qZmZmZmck/zczMzMzMzD8AAAAAAADQP5qZmZmZmdE/MzMzMzMz0z/NzMzMzMzUP2ZmZmZmZtY/AAAAAAAA2D+amZmZmZnZPzMzMzMzM9s/zczMzMzM3D9mZmZmZmbePwAAAAAAAOA/zczMzMzM4D+amZmZmZnhP2ZmZmZmZuI/MzMzMzMz4z8AAAAAAADkP83MzMzMzOQ/mpmZmZmZ5T9mZmZmZmbmPzMzMzMzM+c/AAAAAAAA6D/NzMzMzMzoP5qZmZmZmek/ZmZmZmZm6j8zMzMzMzPrPwAAAAAAAOw/zczMzMzM7D+amZmZmZntP2ZmZmZmZu4/MzMzMzMz7z8AAAAAAADwP2ZmZmZmZvA/zczMzMzM8D8zMzMzMzPxP5qZmZmZmfE/AAAAAAAA8j9mZmZmZmbyP83MzMzMzPI/MzMzMzMz8z+amZmZmZnzPwAAAAAAAPQ/ZmZmZmZm9D/NzMzMzMz0PzMzMzMzM/U/mpmZmZmZ9T8AAAAAAAD2P2ZmZmZmZvY/zczMzMzM9j8zMzMzMzP3P5qZmZmZmfc/AAAAAAAA+D9mZmZmZmb4P83MzMzMzPg/MzMzMzMz+T+amZmZmZn5PwAAAAAAAPo/ZmZmZmZm+j/NzMzMzMz6PzMzMzMzM/s/mpmZmZmZ+z8AAAAAAAD8P2ZmZmZmZvw/zczMzMzM/D8="},"shape":[73],"dtype":"float64","order":"little"}],["VDS",{"type":"ndarray","array":{"type":"bytes","data":"MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8="},"shape":[73],"dtype":"float64","order":"little"}],["VSB",{"type":"ndarray","array":{"type":"bytes","data":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="},"shape":[73],"dtype":"float64","order":"little"}],["L",{"type":"ndarray","array":{"type":"bytes","data":"CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8K16NwPQrHPwrXo3A9Csc/CtejcD0Kxz8="},"shape":[73],"dtype":"float64","order":"little"}],["W",{"type":"ndarray","array":{"type":"bytes","data":"BQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAA=="},"shape":[73],"dtype":"int32","order":"little"}],["NFING",{"type":"ndarray","array":{"type":"bytes","data":"AQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAA=="},"shape":[73],"dtype":"int32","order":"little"}],["GM_ID",{"type":"ndarray","array":{"type":"bytes","data":"tY/1nxi+OUBzbHJTe286QOeBlLgvyzpAWuIqkPv3OkD9weL2Nws7QArCN3vZDztAOY+MxQQLO0ClKDQEo/46QKzREdi56jpATlzmbBvOOkADe8sjxaY6QHrEHysucjpAcNP7NbstOkDXg/xYe9c5QIl/Ufg/bzlAU5DMnq33OEBi4FrtBnY4QFK+YwSV7jdAkJakTLVcN0BP/NoxZas2QE8mij9WuTVAO23AJolsNEA9HTflDsYyQEWnnuVk4zBAkZz9u/LdLUDnOddYCR4qQP4JrGQ6uSZAqHxVPCnGI0C+iPniF0chQJdrnZP3ZB5AOqqUpGXzGkBc/vvSYhoYQHLfuoNPvRVAFfAZtrfDE0BUyFC/lhkSQL0pYh7yrhBANadN72/uDkAqF+e9K9EMQIMYR9vI9gpA0Mi80VJTCUDirj3Uat0HQJFRV3isjQZAUbcv8DdeBUB4r5iaV0oEQGQixd47TgNAIMH9tMdmAkD1IISlaZEBQOTlmfT9ywBAAcv7BrgUAED0s+4jItT+P0eBqgB2lf0/ywcFBCtr/D/IHIddTFP7P6VLkEwkTPo/oV7clzFU+T91a1BAH2r4P8WGFWK+jPc/2rhSnP+69j+l+FXd7/P1P5tUoAS0NvU/hybRTIWC9D+rUQXOr9bzP3I3yjaPMvM/Exlar42V8j8DihyDIf/xP7g33HbMbvE/UP3eaxrk8D9Dk4IHoF7wP+SPegX0u+8/HIBkaprD7j/HzvO0idPtP8MWO/cl6+w/cDFZpN8J7D8="},"shape":[73],"dtype":"float64","order":"little"}],["JD",{"type":"ndarray","array":{"type":"bytes","data":"zczMzE+lkz3NzMzME+CiPQAAAAAQXrI9zczMzBL9wT2amZkZp6vRPZqZmZmVYOE9AAAAAJsW8T0AAAAAN8oAPgAAAACHeBA+ZmZmZqgeID4zMzMzzXIvPpqZmZlBij4+mpmZmdZ7TT6amZmZA0BcPpqZmZkx0Wo+MzMzs+0teT4zMzMzx1qHPpqZmZkXYpU+MzMzsx1Qoz4AAAAAlyyxPmZmZmYI770+AAAAABNeyT4zMzOzbrfUPjMzM7OALuA+mpmZGfMV6D7NzMzMPBXxPs3MzMzCK/c+MzMzM6I0/j5mZmZmkAcDP5qZmZllTQc/AAAAAL3dCz9mZmbmqlYQP83MzEzQ2RI/AAAAAB91FT9mZmbmNiYYPzMzMzNH6xo/mpmZmdzCHT8AAAAA31UgP83MzExq0iE/ZmZm5o5WIz/NzMxM0eEkPwAAAAC5cyY/zczMzM8LKD9mZmZmoakpP5qZmZm7TCs/AAAAAK70LD8zMzMzC6EuPwAAAAC0KDA/MzMzM64CMT9mZmbmQd4xP5qZmRk+uzI/mpmZmXOZMz8zMzOztHg0P83MzEzVWDU/mpmZmao5Nj9mZmZmCxs3PwAAAIDP/Dc/MzMzM9DeOD+amZmZ58A5P5qZmZnwojo/mpmZmceEOz8AAAAASWY8P2ZmZmZSRz0/MzMzM8EnPj/NzMzMcwc/P83MzMxI5j8/MzMzMw9iQD/NzMzMadBAP5qZmZkjPkE/MzMzsyurQT9mZmZmcRdCP2ZmZubjgkI/mpmZGXLtQj8="},"shape":[73],"dtype":"float64","order":"little"}],["GM_GDS",{"type":"ndarray","array":{"type":"bytes","data":"MfwNXICuQ0AZM3SQfq1DQB1JGUQVrENAeUtx8xuqQ0CIOfAiWqdDQEwf1/aCo0NAz0yreS6eQ0CCQm+s0pZDQLPFZZi8jENAe96Siw5/Q0AcskFPx2xDQLT73/7gVENA5VcdeZs2Q0CEA+R8CRJDQE3sjKv06EJA8hmaAfK/QkAJS1rt9p5CQElLkUcDkEJA1MXZEIWaQkBVfK07vrxCQDM45XNp6EJA2LqqWO4GQ0Akf2k1UAJDQFMSo1NrzEJAgonfL6lhQkDjFjgM7sdBQAIJAgdEC0FADje1a9s5QEDHowRPicE+QMfrgussFD1AbwqxaOV4O0AOE3OT2/Y5QAGpTl2tkDhA7OKUawhGN0ApUbra9hQ2QAndkFTK+jRAzQJu1K70M0Aai8Nj+v8yQNhpkxZVGjJAlrywvcJBMUDC/EDGoHQwQJ5LRGc3Yy9AeO3FT0bvLUCnnY3VuossQGiCj5U4NytAnCGZl6bwKUDXGUucIbcoQBeM7p/tiSdAWgv8kW1oJkC3xd2VG1IlQKZwTreDRiRAHbxU4D5FI0CDM11/8E0iQACOylxEYCFA6yED8ut7IEAzg+fePEEfQD6VD4wtnB1A6XBCLycIHECD8CoZrYQaQLIzLwBIERlAkDJ7IoWtF0Ce9Ahl9lgWQO8EAXsxExVAAQu7uM/bE0AZQBmbbbISQEsZfrSqlhFAIfnagymIEEAXQrAyHQ0PQDxn328BIw1A8GjIKFFRC0CjXlxtYJcJQBvRM8OF9AdAwhneLxloBkA="},"shape":[73],"dtype":"float64","order":"little"}],["GM_CGG",{"type":"ndarray","array":{"type":"bytes","data":"Upy6JTGi9EB+DWcrBm8EQdm93t7DORRB2Ub+tsMBJEEK42UxG8YzQeS37SmFhUNBC4F+/UQ+U0GGakpXBO5iQXPLE/6rkXJBshuzZUElgkG6043a0KORQZZJZrF+B6FBH7YNQdtJsEEIFkecLsm+QQ4cBSM6pcxBfW1Ow7Ii2kH2nbY3+UPnQQ83eZunFvRBQGkh/jy7AEKAAfBUT9QKQtLueyRawhRC6elRePkJH0J1KQAoX0smQm9iXUa7gC5C1fXgWp3GM0K4DtxiJVY4QhFmmN9RmjxC7G9TqZ8wQEK2iOsjTc5BQu+ia5dDK0NCw3zTyFhSREJ3j9pnbk9FQneZH2PvLEZC7pvyK+/yRkL4a66eMadHQm9OfFaUTUhC6zzA8I3oSELUGUp7nHlJQp3j/UmfAUpCG61ScxOBSkIzuzFcQPhKQrxuAOFQZ0tCbT70UWXOS0Kg2/2YnC1MQkN3+QUYhUxCsYDCv/3UTELYI29geR1NQh+JXbe5Xk1C/cyEEvGYTUKXJHcVU8xNQjNAvfkT+U1CDAZYMmcfTkIlaDJnfj9OQsSSfx+JWU5C7fbTZbNtTkKZ8pX3JXxOQo7MyB0GhU5C87YkBXSITkJ1zhhMjIZOQknMQQlnf05C8h9BBRhzTkJGMzTKrmFOQjeiWFw3S05CG9HiTbkvTkIoUnQlOQ9OQg/D+kW56U1CkMQFUDm/TUIS3fGvt49NQq1PuRcyW01CKq7pt6YhTUIIzx3IFONMQtAP+f19n0xCb9nl4eZWTEI="},"shape":[73],"dtype":"float64","order":"little"}]]}}},"view":{"type":"object","name":"CDSView","id":"p1065","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1066"}}},"glyph":{"type":"object","name":"Line","id":"p1061","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_CGG"},"line_color":"blue"}},"nonselection_glyph":{"type":"object","name":"Line","id":"p1062","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_CGG"},"line_color":"blue","line_alpha":0.1}},"muted_glyph":{"type":"object","name":"Line","id":"p1063","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_CGG"},"line_color":"blue","line_alpha":0.2}}}},{"type":"object","name":"GlyphRenderer","id":"p1091","attributes":{"y_range_name":"gain","data_source":{"id":"p1055"},"view":{"type":"object","name":"CDSView","id":"p1092","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1093"}}},"glyph":{"type":"object","name":"Line","id":"p1088","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_GDS"},"line_color":"blue","line_dash":[6]}},"nonselection_glyph":{"type":"object","name":"Line","id":"p1089","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_GDS"},"line_color":"blue","line_alpha":0.1,"line_dash":[6]}},"muted_glyph":{"type":"object","name":"Line","id":"p1090","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_GDS"},"line_color":"blue","line_alpha":0.2,"line_dash":[6]}}}},{"type":"object","name":"GlyphRenderer","id":"p1103","attributes":{"data_source":{"type":"object","name":"ColumnDataSource","id":"p1094","attributes":{"selected":{"type":"object","name":"Selection","id":"p1095","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1096"},"data":{"type":"map","entries":[["index",{"type":"ndarray","array":{"type":"bytes","data":"+a8CAByzAgA/tgIAYrkCAIW8AgCovwIAy8ICAO7FAgARyQIANMwCAFfPAgB60gIAndUCAMDYAgDj2wIABt8CACniAgBM5QIAb+gCAJLrAgC17gIA2PECAPv0AgAe+AIAQfsCAGT+AgCHAQMAqgQDAM0HAwDwCgMAEw4DADYRAwBZFAMAfBcDAJ8aAwDCHQMA5SADAAgkAwArJwMATioDAHEtAwCUMAMAtzMDANo2AwD9OQMAID0DAENAAwBmQwMAiUYDAKxJAwDPTAMA8k8DABVTAwA4VgMAW1kDAH5cAwChXwMAxGIDAOdlAwAKaQMALWwDAFBvAwBzcgMAlnUDALl4AwDcewMA/34DACKCAwBFhQMAaIgDAIuLAwCujgMA0ZEDAA=="},"shape":[73],"dtype":"int32","order":"little"}],["ID",{"type":"ndarray","array":{"type":"bytes","data":"AAAAAAyqsj0AAAAglNfBPQAAAKC7WNE9AAAAwNYC4T0AAABgKsDwPQAAACBQhQA+AAAAoNtLED4AAACgoA8gPgAAAICRmi8+AAAAgCgDPz4AAAAg91FOPgAAAIAxf10+AAAAwLuCbD4AAACgV1V7PgAAAACe8ok+AAAAAFpbmD4AAADg75amPgAAAOC7sbQ+AAAAQE23wj4AAAAAa6vQPgAAAGBSEt0+AAAAgGuZ6D4AAADgbQL0PgAAAIDaE/8+AAAAIF76Bj8AAADgTTIQPwAAAMAj2xU/AAAAAKFiHD8AAADgfdchPwAAACCE0yU/AAAAYIcaKj8AAACA06MuPwAAAABatDE/AAAAIAcyND8AAACg+Mg2PwAAAACbdzk/AAAAAJo8PD8AAACgxxY/PwAAAMCEAkE/AAAAoCeDQj8AAAAAxgxEPwAAAMDZnkU/AAAAYNw4Rz8AAAAgR9pIPwAAAECTgko/AAAAQDoxTD8AAAAAtuVNPwAAAOCBn08/AAAAAA2vUD8AAABgfpBRPwAAAIDUc1I/AAAAANBYUz8AAAAAMj9UPwAAAMC8JlU/AAAAwDIPVj8AAABAV/hWPwAAAADu4Vc/AAAA4LrLWD8AAACggrVZPwAAAKAJn1o/AAAAoBSIWz8AAADAaHBcPwAAAODKV10/AAAAYAA+Xj8AAADgziJfPwAAAED+AmA/AAAAAKhzYD8AAADgSONgPwAAAGDFUWE/AAAAQAO/YT8AAABg6SpiPwAAAABglWI/AAAAIFH+Yj8="},"shape":[73],"dtype":"float64","order":"little"}],["VT",{"type":"ndarray","array":{"type":"bytes","data":"AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8AAABg+I3ePwAAAGD4jd4/AAAAYPiN3j8="},"shape":[73],"dtype":"float64","order":"little"}],["GM",{"type":"ndarray","array":{"type":"bytes","data":"AAAAgC+n/T0AAADgh10NPgAAAACAER0+AAAAoPPBLD4AAACgU208PgAAAOCBEUw+AAAAYKerWz4AAAAABThrPgAAAODGsXo+AAAAYO4Sij4AAADgcFSZPgAAAKDBbqg+AAAAQAZbtz4AAABAIhXGPgAAAOBOntQ+AAAAIAL/4j4AAAAgt0XxPgAAAIAPAf8+AAAAQGlnCz8AAABgP6wXPwAAACBduSM/AAAAoNI6Lz8AAABgoTk3PwAAACBZJ0A/AAAAoD0SRT8AAABAxfhJPwAAAMB1jU4/AAAAoMdTUT8AAABgbx9TPwAAAGDHr1Q/AAAAgCwPVj8AAADAUkhXPwAAAMBRZFg/AAAAQA1qWT8AAABgVF5aPwAAAABKRFs/AAAAoNcdXD8AAACgEexcPwAAAKCEr10/AAAAwGxoXj8AAACg2hZfPwAAACDMul8/AAAAwBwqYD8AAAAgj3FgPwAAAEC+s2A/AAAA4K7wYD8AAACAaShhPwAAAMD5WmE/AAAAYG2IYT8AAACA07BhPwAAAOA71GE/AAAAQLbyYT8AAADAUQxiPwAAACAcIWI/AAAAoCExYj8AAADgbDxiPwAAAGAGQ2I/AAAAIPVEYj8AAAAAPkJiPwAAAODkOmI/AAAAoOwuYj8AAAAAWB5iPwAAAEAqCWI/AAAAoGjvYT8AAABgG9FhPwAAAOBOrmE/AAAAgBWHYT8AAABgiFthPwAAAODIK2E/AAAAoAH4YD8AAACgZsBgPwAAAIA1hWA/AAAAQLRGYD8="},"shape":[73],"dtype":"float64","order":"little"}],["GMB",{"type":"ndarray","array":{"type":"bytes","data":"AAAAwDfk4z0AAABg+3XzPQAAAIBgBwM+AAAAYLiXEj4AAABgGSYiPgAAAKBMsTE+AAAAgLk3QT4AAABgULdQPgAAAMB5LWA+AAAAQCgubz4AAADAKeF9PgAAAODJbIw+AAAAADjLmj4AAADAS/qoPgAAAOA6/rY+AAAAoD3jxD4AAAAAibvSPgAAAACyl+A+AAAAgLP47D4AAABgHL74PgAAAEBcZgQ/AAAAoGv9Dz8AAADgQ5UXPwAAAOBmRiA/AAAAIMsVJT8AAABga9YpPwAAAODHPi4/AAAAYPIUMT8AAACAA8kyPwAAACA2QjQ/AAAAYPeKNT8AAADA2K02PwAAAODQszc/AAAAgL+jOD8AAADglYI5PwAAACC7Uzo/AAAAYHcZOz8AAABATtU7PwAAAOBCiDw/AAAAIAkzPT8AAAAAJdY9PwAAAMD/cT4/AAAAYPQGPz8AAABgVpU/PwAAAOC6DkA/AAAAINBPQD8AAACgEY5APwAAAOCkyUA/AAAA4K4CQT8AAACAUzlBPwAAAGC1bUE/AAAAAPafQT8AAABgNdBBPwAAAICS/kE/AAAAoCorQj8AAACAGlZCPwAAAEB9f0I/AAAAgG2nQj8AAAAgBc5CPwAAAGBd80I/AAAAII8XQz8AAADgsjpDPwAAAADhXEM/AAAAYDF+Qz8AAABgu55DPwAAAECWvkM/AAAA4NfdQz8AAADglPxDPwAAACDgGkQ/AAAAYMo4RD8AAAAgYVZEPwAAAOCuc0Q/AAAAQLqQRD8="},"shape":[73],"dtype":"float64","order":"little"}],["GDS",{"type":"ndarray","array":{"type":"bytes","data":"AAAAoG31oT0AAACArsmxPQAAAKDSnME9AAAAYEhu0T0AAAAASD3hPQAAACDBCPE9AAAAoEPPAD4AAACA444QPgAAAIAcRSA+AAAAIHHdLz4AAAAAkQ8/PgAAAICFF04+AAAAYNDrXD4AAADAFYRrPgAAAGBq23k+AAAAwK7yhz4AAAAgVtGVPgAAAGDOgqM+AAAAQE0RsT4AAACALwe9PgAAAOCTx8c+AAAA4GyV0j4AAACA0oTbPgAAAAABReM+AAAA4Nab6T4AAADghULwPgAAAGAK5fM+AAAAgFal9z4AAAAgKH77PgAAACADcv8+AAAAIOnDAT8AAAAgOuQDPwAAACCtHgY/AAAAAPd3CD8AAABgt/QKPwAAAGCDmQ0/AAAAIH01ED8AAADA7rYRPwAAAECTUxM/AAAAIA0OFT8AAABgLekWPwAAACD85xg/AAAAAMANGz8AAAAgBl4dPwAAAECp3B8/AAAAQO1GIT8AAACgFLsiPwAAAEBFTSQ/AAAAgDEAJj8AAAAAx9YnPwAAAKAy1Ck/AAAAQOT7Kz8AAABgkVEuPwAAAECbbDA/AAAAoIvLMT8AAABg3kczPwAAAOD34zQ/AAAAoFiiNj8AAADglYU4PwAAAABRkDo/AAAAQCrFPD8AAACAsCY/PwAAAICm20A/AAAAgJU8Qj8AAAAgDrdDPwAAAAC9S0U/AAAA4AL7Rj8AAACA5cRIPwAAAGACqUo/AAAAQIWmTD8AAABgI7xOPwAAAAAPdFA/AAAAwCWUUT8="},"shape":[73],"dtype":"float64","order":"little"}],["CGG",{"type":"ndarray","array":{"type":"bytes","data":"AAAAgNIHAT0AAACArvMAPQAAAGBP4AA9AAAAwKrNAD0AAADguLsAPQAAAOB1qgA9AAAAQOSZAD0AAABgE4oAPQAAACAqewA9AAAA4H5tAD0AAADAw2EAPQAAAOBgWQA9AAAAQB9XAD0AAABga2AAPQAAAKCJfwA9AAAAoOrGAD0AAADgXlQBPQAAAIBaTgI9AAAAQCfPAz0AAABgRbwFPQAAAAAYtwc9AAAAQPtXCT0AAADgxnQKPQAAAKB/Hws9AAAAwNV9Cz0AAADAha8LPQAAAEDuyAs9AAAAAKLVCz0AAACg0tsLPQAAAIC43gs9AAAAYPnfCz0AAAAgbOALPQAAAGB94As9AAAAQGTgCz0AAADAPOALPQAAAIAV4As9AAAAAPbfCz0AAACg4t8LPQAAAADe3ws9AAAAIOrfCz0AAACgCOALPQAAAEA74As9AAAAoIPgCz0AAAAA5OALPQAAAIBe4Qs9AAAAwPXhCz0AAACgrOILPQAAAICG4ws9AAAAQIfkCz0AAABgs+ULPQAAAIAP5ws9AAAAgKHoCz0AAACAb+oLPQAAAKCA7As9AAAAwNzuCz0AAACAjPELPQAAAICZ9As9AAAAQA74Cz0AAADg9fsLPQAAAGBcAAw9AAAAYE4FDD0AAACA2AoMPQAAAGAHEQw9AAAAgOcXDD0AAAAghB8MPQAAAKDmJww9AAAAoBYxDD0AAACgGDsMPQAAAEDtRQw9AAAAoJFRDD0AAAAA/l0MPQAAAIAmaww9AAAAgPp4DD0="},"shape":[73],"dtype":"float64","order":"little"}],["CGS",{"type":"ndarray","array":{"type":"bytes","data":"AAAAoMIR5jwAAABAyhHmPAAAAADaEeY8AAAAIPoR5jwAAACgOhLmPAAAAGC7EuY8AAAAgLsT5jwAAADAuBXmPAAAAACsGeY8AAAAwIIh5jwAAACgDDHmPAAAAMDMT+Y8AAAAoHiM5jwAAAAgfQPnPAAAAABh6uc8AAAAQNmg6TwAAABA48DsPAAAAIDZB/E8AAAAoJcI9TwAAADAYxv6PAAAAKAySv88AAAAQEfFAT0AAADgRDkDPQAAAECLGQQ9AAAAwFSXBD0AAACAvNsEPQAAAKADAQU9AAAAIAUWBT0AAACgrSIFPQAAAOAXKwU9AAAAgFsxBT0AAAAgiDYFPQAAAAAmOwU9AAAAwHk/BT0AAACApUMFPQAAAOC5RwU9AAAAwL5LBT0AAACAt08FPQAAAEClUwU9AAAAwIdXBT0AAAAAXlsFPQAAAIAmXwU9AAAAQN9iBT0AAAAAhmYFPQAAACAYagU9AAAAYJJtBT0AAAAg8XAFPQAAAGAwdAU9AAAAQEt3BT0AAAAAPHoFPQAAAID8fAU9AAAAIIV/BT0AAADAzYEFPQAAAKDMgwU9AAAAwHaFBT0AAADgv4YFPQAAAOCZhwU9AAAAIPWHBT0AAABgwIcFPQAAAEDohgU9AAAAYFiFBT0AAABA+oIFPQAAAKC2fwU9AAAAoHV7BT0AAAAgH3YFPQAAAOCbbwU9AAAAQNZnBT0AAACAu14FPQAAAMA8VAU9AAAA4E9IBT0AAADA8DoFPQAAAMAhLAU9AAAAIOwbBT0="},"shape":[73],"dtype":"float64","order":"little"}],["CGD",{"type":"ndarray","array":{"type":"bytes","data":"AAAAwIUR5jwAAADAhRHmPAAAAKCFEeY8AAAAgIUR5jwAAAAAhRHmPAAAAECEEeY8AAAAoIIR5jwAAACAfxHmPAAAAEB5EeY8AAAAwGwR5jwAAADAUxHmPAAAAGAiEeY8AAAAoMAQ5jwAAABAABDmPAAAAMCJDuY8AAAAwMAL5jwAAABAqAbmPAAAAKD7/eU8AAAAYOHw5TwAAAAAR+DlPAAAAKBgz+U8AAAAoKnB5TwAAABAiLjlPAAAAOBbs+U8AAAAINyw5TwAAABg9q/lPAAAAED7r+U8AAAAYIiw5TwAAACAarHlPAAAAKCIsuU8AAAAANiz5TwAAABAVbXlPAAAAAABt+U8AAAAoN645TwAAADA8rrlPAAAAGBDveU8AAAAgNe/5TwAAACAt8LlPAAAAKDsxeU8AAAAgIHJ5TwAAACAgs3lPAAAAGD90eU8AAAAAALX5TwAAABgotzlPAAAAEDz4uU8AAAAAAzq5TwAAACAB/LlPAAAAGAE++U8AAAAoCUF5jwAAAAAkxDmPAAAAKB5HeY8AAAAIA0s5jwAAACghzzmPAAAAAArT+Y8AAAAAEFk5jwAAABgHHzmPAAAAAAZl+Y8AAAAQJy15jwAAADAFNjmPAAAACD6/uY8AAAAgMsq5zwAAADgDVznPAAAAKBJk+c8AAAAYAbR5zwAAADgxhXoPAAAAAADYug8AAAAACK26DwAAAAgcxLpPAAAAOAnd+k8AAAAYE3k6TwAAACAyFnqPAAAAKBS1+o8AAAAwHlc6zw="},"shape":[73],"dtype":"float64","order":"little"}],["CGB",{"type":"ndarray","array":{"type":"bytes","data":"AAAAYAH85zwAAAAAaqvnPAAAAKDdXec8AAAAQCsT5zwAAADgI8vmPAAAAOCXheY8AAAAAFNC5jwAAAAgFQHmPAAAAGCDweU8AAAA4AuD5TwAAACgrkTlPAAAAECUBOU8AAAAwEO/5DwAAABgMG7kPAAAAKA7BeQ8AAAAQBBv4zwAAAAA8IniPAAAACC7K+E8AAAAQBl13jwAAAAADrTZPAAAAGA08dQ8AAAAIEwS0TwAAAAg/9XMPAAAAADXkck8AAAAwJ+kxzwAAADAuXzGPAAAAIC+vsU8AAAAwKw3xTwAAADgpczEPAAAAEDnb8Q8AAAA4H0axDwAAABA7MjDPAAAAAByecM8AAAA4CwrwzwAAADgqd3CPAAAAECtkMI8AAAAgBZEwjwAAACA0/fBPAAAAMDYq8E8AAAAwB5gwTwAAABgnxTBPAAAAEBWycA8AAAAQD9+wDwAAADAVjPAPAAAAMAz0b88AAAAwAs8vzwAAAAAMae+PAAAAOCfEr48AAAAQFZ+vTwAAADAUuq8PAAAAOCVVrw8AAAA4CHDuzwAAACA+y+7PAAAAMApnbo8AAAAQLcKujwAAAAgsni5PAAAAEAt57g8AAAAIEFWuDwAAADgC8a3PAAAAICzNrc8AAAAQGWotjwAAAAAWBu2PAAAAKDLj7U8AAAAIAoGtTwAAADAZ360PAAAAOBB+bM8AAAAQP52szwAAABgCfiyPAAAAIDTfLI8AAAAoM0FsjwAAACgZZOxPAAAACACJrE8AAAAwP69sDw="},"shape":[73],"dtype":"float64","order":"little"}],["CDD",{"type":"ndarray","array":{"type":"bytes","data":"AAAAYMFb/DwAAABgwVv8PAAAAGDBW/w8AAAAYMFb/DwAAABgwVv8PAAAAGDBW/w8AAAAYMFb/DwAAABgwVv8PAAAAIDBW/w8AAAAoMFb/DwAAADgwVv8PAAAAGDCW/w8AAAAgMNb/DwAAACgxVv8PAAAAMDJW/w8AAAA4NFb/DwAAABg4Vv8PAAAAGD+W/w8AAAA4DFc/DwAAAAgh1z8PAAAAIAHXfw8AAAAYLdd/DwAAACglV78PAAAAACfX/w8AAAA4NBg/DwAAAAAK2L8PAAAAECuY/w8AAAAoF1l/DwAAADgPGf8PAAAAMBQafw8AAAA4J5r/DwAAAAALm78PAAAAGAFcfw8AAAAoC10/DwAAABAsHf8PAAAAECYe/w8AAAA4PF//DwAAAAgy4T8PAAAACA0ivw8AAAAoD6Q/DwAAACA/5b8PAAAAACOnvw8AAAAAAWn/DwAAADggrD8PAAAAIAqu/w8AAAAYCPH/DwAAAAAm9T8PAAAAADF4/w8AAAAINz0/DwAAADAIwj9PAAAACDoHf08AAAAIIA2/TwAAADgTVL9PAAAAGDAcf08AAAAgFSV/TwAAACAlb39PAAAAKAe6/08AAAAwJoe/jwAAADgxFj+PAAAAGBmmv48AAAAAFbk/jwAAABgdDf/PAAAAECnlP88AAAA4NP8/zwAAABAazgAPQAAAMC8eAA9AAAAgLW/AD0AAACgmA0BPQAAAICPYgE9AAAAoKW+AT0AAADAwyECPQAAAGCuiwI9AAAAgAX8Aj0="},"shape":[73],"dtype":"float64","order":"little"}],["CSS",{"type":"ndarray","array":{"type":"bytes","data":"AAAAQGN8/zwAAAAgaHz/PAAAAMBxfP88AAAAwIR8/zwAAABgqnz/PAAAAKD0fP88AAAAgId9/zwAAACgqX7/PAAAAODmgP88AAAAIFOF/zwAAADgDY7/PAAAAEBCn/88AAAA4BHB/zwAAABAkgEAPQAAACBtQQA9AAAAYEO6AD0AAADgAZYBPQAAAAAPCgM9AAAA4Jk5BT0AAACA5/wHPQAAAGCWzQo9AAAAIPcaDT0AAAAgDKwOPQAAAADzmw89AAAAID4QED0AAABgPjMQPQAAAOBIRRA9AAAAQHVOED0AAAAgFFMQPQAAAIBhVRA9AAAAQIFWED0AAADgBlcQPQAAAKA8VxA9AAAAQEdXED0AAABAOVcQPQAAACAbVxA9AAAA4PBWED0AAADAu1YQPQAAAOB7VhA9AAAAQDBWED0AAACg11UQPQAAAEBwVRA9AAAA4PdUED0AAABAbFQQPQAAAGDKUxA9AAAAwA5TED0AAACgNVIQPQAAAIA6URA9AAAAIBhQED0AAACgyE4QPQAAAOBETRA9AAAAIIVLED0AAAAggEkQPQAAAKArRxA9AAAAwHtEED0AAADgYkEQPQAAAADSPRA9AAAAALg5ED0AAAAgAjUQPQAAAKCbLxA9AAAAIG4pED0AAABgYSIQPQAAAEBcGhA9AAAA4EQRED0AAACAAQcQPQAAAMDx9g89AAAAgCjdDz0AAACAf8APPQAAAODXoA89AAAA4B1+Dz0AAACASlgPPQAAAMBlLw89AAAAoIYDDz0="},"shape":[73],"dtype":"float64","order":"little"}],["STH",{"type":"ndarray","array":{"type":"bytes","data":"AAAAgHZf4DkAAADgZyrwOQAAAOCU6P85AAAAIAN5DzoAAABgcAQfOgAAAECdiC46AAAAAIkCPjoAAACgQW5NOgAAAMC4xlw6AAAAQK8FbDoAAAAg3CN7OgAAAACDGYo6AAAAIL/fmDoAAABAqnKnOgAAAKAP1LU6AAAAwFUNxDoAAAAAGi7SOgAAACBiReA6AAAA4HGv7DoAAAAgSLf4OgAAAOBHiwQ7AAAAILk6EDsAAABgZBgYOwAAAIALvCA7AAAA4DbOJTsAAACArtsqOwAAAECYlS87AAAAoGPpMTsAAAAgn8UzOwAAAEDWZTU7AAAAoLLUNjsAAADgMh04OwAAAICzSDk7AAAAAFheOjsAAABgLGM7OwAAAKCOWjw7AAAAIKNGPTsAAABAuSg+OwAAACCZAT87AAAAgLrRPzsAAACAtUxAOwAAAKByrEA7AAAAgDAIQTsAAACgDGBBOwAAAGAptEE7AAAA4K0EQjsAAACgxlFCOwAAACClm0I7AAAAQH/iQjsAAADAjiZDOwAAAEARaEM7AAAAIEenQzsAAACAc+RDOwAAAODbH0Q7AAAAIMhZRDsAAADAgZJEOwAAAMBTykQ7AAAAQIoBRTsAAABAcjhFOwAAAIBYb0U7AAAA4IimRTsAAABgTd5FOwAAAMDsFkY7AAAAoKhQRjsAAADgu4tGOwAAAKBYyEY7AAAA4KUGRzsAAACgvUZHOwAAAOCqiEc7AAAAYGjMRzsAAAAg4BFIOwAAAEDrWEg7AAAAQFOhSDs="},"shape":[73],"dtype":"float64","order":"little"}],["SFL",{"type":"ndarray","array":{"type":"bytes","data":"AAAAgFaJ3DkAAADAIAH8OQAAAMCIdxs6AAAA4CzrOjoAAADALlpaOgAAAIAJwnk6AAAAQF4fmToAAAAguG24OgAAAABMp9c6AAAAgMXE9joAAACgP70VOwAAAMClhjQ7AAAAAOMWUzsAAAAAaWZxOwAAAMDG6I47AAAAwDyXqjsAAAAA0wjGOwAAAMBFfuE7AAAAAJ1n+jsAAACADa8SPAAAAMDHSyg8AAAAIEh3PDwAAAAAJ8VNPAAAAGCF6ls8AAAAQAfKZzwAAADA6bZyPAAAAGB9k3s8AAAAQItCgzwAAABAUcKJPAAAACB4oJA8AAAAoHbalDwAAACAsIqZPAAAAKBhrZ48AAAAIL8fojwAAABARh+lPAAAAKA3VKg8AAAAAJi9qzwAAAAga1qvPAAAAIDRlLE8AAAA4AqVszwAAADAO621PAAAAGCr3Lc8AAAAwI0iujwAAAAgBH68PAAAAIAd7r48AAAA4Ou4wDwAAABgEATCPAAAAGDrV8M8AAAAQOWzxDwAAACAXxfGPAAAACC1gcc8AAAAIDvyyDwAAACgQGjKPAAAAOAO48s8AAAAYOlhzTwAAADgDeTOPAAAAEBaNNA8AAAAoIf30DwAAACgJbvRPAAAAIDHftI8AAAAYP5B0zwAAADAWATUPAAAAKBixdQ8AAAA4KaE1TwAAADArkHWPAAAAEAD/NY8AAAAQC6z1zwAAAAAu2bYPAAAACA4Ftk8AAAAgDjB2TwAAACgVWfaPAAAACAwCNs8AAAAIHKj2zw="},"shape":[73],"dtype":"float64","order":"little"}],["INFO",{"type":"ndarray","array":["Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3"],"shape":[73],"dtype":"object","order":"little"}],["CORNER",{"type":"ndarray","array":["NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM"],"shape":[73],"dtype":"object","order":"little"}],["TEMP",{"type":"ndarray","array":{"type":"bytes","data":"LAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAAA=="},"shape":[73],"dtype":"int32","order":"little"}],["VGS",{"type":"ndarray","array":{"type":"bytes","data":"AAAAAAAAAACamZmZmZmZP5qZmZmZmak/MzMzMzMzsz+amZmZmZm5PwAAAAAAAMA/MzMzMzMzwz9mZmZmZmbGP5qZmZmZmck/zczMzMzMzD8AAAAAAADQP5qZmZmZmdE/MzMzMzMz0z/NzMzMzMzUP2ZmZmZmZtY/AAAAAAAA2D+amZmZmZnZPzMzMzMzM9s/zczMzMzM3D9mZmZmZmbePwAAAAAAAOA/zczMzMzM4D+amZmZmZnhP2ZmZmZmZuI/MzMzMzMz4z8AAAAAAADkP83MzMzMzOQ/mpmZmZmZ5T9mZmZmZmbmPzMzMzMzM+c/AAAAAAAA6D/NzMzMzMzoP5qZmZmZmek/ZmZmZmZm6j8zMzMzMzPrPwAAAAAAAOw/zczMzMzM7D+amZmZmZntP2ZmZmZmZu4/MzMzMzMz7z8AAAAAAADwP2ZmZmZmZvA/zczMzMzM8D8zMzMzMzPxP5qZmZmZmfE/AAAAAAAA8j9mZmZmZmbyP83MzMzMzPI/MzMzMzMz8z+amZmZmZnzPwAAAAAAAPQ/ZmZmZmZm9D/NzMzMzMz0PzMzMzMzM/U/mpmZmZmZ9T8AAAAAAAD2P2ZmZmZmZvY/zczMzMzM9j8zMzMzMzP3P5qZmZmZmfc/AAAAAAAA+D9mZmZmZmb4P83MzMzMzPg/MzMzMzMz+T+amZmZmZn5PwAAAAAAAPo/ZmZmZmZm+j/NzMzMzMz6PzMzMzMzM/s/mpmZmZmZ+z8AAAAAAAD8P2ZmZmZmZvw/zczMzMzM/D8="},"shape":[73],"dtype":"float64","order":"little"}],["VDS",{"type":"ndarray","array":{"type":"bytes","data":"MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8="},"shape":[73],"dtype":"float64","order":"little"}],["VSB",{"type":"ndarray","array":{"type":"bytes","data":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="},"shape":[73],"dtype":"float64","order":"little"}],["L",{"type":"ndarray","array":{"type":"bytes","data":"uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj+4HoXrUbjOP7gehetRuM4/uB6F61G4zj8="},"shape":[73],"dtype":"float64","order":"little"}],["W",{"type":"ndarray","array":{"type":"bytes","data":"BQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAA=="},"shape":[73],"dtype":"int32","order":"little"}],["NFING",{"type":"ndarray","array":{"type":"bytes","data":"AQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAA=="},"shape":[73],"dtype":"int32","order":"little"}],["GM_ID",{"type":"ndarray","array":{"type":"bytes","data":"QhxiEpNrOUB6MxSQYlU6QOMG2n7RzzpAiIcZ+mAMO0BCYo43NSc7QGCa9vUCLztAQRfQmdkqO0CHRPYYiR07QKzfAbtzBztAJrBgtILnOkAMRD54srs6QKaXfpOLgTpA+f6Vw8Y2OkD/5bhkS9o5QP4jNKd3bTlAabUsOQT1OEBxF3ELuHc4QDySJbOf+DdA3fjjJ1ptN0CuCZ060Lg2QIrKIL/+tTVAu/anjQhQNEBjgi6mP5IyQHfAZQ8YojBAhQv4cTdYLUCfGkkLG6gpQL9Nbw/PXSZAj9iX0KeII0De1DAsFyYhQObsGMhGVB5A5DTHk8YKG0B+MNRC5FAYQHHjxfYlCxZAG40HCXoiFEDLjDDPLoQSQKCP4bVtIRFAvOoXKSTdD0CuIKa5CMUNQIHdG8tZ7AtAgJaDaf5HCkCUo2DxPM8IQDrYjtctewdAysUGWk5GBkCmXvrCLiwFQJkhsc4zKQRAHrcKXWc6A0AlxOweVV0CQIrimcTujwFAHG51mnfQAEBKq+rlcx0AQMOyRwM76/4/tTULurKv/T+SX4X+YIb8P5qc3qCSbfs/KOhSRsdj+j8STvcSqWf5P0vlHjcGePg/9ZoIGc2T9z8bgWpuBrr2P5teqD3U6fU/Lrat120i9T9rtd4dHmP0P5Fw4CRCq/M/uTFP+0f68j/pI2bErU/yP8dZkL4Aq/E/dZ9EPd0L8T+hJqIk7XHwP2GGDafQue8/cMvsZyaZ7j8Pw52Le4HtP6RqNjKFcuw/T4cbPAls6z8="},"shape":[73],"dtype":"float64","order":"little"}],["JD",{"type":"ndarray","array":{"type":"bytes","data":"AAAAAODcjT0zMzMzIIycPTMzMzMswas9AAAAAL43uz2amZmZEM3KPZqZmZnmbto9AAAAAPkS6j2amZmZmrL5PWZmZmZ0SAk+mpmZmVPPGD4AAACAkkEoPmZmZmb0mDc+mpmZmfzORj4zMzOz391VPgAAAAAYwmQ+AAAAAEh8cz4AAACAWRKCPmZmZuYvjpA+MzMzMxXynT5mZmZm3quqPgAAAIDbQbc+mpmZme+twz4AAACA8QHQPs3MzMyu3Ng+ZmZm5uRh4j4zMzMzFurpPpqZmZkcfPE+mpmZmU219j6amZmZ/Iv8Ps3MzEwDdgE/ZmZm5gXiBD+amZmZD4MIPzMzMzPDUww/MzMzswUoED8AAACAYDoSPzMzMzOvXxQ/mpmZmeGWFj+amZkZBt8YP83MzMw6Nxs/zczMzKWeHT8AAAAAOAogP2ZmZmbhSyE/AAAAgOOTIj8AAACA0uEjP5qZmZlCNSU/MzMzM8iNJj8AAAAA+OonP2ZmZuZnTCk/ZmZmZq6xKj/NzMzMYxosP83MzMwghi0/AAAAAID0Lj9mZmZmjjIwPzMzMzPK6zA/MzMzM8KlMT/NzMzMRWAyP83MzMwkGzM/mpmZGS/WMz/NzMxMNZE0PzMzM7MHTDU/ZmZm5nYGNj/NzMzMU8A2P5qZmRlveTc/ZmZm5pkxOD8AAACApeg4P5qZmZljnjk/ZmZmZqZSOj9mZmZmQQU7P5qZmZkItjs/AAAAANJkPD9mZmZmdRE9P83MzMzMuz0/AAAAALVjPj8="},"shape":[73],"dtype":"float64","order":"little"}],["GM_GDS",{"type":"ndarray","array":{"type":"bytes","data":"mYmeojxrSkCFOkhc9WlKQI95riMqaEpA2Kix7aZlSkCSSR90JGJKQNR3gvZAXUpAedssTXlWSkCW7Gt1Ik1KQC1BuXRiQEpAV0eQcTUvSkCGLFM9gxhKQDkd2nZe+0lAZwtTL4jXSUCp9UCUYK5JQBzqDJ9IhElAMERnkRhiSUCx37bTUVVJQKAyyxfNbElAqbWDFJiwSUBKidEetBhKQOetJnriikpAFwChQU3jSkD1fgfd0AFLQNLAaS9f00pALuVLaH9USkBSNPKKg45JQMTlASVKkkhAxueOL/RyR0BcbRGG/0FGQNXh+9UvDUVA7iAteAjeQ0BUJ0++Q7pCQLUSOri4pEFA4sWL5UyeQEBu6EDyeE0/QL9SpUtYej1AuIhLEg/BO0DENypMbx86QCO55cF9kzhAnuVKZYcbN0B+uGlkI7Y1QGThMLkrYjRAxYUsQrEeM0D87o4S8OoxQPNWgJRExjBAE35HKENgL0CZVcf5ElAtQL9OlEESWytAGvdgtmWAKUBpgVESOb8nQOiSQU67FiZAAv8/WxyGJEC65nw2jAwjQK5aT3c6qSFAkO4WnlZbIECeNpmoIEQeQH2KigYw+RtAvNoqsT7UGUBwC1Rds9MXQNZH+R359RVAUYdL7n85FEAbLOYfvZwSQAqM+y4rHhFAjfDedZR4D0CTb1vSPusMQFplyF5pkQpA8AFOgzFoCEB8nLy1vGwGQA6Ucvo4nARAHn/DUt3zAkBfBb6f6nABQDmRT4atEABAOfM7OQGh/T8="},"shape":[73],"dtype":"float64","order":"little"}],["GM_CGG",{"type":"ndarray","array":{"type":"bytes","data":"q0L3ldPb60CNAqQaaLf7QJsxCFkjjwtBwrfWKvhhG0FyNZsKay4rQZFAbaJr8jpBMrUTUCarSkFR06vQyVRaQY/pqY9J6mlBR53f+iNleUG1vZm3Rr2IQQQNgsAv6ZdBO+/Qvn/epkF8UTq+HpO1QcEGX3Tr/sNBeO0y7ccd0kGKRHIw8OTfQWjcPMA0GetBspqsaWMi9kExQXrQGW0BQphEOHFVnQpCFYLXAU23E0Iw3G7GhhccQuS8cHPrDiNC/jOAmd2GKEJCc2Uj4AQuQpdbeysCmDFCMVnhtZrrM0K2i0nOKfc1Qp8m85WMwDdCyRiQteBSOUIP4jBw8Lk6QlCnmunf/ztCL/VgvmssPULIM5vl/0Q+Qv8ZCv8mTT9CcFgdAIUjQELqYun875lAQrZ7EusiCkFCN0/HVz50QULPhEkMSthBQoDQuPlCNkJCOI4J7iKOQkIViOwv5d9CQq8D0O2IK0NC0tO9QhFxQ0LYh2p0hbBDQglSVBDw6UNCwarIxl0dREJ2sJd53EpEQgFdg8B6ckRC3xAcZUaUREJmmbZrTLBEQubL7bKXxkRCFcsbCDHXREKCsrUPH+JEQrLFaJJl50RCZcSHXgbnREIVvQ3WAOFEQmwLOCBT1URCeqlIc/rDREIAIyqm9KxEQr8CQQBBkERCZv9UHuJtREKLxLv530VEQiMEN6hJGERCr6nkXTflQ0JNILIozKxDQpdes/c3b0NCOHZuMbgsQ0LI5R9smOVCQpVyJsAxmkJCD8A/TOlKQkI="},"shape":[73],"dtype":"float64","order":"little"}]]}}},"view":{"type":"object","name":"CDSView","id":"p1104","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1105"}}},"glyph":{"type":"object","name":"Line","id":"p1100","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_CGG"},"line_color":"green"}},"nonselection_glyph":{"type":"object","name":"Line","id":"p1101","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_CGG"},"line_color":"green","line_alpha":0.1}},"muted_glyph":{"type":"object","name":"Line","id":"p1102","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_CGG"},"line_color":"green","line_alpha":0.2}}}},{"type":"object","name":"GlyphRenderer","id":"p1137","attributes":{"y_range_name":"gain","data_source":{"id":"p1094"},"view":{"type":"object","name":"CDSView","id":"p1138","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1139"}}},"glyph":{"type":"object","name":"Line","id":"p1134","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_GDS"},"line_color":"green","line_dash":[6]}},"nonselection_glyph":{"type":"object","name":"Line","id":"p1135","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_GDS"},"line_color":"green","line_alpha":0.1,"line_dash":[6]}},"muted_glyph":{"type":"object","name":"Line","id":"p1136","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_GDS"},"line_color":"green","line_alpha":0.2,"line_dash":[6]}}}},{"type":"object","name":"GlyphRenderer","id":"p1149","attributes":{"data_source":{"type":"object","name":"ColumnDataSource","id":"p1140","attributes":{"selected":{"type":"object","name":"Selection","id":"p1141","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1142"},"data":{"type":"map","entries":[["index",{"type":"ndarray","array":{"type":"bytes","data":"6l4FAA1iBQAwZQUAU2gFAHZrBQCZbgUAvHEFAN90BQACeAUAJXsFAEh+BQBrgQUAjoQFALGHBQDUigUA940FABqRBQA9lAUAYJcFAIOaBQCmnQUAyaAFAOyjBQAPpwUAMqoFAFWtBQB4sAUAm7MFAL62BQDhuQUABL0FACfABQBKwwUAbcYFAJDJBQCzzAUA1s8FAPnSBQAc1gUAP9kFAGLcBQCF3wUAqOIFAMvlBQDu6AUAEewFADTvBQBX8gUAevUFAJ34BQDA+wUA4/4FAAYCBgApBQYATAgGAG8LBgCSDgYAtREGANgUBgD7FwYAHhsGAEEeBgBkIQYAhyQGAKonBgDNKgYA8C0GABMxBgA2NAYAWTcGAHw6BgCfPQYAwkAGAA=="},"shape":[73],"dtype":"int32","order":"little"}],["ID",{"type":"ndarray","array":{"type":"bytes","data":"AAAAYIMxsD0AAABgP9m+PQAAAKB09s09AAAAgFVl3T0AAAAAdfrsPQAAACARn/w9AAAAQGBGDD4AAABAH+gbPgAAAADBfSs+AAAAYPgAOz4AAABACWtKPgAAAECxtFk+AAAAwLPWaD4AAABgJct3PgAAAABqj4Y+AAAA4EEmlT4AAADgXpijPgAAAACQ8bE+AAAAAFM6wD4AAADgGuTMPgAAAKA5Itk+AAAAwE4p5T4AAADApRXxPgAAAODdS/o+AAAAwChDAz8AAABg7OsKPwAAAOAZCBI/AAAAIFNIFz8AAAAgWiQdPwAAAIBlxSE/AAAAwG42JT8AAACAZd8oPwAAAADAuyw/AAAAoABkMD8AAABAtYAyPwAAAADdsjQ/AAAAAHz5Nj8AAABAqlM5PwAAAACIwDs/AAAA4DY/Pj8AAAAAa2dAPwAAAGBAt0E/AAAAYKYOQz8AAAAAJm1EPwAAAMBF0kU/AAAA4Io9Rz8AAACgeK5IPwAAAGCRJEo/AAAAgFafSz8AAABASB5NPwAAAGDmoE4/AAAAoFcTUD8AAACAkNdQPwAAAEDcnFE/AAAAwPhiUj8AAABgoylTPwAAACCZ8FM/AAAAgJa3VD8AAAAAWH5VPwAAAMCZRFY/AAAAYBgKVz8AAABgkc5XPwAAAIDDkVg/AAAAIG9TWT8AAADAVxNaPwAAAKBD0Vo/AAAAIP2MWz8AAABAU0ZcPwAAAKAZ/Vw/AAAAwCixXT8AAABgXmJePwAAAICdEF8/AAAAYM27Xz8="},"shape":[73],"dtype":"float64","order":"little"}],["VT",{"type":"ndarray","array":{"type":"bytes","data":"AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8AAACASAjePwAAAIBICN4/AAAAgEgI3j8="},"shape":[73],"dtype":"float64","order":"little"}],["GM",{"type":"ndarray","array":{"type":"bytes","data":"AAAAADWB+T0AAACgvk4JPgAAAEC2GRk+AAAAoP/gKD4AAACgFaM4PgAAAMDnXUg+AAAAILIOWD4AAACA0bFnPgAAACCfQnc+AAAAYGa7hj4AAAAgmRWWPgAAAOB3SqU+AAAAYGlUtD4AAABAFDHDPgAAAIC849E+AAAAIFp24D4AAAAg++3tPgAAAGCP4Po+AAAAAN/BBz8AAACgK3gUPwAAAEBq8CA/AAAAgICHKj8AAABgAHgzPwAAAEB+uDo/AAAAYJg5QT8AAAAAHAtFPwAAACDPnEg/AAAAoO7VSz8AAADgwLNOPwAAACAuoFA/AAAAoFDFUT8AAACgmtBSPwAAAOAWyFM/AAAAIDywVD8AAADgEIxVPwAAAMB4XVY/AAAA4IQlVz8AAAAAueRXPwAAAEA/m1g/AAAAYA5JWT8AAACAAu5ZPwAAAODsiVo/AAAAoJ0cWz8AAACA6KVbPwAAACCnJVw/AAAAwLmbXD8AAADgBQhdPwAAAMB1al0/AAAAQPbCXT8AAABgdhFePwAAAADlVV4/AAAAIDGQXj8AAAAgSMBePwAAAKAW5l4/AAAAYIgBXz8AAABgiRJfPwAAAMAHGV8/AAAAIPYUXz8AAADgTgZfPwAAAEAX7V4/AAAAoGTJXj8AAACAX5tePwAAAOBHY14/AAAA4HchXj8AAADAZNZdPwAAAGCegl0/AAAAQMwmXT8AAACgqMNcPwAAACD6WVw/AAAAgIzqWz8AAACAKXZbPwAAAECT/Vo/AAAAIH6BWj8="},"shape":[73],"dtype":"float64","order":"little"}],["GMB",{"type":"ndarray","array":{"type":"bytes","data":"AAAAIAeX4T0AAABATT/xPQAAAMCp5gA+AAAAgG+MED4AAAAAtS8gPgAAAOCGni8+AAAAoAPTPj4AAAAgw/hNPgAAAKChCl0+AAAAwH8CbD4AAABAm9l6PgAAAGBwiYk+AAAAoF0NmD4AAADAB2WmPgAAAEDWlrQ+AAAAYLGwwj4AAACAYcTQPgAAAAA2vd0+AAAA4F376T4AAAAgbCX2PgAAAEA+JQI/AAAAgO8oDD8AAABAaX4UPwAAAOAE6xs/AAAAoPjgIT8AAADgvLclPwAAAEC3Rik/AAAAAMh2LD8AAACAxEYvPwAAAMDz4DA/AAAAIOr7MT8AAABA3/syPwAAAIAg5zM/AAAAYHDCND8AAABAL5E1PwAAACCoVTY/AAAAgF4RNz8AAABgTcU3PwAAAOAYcjg/AAAAAC8YOT8AAACA3rc5PwAAAGBlUTo/AAAAgPjkOj8AAADAyXI7PwAAAOAI+zs/AAAA4OV9PD8AAAAgkPs8PwAAAOA2dD0/AAAAgAjoPT8AAACgMlc+PwAAAKDhwT4/AAAAYEAoPz8AAAAgeYo/PwAAAOC06D8/AAAAQI4hQD8AAABg7ExAPwAAAMCJdkA/AAAAAHyeQD8AAACA2cRAPwAAACC66UA/AAAAIDcNQT8AAADAai9BPwAAAKBwUEE/AAAAgGRwQT8AAABAYo9BPwAAAKCErUE/AAAAgOTKQT8AAACAl+dBPwAAAGCwA0I/AAAAgD0fQj8AAABgSTpCPwAAAIDaVEI/AAAA4PNuQj8="},"shape":[73],"dtype":"float64","order":"little"}],["GDS",{"type":"ndarray","array":{"type":"bytes","data":"AAAAAJ2NmD0AAADAHF6oPQAAAECNLLg9AAAA4AT4xz0AAABgQr/XPQAAAOCPgOc9AAAAgJ059z0AAACgWOcGPgAAAKDBhRY+AAAAwM8PJj4AAABAeH81PgAAAKACzkQ+AAAAwNf0Uz4AAABA7+5iPgAAAKCqunE+AAAAoEtbgD4AAABAC7GNPgAAAOBBdpo+AAAAgCgRpz4AAABgCoazPgAAAKC0w78+AAAA4DaXyD4AAACg7QHSPgAAAIA58Ng+AAAAQPtn4D4AAADAaqvkPgAAAMDPJ+k+AAAAYIjR7T4AAADA+lTxPgAAAMCG3fM+AAAAwKiJ9j4AAADAlmH5PgAAAADZbfw+AAAAgBq3/z4AAACAG6MBPwAAAOAykgM/AAAAoLatBT8AAACA6voHPwAAAMCMfwo/AAAA4OxBDT8AAADggSQQPwAAAKBFzhE/AAAAIIuiEz8AAAAAFaYVPwAAAGAs3hc/AAAAQK5QGj8AAACAGQQdPwAAACCb/x8/AAAAgI2lIT8AAABAoncjPwAAACDGeiU/AAAAIBe0Jz8AAAAAEikqPwAAAGCH3yw/AAAAQIjdLz8AAABgpJQxPwAAAKB7ZDM/AAAAAENhNT8AAAAgs403PwAAAMAc7Dk/AAAAgDt+PD8AAADgCEU/PwAAACBJIEE/AAAAIOy3Qj8AAADAXmhEPwAAAGAEMEY/AAAAAL8MSD8AAACABvxJPwAAAKAH+0s/AAAAYMgGTj8AAAAgJg5QPwAAACBaHFE/AAAA4KwsUj8="},"shape":[73],"dtype":"float64","order":"little"}],["CGG",{"type":"ndarray","array":{"type":"bytes","data":"AAAAYDS7Aj0AAAAAj6ECPQAAAMDiiAI9AAAAYCNxAj0AAADgR1oCPQAAACBNRAI9AAAAYDovAj0AAADAKRsCPQAAAMBbCAI9AAAAYFr3AT0AAADAQekBPQAAACBN4AE9AAAA4OTgAT0AAAAgk/MBPQAAAGBWKAI9AAAAgD+bAj0AAABgbXcDPQAAAEAA7gQ9AAAAAB0RBz0AAADADqAJPQAAAACmEAw9AAAAYNLwDT0AAABgiSgPPQAAACAw3Q89AAAAgHcfED0AAADg3DgQPQAAAEC4RRA9AAAAgBVMED0AAABAJU8QPQAAAICMUBA9AAAAwCFRED0AAACAUVEQPQAAAMBSURA9AAAAYEFRED0AAADAK1EQPQAAAEAZURA9AAAA4A1RED0AAAAgDFEQPQAAAIAVURA9AAAAgCtRED0AAABgT1EQPQAAAECCURA9AAAAwMVRED0AAACgG1IQPQAAAICFUhA9AAAA4AVTED0AAADgnlMQPQAAAIBTVBA9AAAAACdVED0AAADgHFYQPQAAAIA5VxA9AAAAYIFYED0AAADg+VkQPQAAAMCoWxA9AAAAoJRdED0AAACAxF8QPQAAAEBAYhA9AAAAQBBlED0AAABgPWgQPQAAAMDQaxA9AAAAoNNvED0AAAAAT3QQPQAAAIBLeRA9AAAAoNB+ED0AAABg5IQQPQAAAOCKixA9AAAAoMWSED0AAAAgk5oQPQAAAADvohA9AAAAINGrED0AAACALrUQPQAAAKD4vhA9AAAA4B7JED0="},"shape":[73],"dtype":"float64","order":"little"}],["CGS",{"type":"ndarray","array":{"type":"bytes","data":"AAAAINYR5jwAAAAg4hHmPAAAAAD7EeY8AAAAgC0S5jwAAADAkhLmPAAAAABdE+Y8AAAAYPAU5jwAAACgExjmPAAAAOBRHuY8AAAAALsq5jwAAAAAYEPmPAAAAMA2dOY8AAAAwKTU5jwAAADAsZHnPAAAAEBK/+g8AAAAQAiw6zwAAACA/UHwPAAAAKASPPQ8AAAAAHPy+TwAAABgkFwAPQAAAECukwM9AAAAwHILBj0AAACggKYHPQAAAIDKlgg9AAAAAHobCT0AAAAAZ2MJPQAAAGDwigk9AAAAoLahCT0AAADA8K8JPQAAAKDWuQk9AAAAIIzBCT0AAACAJcgJPQAAAEAtzgk9AAAAgOjTCT0AAABAedkJPQAAAEDw3gk9AAAAwFTkCT0AAACgqekJPQAAAKDv7gk9AAAAgCX0CT0AAACgSfkJPQAAAGBZ/gk9AAAAwFEDCj0AAABALwgKPQAAAKDtDAo9AAAAwIcRCj0AAAAg+BUKPQAAACA4Ggo9AAAA4D8eCj0AAACgBiIKPQAAACCCJQo9AAAAgKYoCj0AAABgZisKPQAAACCyLQo9AAAAYHgvCj0AAAAgpTAKPQAAACAiMQo9AAAAwNYwCj0AAADApy8KPQAAAMB3LQo9AAAAoCcqCj0AAACgliUKPQAAAICjHwo9AAAAoC0YCj0AAAAAFg8KPQAAACBBBAo9AAAAwJf3CT0AAADACekJPQAAAECO2Ak9AAAAwCXGCT0AAAAA2rEJPQAAAIC+mwk9AAAAQPCDCT0="},"shape":[73],"dtype":"float64","order":"little"}],["CGD",{"type":"ndarray","array":{"type":"bytes","data":"AAAAwIUR5jwAAADAhRHmPAAAAICFEeY8AAAAQIUR5jwAAACghBHmPAAAAICDEeY8AAAAAIER5jwAAABAfBHmPAAAAMByEeY8AAAAwF8R5jwAAADgORHmPAAAAKDuEOY8AAAAgFkQ5jwAAABgNA/mPAAAAMD7DOY8AAAAgMkI5jwAAAAAPQHmPAAAAMDG9OU8AAAAQNzi5TwAAAAgo83lPAAAAMCdueU8AAAAgH6q5TwAAACABqHlPAAAAED4m+U8AAAAgL+Z5TwAAABAMJnlPAAAAICVmeU8AAAA4Iya5TwAAAAA5ZvlPAAAAICGneU8AAAA4Gif5TwAAADgiqHlPAAAAKDvo+U8AAAAAJ2m5TwAAAAAm6nlPAAAACDzrOU8AAAAYLCw5TwAAADA37TlPAAAAACQueU8AAAAwNG+5TwAAACAuMTlPAAAAEBay+U8AAAAYNDS5TwAAACgN9vlPAAAAECx5OU8AAAAYGPv5TwAAACAefvlPAAAAGAlCeY8AAAAAKAY5jwAAABgKirmPAAAAOAOPuY8AAAAgKFU5jwAAADAQW7mPAAAAOBai+Y8AAAAQGWs5jwAAACg5tHmPAAAAKBy/OY8AAAA4Kks5zwAAACAOWPnPAAAAGDYoOc8AAAAYETm5zwAAABAPTToPAAAAAB/i+g8AAAAQLns6DwAAABgh1jpPAAAAABmz+k8AAAAYKlR6jwAAAAgdN/qPAAAAKCveOs8AAAAwAcd7DwAAADg6MvsPAAAACCDhO08AAAAQNBF7jw="},"shape":[73],"dtype":"float64","order":"little"}],["CGB",{"type":"ndarray","array":{"type":"bytes","data":"AAAAoHXJ7jwAAAAg1GLuPAAAAKAKAO48AAAA4Nqg7TwAAABACEXtPAAAAEBU7Ow8AAAA4HeW7DwAAABAF0PsPAAAAECq8es8AAAAgE6h6zwAAABgbVDrPAAAAEAP/Oo8AAAAQJWe6jwAAABgZi3qPAAAAIATlek8AAAAYCy06DwAAACgfVjnPAAAAAAVS+U8AAAAwLF84jwAAADgrIDePAAAAMCBdNg8AAAAoP/V0zwAAADAOM7QPAAAAMB49s08AAAAwE/QyzwAAAAga4DKPAAAAOCqock8AAAAoBD9yDwAAADACHbIPAAAAGAN/sc8AAAAANGNxzwAAADAqiHHPAAAAMDEt8Y8AAAA4DFPxjwAAACgeOfFPAAAAEBZgMU8AAAAoLAZxTwAAAAgarPEPAAAAGB4TcQ8AAAA4NHnwzwAAAAAb4LDPAAAAIBJHcM8AAAAoFu4wjwAAABgoFPCPAAAACAT78E8AAAAwK+KwTwAAADgcibBPAAAAKBZwsA8AAAA4GFewDwAAAAAFfW/PAAAAACnLb88AAAAAH1mvjwAAABAnZ+9PAAAAOAS2bw8AAAAQO4SvDwAAAAARk27PAAAAKA4iLo8AAAAwO3DuTwAAACglwC5PAAAAEB0Prg8AAAAgM99tzwAAABgA7+2PAAAAGB5ArY8AAAAIKpItTwAAADAHJK0PAAAAABl37M8AAAAACAxszwAAAAg8IeyPAAAAEB45LE8AAAAAFVHsTwAAABAF7GwPAAAAAA+IrA8AAAA4GE2rzw="},"shape":[73],"dtype":"float64","order":"little"}],["CDD",{"type":"ndarray","array":{"type":"bytes","data":"AAAAYMFb/DwAAABgwVv8PAAAAGDBW/w8AAAAYMFb/DwAAABgwVv8PAAAAGDBW/w8AAAAYMFb/DwAAACAwVv8PAAAAIDBW/w8AAAAwMFb/DwAAABAwlv8PAAAACDDW/w8AAAAwMRb/DwAAAAgyFv8PAAAAMDOW/w8AAAAoNtb/DwAAAAg9Fv8PAAAAIAhXPw8AAAAgHBc/DwAAADA71z8PAAAAACqXfw8AAAAgKJe/DwAAACg1l/8PAAAAGBCYfw8AAAAoONi/DwAAADgumT8PAAAAODKZvw8AAAAABhp/DwAAABAqGv8PAAAAOCCbvw8AAAAILBx/DwAAAAAOnX8PAAAAEArefw8AAAA4JB9/DwAAAAAeYL8PAAAACD0h/w8AAAAwBSO/DwAAABA8JT8PAAAAMCenPw8AAAAADyl/DwAAACg5678PAAAAODFufw8AAAAAADG/DwAAACgxdP8PAAAACBN4/w8AAAAoNT0/DwAAADAowj9PAAAACAMH/08AAAAAGs4/TwAAAAgK1X9PAAAACDGdf08AAAAAMaa/TwAAADgxsT9PAAAACB59P08AAAAoKEq/jwAAADgG2j+PAAAAKDZrf48AAAAYOL8/jwAAADAUVb/PAAAAMBTu/88AAAAwI8WAD0AAACgd1YAPQAAAKD7nQA9AAAAwKvtAD0AAABAB0YBPQAAAEB0pwE9AAAA4DcSAj0AAABgboYCPQAAAIAFBAM9AAAAILiKAz0AAAAgDRoEPQAAAEBasQQ9AAAAoMhPBT0="},"shape":[73],"dtype":"float64","order":"little"}],["CSS",{"type":"ndarray","array":{"type":"bytes","data":"AAAAIGZ8/zwAAADAbXz/PAAAAOB8fP88AAAAwJp8/zwAAAAA1nz/PAAAAEBLff88AAAAwDN+/zwAAADg/3//PAAAACCPg/88AAAAYJqK/zwAAACgh5j/PAAAAGAEtP88AAAAIBPq/zwAAADA0ykAPQAAAOCKjwA9AAAAgH5OAT0AAABgBqQCPQAAAEDy1AQ9AAAA4F74Bz0AAACg4K4LPQAAAIB3Mg89AAAAAEXxED0AAACA388RPQAAAMCtUBI9AAAA4GuWEj0AAABg0roSPQAAAKByzRI9AAAAIN/WEj0AAABgmdsSPQAAAIDx3RI9AAAA4BPfEj0AAADgl98SPQAAAODI3xI9AAAAgMzfEj0AAAAgtd8SPQAAAECL3xI9AAAAYFLfEj0AAAAgC98SPQAAAEC13hI9AAAAAE/eEj0AAABg1t0SPQAAAMBI3RI9AAAAwKLcEj0AAACg4NsSPQAAAAD+2hI9AAAAwPXZEj0AAAAAwtgSPQAAAKBb1xI9AAAAoLrVEj0AAADA1dMSPQAAAGCi0RI9AAAA4BPPEj0AAABAHMwSPQAAACCryBI9AAAAAK7EEj0AAAAgEMASPQAAAOC5uhI9AAAAgJG0Ej0AAABAeq0SPQAAAGBVpRI9AAAA4AGcEj0AAACgXZESPQAAAABGhRI9AAAA4Jh3Ej0AAAAgNmgSPQAAAIABVxI9AAAAoONDEj0AAABgzC4SPQAAAGC0FxI9AAAAYJ3+ET0AAAAAlOMRPQAAACCvxhE9AAAAQA+oET0="},"shape":[73],"dtype":"float64","order":"little"}],["STH",{"type":"ndarray","array":{"type":"bytes","data":"AAAAwLtH3DkAAACAN/rrOQAAAMA0qvs5AAAAQIJWCzoAAABgf/0aOgAAAMD4nCo6AAAAIP8xOjoAAABgurhJOgAAAGBGLFk6AAAAIKyGaDoAAAAAH8F3OgAAAIC01IY6AAAA4NS7lToAAADAcnSkOgAAAICAArM6AAAAwP9wwToAAAAgQp7POgAAAGCFUNw6AAAAgCT26DoAAACgHHT1OgAAAMCNtgE7AAAAIGSvCzsAAADgD0gUOwAAAKDZyxs7AAAAAATmITsAAABgTdklOwAAAMCliik7AAAAwP/gLDsAAAAg6tkvOwAAAGAEQDE7AAAAYG5xMjsAAAAA04gzOwAAACCEjDQ7AAAAQDqBNTsAAADgOWo2OwAAACCjSTc7AAAAoMMgODsAAABAXPA4OwAAAEDWuDk7AAAAwGl6OjsAAADgNjU7OwAAAMBW6Ts7AAAA4OSWPDsAAABgBT49OwAAAADo3j07AAAAwMh5PjsAAADA8A4/OwAAACC1nj87AAAAoLsUQDsAAADA0VdAOwAAACDYmEA7AAAAAA/YQDsAAADAuhVBOwAAAGAjUkE7AAAA4JONQTsAAABgWchBOwAAAIDBAkI7AAAAgBg9QjsAAAAAqHdCOwAAAECzskI7AAAAQHXuQjsAAABgHStDOwAAAMDMaEM7AAAAwJOnQzsAAACgcOdDOwAAAGBPKEQ7AAAA4ApqRDsAAABgN7FEOwAAAMBeHkU7AAAAQHmLRTsAAABARPhFOwAAAEB9ZEY7AAAAgOTPRjs="},"shape":[73],"dtype":"float64","order":"little"}],["SFL",{"type":"ndarray","array":{"type":"bytes","data":"AAAAwATAzTkAAACgX1DtOQAAAMDI3Qw6AAAAwJlmLDoAAACgkehLOgAAAEChYGs6AAAAwKnKijoAAABgMSGqOgAAAIAUXck6AAAAIEl16DoAAACg4V4HOwAAAOCkDSY7AAAAgM91RDsAAAAAv49iOwAAACDJXYA7AAAAgDjkmzsAAAAAbd22OwAAAEAJ9tE7AAAAAB/Z6jsAAABg79ICPAAAAMClQRg8AAAA4E8sLDwAAACgMj49PAAAAODuQUs8AAAAALoeVzwAAABA0B9iPAAAAAA3pGo8AAAAYO6UcjwAAADA7td4PAAAAKCFC4A8AAAAQJImhDwAAAAAwbqIPAAAAMAvxo08AAAA4LqjkTwAAADAvp6UPAAAAACr05c8AAAAAAJCmzwAAABALumePAAAACA6ZKE8AAAAYHRvozwAAACgtJWlPAAAAGBN1qc8AAAAoHIwqjwAAADgOqOsPAAAAGCeLa88AAAA4DvnsDwAAACAQkKyPAAAACAzp7M8AAAAIFAVtTwAAABAzYu2PAAAAGDQCbg8AAAAIHGOuTwAAABAuRi7PAAAAICkp7w8AAAA4CA6vjwAAABgD8+/PAAAAGCissA8AAAAYMV9wTwAAAAAUUjCPAAAAKCiEcM8AAAAwBXZwzwAAACgBp7EPAAAAODUX8U8AAAAYOUdxjwAAAAgptfGPAAAAICQjMc8AAAA4Cs8yDwAAACgD+bIPAAAAGDkick8AAAA4GQnyjwAAABAXb7KPAAAAGCqTss8AAAAIDjYyzw="},"shape":[73],"dtype":"float64","order":"little"}],["INFO",{"type":"ndarray","array":["Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3"],"shape":[73],"dtype":"object","order":"little"}],["CORNER",{"type":"ndarray","array":["NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM"],"shape":[73],"dtype":"object","order":"little"}],["TEMP",{"type":"ndarray","array":{"type":"bytes","data":"LAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAAA=="},"shape":[73],"dtype":"int32","order":"little"}],["VGS",{"type":"ndarray","array":{"type":"bytes","data":"AAAAAAAAAACamZmZmZmZP5qZmZmZmak/MzMzMzMzsz+amZmZmZm5PwAAAAAAAMA/MzMzMzMzwz9mZmZmZmbGP5qZmZmZmck/zczMzMzMzD8AAAAAAADQP5qZmZmZmdE/MzMzMzMz0z/NzMzMzMzUP2ZmZmZmZtY/AAAAAAAA2D+amZmZmZnZPzMzMzMzM9s/zczMzMzM3D9mZmZmZmbePwAAAAAAAOA/zczMzMzM4D+amZmZmZnhP2ZmZmZmZuI/MzMzMzMz4z8AAAAAAADkP83MzMzMzOQ/mpmZmZmZ5T9mZmZmZmbmPzMzMzMzM+c/AAAAAAAA6D/NzMzMzMzoP5qZmZmZmek/ZmZmZmZm6j8zMzMzMzPrPwAAAAAAAOw/zczMzMzM7D+amZmZmZntP2ZmZmZmZu4/MzMzMzMz7z8AAAAAAADwP2ZmZmZmZvA/zczMzMzM8D8zMzMzMzPxP5qZmZmZmfE/AAAAAAAA8j9mZmZmZmbyP83MzMzMzPI/MzMzMzMz8z+amZmZmZnzPwAAAAAAAPQ/ZmZmZmZm9D/NzMzMzMz0PzMzMzMzM/U/mpmZmZmZ9T8AAAAAAAD2P2ZmZmZmZvY/zczMzMzM9j8zMzMzMzP3P5qZmZmZmfc/AAAAAAAA+D9mZmZmZmb4P83MzMzMzPg/MzMzMzMz+T+amZmZmZn5PwAAAAAAAPo/ZmZmZmZm+j/NzMzMzMz6PzMzMzMzM/s/mpmZmZmZ+z8AAAAAAAD8P2ZmZmZmZvw/zczMzMzM/D8="},"shape":[73],"dtype":"float64","order":"little"}],["VDS",{"type":"ndarray","array":{"type":"bytes","data":"MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8="},"shape":[73],"dtype":"float64","order":"little"}],["VSB",{"type":"ndarray","array":{"type":"bytes","data":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="},"shape":[73],"dtype":"float64","order":"little"}],["L",{"type":"ndarray","array":{"type":"bytes","data":"MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8zMzMzMzPTPzMzMzMzM9M/MzMzMzMz0z8="},"shape":[73],"dtype":"float64","order":"little"}],["W",{"type":"ndarray","array":{"type":"bytes","data":"BQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAA=="},"shape":[73],"dtype":"int32","order":"little"}],["NFING",{"type":"ndarray","array":{"type":"bytes","data":"AQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAA=="},"shape":[73],"dtype":"int32","order":"little"}],["GM_ID",{"type":"ndarray","array":{"type":"bytes","data":"EkMyNjkzOUB4wcu8jUA6QDiIpQ+fzjpANHyCrTkVO0BD8OfWvTQ7QBPug1JEPjtAEev2pBM6O0D8yZa0iCs7QI7/iMA5EztA24rCOxnwOkCSz4gGJsA6QC0zBUQJgTpAgzTyiekwOkCnuVtJnc85QKlXDeMEYDlAc+3oHX7oOEAYIKgRNnA4QLxvWatG9zdAiQzmOnxsN0BsiBa1EKw2QLg2XxcWkTVAsZ4TjAUPNEA07r+JmzsyQKfS7/wXQjBA26/eP4qdLEDFAUhFUgMpQIXEe+Dj1iVA49WBogQhI0ClYQ0fSdsgQKeDcAAD8B1Ahmo+gs3OGkDa26dT0jQYQICPne3OBxZART++xAIyFEDXzw9D8KESQO4fUD7ESRFANoMBsKoeEEBmWbzjXzAOQHUJIRV0XwxAQ3RuqTnACkBRqCuIiUoJQJY5yETq9wdApl66mS3DBkB97a/oIqgFQJzuvSlfowRARubdpBCyA0BJ7sxx3tECQK5w4fzOAAJAWdxmojQ9AUBL026Sn4UAQHRhPNOisf8/B9iw+Gpr/j83edlasTb9P/WrzyXKEfw/koWAxTr7+j8CJFd0s/H5PwWERWIK9Pg/YzZCTTgB+D9lGKKAVRj3P1w7DCSYOPY/p3uf8FJh9T+nTiAh85H0P1MhtaT/yfM/Lmo4XRcJ8z/JzTbq7U7yP3Rg34xJm/E/t21Tyv7t8D/sszVe7EbwP4mypovuS+8/32W4eA0W7j+688OHAezsP5e+NyGQzes/6zzQoHS66j8="},"shape":[73],"dtype":"float64","order":"little"}],["JD",{"type":"ndarray","array":{"type":"bytes","data":"MzMzM9LoiT3NzMxMzK2YPc3MzExd+Kc9ZmZmZkSEtz0AAAAAxC7HPc3MzEyn5dY9ZmZmZrOe5j0zMzMzTFP2PQAAAAA0/gU+zczMTGCaFT7NzMzMbSIlPs3MzMyNkDQ+MzMzM/beQz4zMzOz6ghTPs3MzMxUDGI+ZmZm5mfrcD5mZmZmMVp/PjMzMzOztYw+MzMzM+v2mT7NzMxM4hynPs3MzExhG7Q+mpmZmdjtwD4AAAAA1lXLPs3MzEx+CdU+zczMzNrR3j5mZmbmiYnlPgAAAADD2ew+AAAAgEKg8j6amZkZSFD3Ps3MzMwIb/w+mpmZmVj4AD/NzMzM6uUDP5qZmZmZ/AY/mpmZmZo5Cj+amZmZu5oNPzMzMzMXjxA/AAAAADBhEj+amZmZ7kIUPwAAAACgMxY/zczMTJIyGD+amZmZET8aPwAAAABnWBw/AAAAANd9Hj+amZmZUVcgP5qZmZkEdSE/zczMTKKXIj9mZmbmxr4jP2ZmZuYN6iQ/AAAAABIZJj8AAAAAbUsnP83MzEy4gCg/MzMzM4y4KT/NzMzMgPIqPzMzMzMtLiw/mpmZmSdrLT9mZmZmBakuP2ZmZmZb5y8/zczMzN6SMD8AAAAA4DExPwAAAAB70DE/ZmZm5nluMj8AAACApwszP5qZmZnPpzM/zczMTL9CND8zMzMzRtw0P5qZmRk2dDU/mpmZGWQKNj8AAAAAqZ42P83MzEzhMDc/ZmZmZu3ANz9mZmbmsU44P5qZmZkX2jg/MzMzswpjOT8="},"shape":[73],"dtype":"float64","order":"little"}],["GM_GDS",{"type":"ndarray","array":{"type":"bytes","data":"duNVsryeUEDh4rtWAJ5QQBxW7/L3nFBAby7tjIWbUEDkHXU9gJlQQFggSg6wllBAVlh0JsuSUEB7sNZDcY1QQM7BeIorhlBAxxz2MnF8UEBE8RD3u29QQOVpqhW3X1BAHBqWPp9MUEBVZuWS5TdQQP4wym4QJVBAxrRZe3caUECv7Vtb1iBQQF5WTmxGQFBA/eLn0ZJ6UEClwm45bsZQQPEb3IKREFFAeBSvN+lCUUDvtPrWXkxRQDsrZsK7JFFA8U7CmmzMUEDbFW/sEkpQQMm8lkMtT09AUdTSc0PfTUB2Bm1PvFdMQN23lwwNyEpAY6cTEE47SUAmSD7bp7hHQJr1flEtREZAX5cCWsnfRECLOMbRC4xDQDr2XUPCSEJAjlTonF0VQUBUcaJkYuI/QFb/AY4ktz1AuxpCUdCnO0AJW9lNXrM5QGcmD1Xt2DdAjzy8VroXNkDyeKc2Fm80QBKPb+Bc3jJAqf3Eju5kMUChdATVKQIwQBKEvXvSai1AkXbnxgD8KkBrt9IheLYoQJSgjFTDmCZAnpHEPWGhJEBo5rKbxc4iQFvzytJbHyFARgWJKBIjH0C49yrwXEccQLHvDmhVqBlA5jtdDrdCF0B2XOUoPhMVQIt7xCqoFhNAXxLGw7ZJEUCbRU0yYFIPQCbI6nPCYwxAlGGRRkHBCUDeSkhCo2QHQFFBuD/SRwVA+/D+CeZkA0Ai/u2ZMLYBQDS45xBLNgBABPqKTULA/T9pNcsS9l37P7dIm6oJPfk/6183O6JV9z8="},"shape":[73],"dtype":"float64","order":"little"}],["GM_CGG",{"type":"ndarray","array":{"type":"bytes","data":"uI+dbSnJ5UBrfblx0Lv1QGoLGxb3qgVBBcFUsqmVFUFOzdaAkXolQYNqw3XRVzVBgcrUjtsqRUGoqUa9PfBUQUTKHddpo2RBrC63ZYY+dEEki3vTWLqDQSfYpG1rDpNB/bkDl5UxokGr/BE8/RqxQWyy4dEZh79BIEI3Uv1PzEHMSFaDkZnYQVOTWiLxi+RBBmsUCZt68EF4ebPcw4/5QUvGXkFrUANCyYeOOp1aDEJNHplKof4TQrZMtpyv1RpC1dQOQPoXIULP0DnEWMEkQumdTfhaMyhCLNnr/vpTK0K5GDnewh4uQqW64XcYTjBCscF4SfRsMUK0BjlF13IyQlazfbOAZTNCPRJ3mDZJNEKoVcOo4CA1QtLFfLBP7jVCPhjWWYmyNkKE7yErCm43QgInlez3IDhCbR+A5UXLOEL2TJ+NzWw5Qud0DOFdBTpCKyM8+cOUOkKpEEJI0Bo7Qo9wyD9ZlztCuPpQZToKPEIuD2oVVXM8QlDvE+yN0jxC9oB7xMsnPUItbltJ93I9Qv0xea73sz1CchtMWLTqPULsRkfgERc+QpQy2PPzOD5CXvV9azxQPkI9WUp4zVw+QpG/o7qKXj5Cc7+OeVxVPkL3tD0GM0E+Qlby6nUKIj5CWx9tLPD3PUIkSxydBsM9Qoy41diJgz1CcAAWa9M5PUKMd7XKW+Y8QgaQOiu6iTxCNf0MWqIkPEJJTa3z37c7Qp/1yDFPRDtC4cKFfNbKOkKCD7gzXUw6QkrbD3LGyTlCKiriSOhDOUI="},"shape":[73],"dtype":"float64","order":"little"}]]}}},"view":{"type":"object","name":"CDSView","id":"p1150","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1151"}}},"glyph":{"type":"object","name":"Line","id":"p1146","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_CGG"},"line_color":"yellow"}},"nonselection_glyph":{"type":"object","name":"Line","id":"p1147","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_CGG"},"line_color":"yellow","line_alpha":0.1}},"muted_glyph":{"type":"object","name":"Line","id":"p1148","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_CGG"},"line_color":"yellow","line_alpha":0.2}}}},{"type":"object","name":"GlyphRenderer","id":"p1191","attributes":{"y_range_name":"gain","data_source":{"id":"p1140"},"view":{"type":"object","name":"CDSView","id":"p1192","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1193"}}},"glyph":{"type":"object","name":"Line","id":"p1188","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_GDS"},"line_color":"yellow","line_dash":[6]}},"nonselection_glyph":{"type":"object","name":"Line","id":"p1189","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_GDS"},"line_color":"yellow","line_alpha":0.1,"line_dash":[6]}},"muted_glyph":{"type":"object","name":"Line","id":"p1190","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_GDS"},"line_color":"yellow","line_alpha":0.2,"line_dash":[6]}}}},{"type":"object","name":"GlyphRenderer","id":"p1203","attributes":{"data_source":{"type":"object","name":"ColumnDataSource","id":"p1194","attributes":{"selected":{"type":"object","name":"Selection","id":"p1195","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1196"},"data":{"type":"map","entries":[["index",{"type":"ndarray","array":{"type":"bytes","data":"2w0IAP4QCAAhFAgARBcIAGcaCACKHQgArSAIANAjCADzJggAFioIADktCABcMAgAfzMIAKI2CADFOQgA6DwIAAtACAAuQwgAUUYIAHRJCACXTAgAuk8IAN1SCAAAVggAI1kIAEZcCABpXwgAjGIIAK9lCADSaAgA9WsIABhvCAA7cggAXnUIAIF4CACkewgAx34IAOqBCAANhQgAMIgIAFOLCAB2jggAmZEIALyUCADflwgAApsIACWeCABIoQgAa6QIAI6nCACxqggA1K0IAPewCAAatAgAPbcIAGC6CACDvQgApsAIAMnDCADsxggAD8oIADLNCABV0AgAeNMIAJvWCAC+2QgA4dwIAATgCAAn4wgASuYIAG3pCACQ7AgAs+8IAA=="},"shape":[73],"dtype":"int32","order":"little"}],["ID",{"type":"ndarray","array":{"type":"bytes","data":"AAAAgIn3rj0AAABAd3i9PQAAAKAaoMw9AAAA4BEZ3D0AAABg2bfrPQAAAICQZfs9AAAAQEUVCz4AAADAgb4aPgAAAIB9Wio+AAAAIK7iOT4AAACAKVBJPgAAACCum1g+AAAAQGC+Zz4AAADATbN2PgAAAMCGeYU+AAAAwN0VlD4AAADAhJKiPgAAACDR+rA+AAAAYGKovj4AAACgMTTLPgAAAKArh9c+AAAAgA+i4z4AAADAwVfvPgAAAAB40vc+AAAA4NY8AT8AAABArNMHPwAAAKBzng8/AAAAIAFCFD8AAADgVjQZPwAAAIB+mR4/AAAAwG0zIj8AAACgCUolPwAAAMBdjSg/AAAA4O/6Kz8AAABAxpAvPwAAAGCbpjE/AAAAwGGXMz8AAADAAJo1PwAAAGDErTc/AAAAoPXROT8AAACA1wU8PwAAAOClSD4/AAAA4MpMQD8AAAAg6ntBPwAAAEBEsUI/AAAAAGnsQz8AAADA5SxFPwAAAGBEckY/AAAAQAy8Rz8AAADAwQlJPwAAAGDmWko/AAAAoPiuSz8AAABgdAVNPwAAAGDSXU4/AAAAwIi3Tz8AAADABYlQPwAAAGBmNlE/AAAA4J7jUT8AAABgaJBSPwAAAKB8PFM/AAAAIJfnUz8AAACgdpFUPwAAAADdOVU/AAAA4JDgVT8AAAAAXoVWPwAAAIAVKFc/AAAAQI7IVz8AAADApGZYPwAAAMA6Alk/AAAAwDabWT8AAADAgzFaPwAAAGAQxVo/AAAAoM5VWz8="},"shape":[73],"dtype":"float64","order":"little"}],["VT",{"type":"ndarray","array":{"type":"bytes","data":"AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8AAABg83/dPwAAAGDzf90/AAAAYPN/3T8="},"shape":[73],"dtype":"float64","order":"little"}],["GM",{"type":"ndarray","array":{"type":"bytes","data":"AAAAQM5T+D0AAAAgTioIPgAAAODs/Rc+AAAAoHnNJz4AAAAgUpc3PgAAAKBAWUc+AAAAIFEQVz4AAAAAqLhmPgAAAOBiTXY+AAAA4J3IhT4AAABAxiOVPgAAACBzWKQ+AAAAQPthsz4AAABAuT/CPgAAAMAx99A+AAAA4GYo3z4AAAAgC0nsPgAAAOBYXvk+AAAAwPdaBj8AAACASyATPwAAAGAHRx8/AAAAgPYaKD8AAADAtGExPwAAAGBudTc/AAAAQJDQPT8AAADAJwNCPwAAAADz50Q/AAAAACKIRz8AAABAi+RJPwAAAGAuBkw/AAAAYIz4TT8AAAAAXcZPPwAAAIAUvFA/AAAAAAaKUT8AAAAgAU9SPwAAAOAwDFM/AAAAwCrCUz8AAABAIHFUPwAAAGAEGVU/AAAAQKe5VT8AAACgxlJWPwAAAMAZ5FY/AAAAQFdtVz8AAAAAOe5XPwAAACB8Zlg/AAAAQOLVWD8AAACgLzxZPwAAAGAqmVk/AAAAgJnsWT8AAADgQzZaPwAAAKDvdVo/AAAAQGKrWj8AAADgYdZaPwAAAOC29lo/AAAA4C4MWz8AAABAoRZbPwAAACD0FVs/AAAAwCIKWz8AAAAgQ/NaPwAAAACM0Vo/AAAAoFilWj8AAABgKW9aPwAAAECiL1o/AAAAgITnWT8AAACgppdZPwAAAEDqQFk/AAAAwDHkWD8AAABgV4JYPwAAAGAmHFg/AAAAoFayVz8AAACAikVXPwAAAGBP1lY/AAAAoB5lVj8="},"shape":[73],"dtype":"float64","order":"little"}],["GMB",{"type":"ndarray","array":{"type":"bytes","data":"AAAAgFYZ4T0AAAAgTcnwPQAAAOD2dwA+AAAAgJYkED4AAAAAWpwfPgAAAADO5i4+AAAAYA8lPj4AAAAgq1JNPgAAAIAialw+AAAA4Ahlaz4AAABAgzx6PgAAAEBn6og+AAAAwCtrlz4AAADAgMClPgAAAACG87M+AAAAoFwUwj4AAAAgfDTQPgAAAGCpuNw+AAAAAKUH6T4AAADABTL1PgAAAOCqKgE/AAAAALA6Cj8AAADAHcMSPwAAAGDeIxk/AAAAAKC/Hz8AAACA2BIjPwAAAMCEByY/AAAAgDWwKD8AAAAA+g4rPwAAAMD2LS0/AAAAAKQZLz8AAABAx24wPwAAAACDQTE/AAAAQHcIMj8AAACgCsYyPwAAAGDWezM/AAAAgOEqND8AAAAg0dM0PwAAAKALdzU/AAAAYNEUNj8AAADgTK02PwAAAGCdQDc/AAAAANzONz8AAACAH1g4PwAAAAB+3Dg/AAAAwAxcOT8AAADg4NY5PwAAAMAOTTo/AAAAIKq+Oj8AAACAxSs7PwAAAOBylDs/AAAAwMP4Oz8AAAAgylg8PwAAAMCZtDw/AAAAoEgMPT8AAACg8V89PwAAAEC1rz0/AAAAoLv7PT8AAADANEQ+PwAAAOBZiT4/AAAAgGvLPj8AAACgsAo/PwAAAOBzRz8/AAAA4P+BPz8AAADAm7o/PwAAAGCI8T8/AAAA4H4TQD8AAADglC1APwAAAMAXR0A/AAAAIBRgQD8AAAAgknhAPwAAACCWkEA/AAAAoCGoQD8="},"shape":[73],"dtype":"float64","order":"little"}],["GDS",{"type":"ndarray","array":{"type":"bytes","data":"AAAAwF/rkz0AAACgNcqjPQAAAOAAp7M9AAAA4OWAwz0AAAAgt1bTPQAAAADaJuM9AAAAYCbv8j0AAACAwqwCPgAAAOADXBI+AAAA4F/4IT4AAACAinwxPgAAAGDk4kA+AAAAAGYmUD4AAABgG4hePgAAAMDzeGw+AAAAwFEpej4AAAAA6qiHPgAAAGALBZU+AAAAYIZBoj4AAAAAhLquPgAAAGDIx7g+AAAAgH32wj4AAABgs2jLPgAAAGBbu9I+AAAAIC9c2D4AAADgC2fePgAAAGCRX+I+AAAAQMyu5T4AAABgcybpPgAAAAAh0ew+AAAAABZe8D4AAACgEXvyPgAAAIAZx/Q+AAAAQA9K9z4AAACgQgz6PgAAAMCjFv0+AAAAwH05AD8AAACAEhYCPwAAAMAjJwQ/AAAAQIlzBj8AAAAA/gIJPwAAAKBB3gs/AAAAQDwPDz8AAABAklARPwAAAGBTUBM/AAAAoAeOFT8AAAAAuBEYPwAAAIBi5Bo/AAAAwAYQHj8AAADA1c8gPwAAAKCrzyI/AAAAgPsNJT8AAACglpEnPwAAAKCAYSo/AAAAALOELT8AAADg5oAwPwAAAIBYbzI/AAAAIASQND8AAACgZ+Q2PwAAAADvbDk/AAAA4MgoPD8AAACA0RU/PwAAAABOGEE/AAAA4E26Qj8AAAAANW5EPwAAAAAOMUY/AAAAQM//Rz8AAABghNdJPwAAAIButUs/AAAA4BmXTT8AAACgaHpPPwAAAODJrlA/AAAAYJOfUT8="},"shape":[73],"dtype":"float64","order":"little"}],["CGG",{"type":"ndarray","array":{"type":"bytes","data":"AAAAIOFqBD0AAABg3ksEPQAAAEAHLgQ9AAAAAE4RBD0AAABgqfUDPQAAAIAY2wM9AAAAIKrBAz0AAACgiakDPQAAAMAbkwM9AAAAIDV/Az0AAABAiG8DPQAAAKB6ZwM9AAAAgLptAz0AAADAII8DPQAAACBf4wM9AAAAoLqSBD0AAAAA5tYFPQAAACCB5gc9AAAAgBa8Cj0AAAAgzuINPQAAAMASVhA9AAAA4GhXET0AAABgHPcRPQAAACARURI9AAAAIOiAEj0AAADgfZkSPQAAAEDUpRI9AAAAoOCrEj0AAABAv64SPQAAAOAHsBI9AAAAQImwEj0AAABgrLASPQAAAACmsBI9AAAAQJGwEj0AAAAAfLASPQAAAGBtsBI9AAAA4GmwEj0AAADgc7ASPQAAAICNsBI9AAAAoLiwEj0AAADA9rASPQAAAABKsRI9AAAAoLSxEj0AAADgOLISPQAAAKDZshI9AAAAQJqzEj0AAABAfrQSPQAAAACKtRI9AAAAYMK2Ej0AAADALLgSPQAAAGDPuRI9AAAAQLG7Ej0AAAAg2r0SPQAAAOBSwBI9AAAA4CTDEj0AAACgWsYSPQAAAED/yRI9AAAAwB7OEj0AAAAgxdISPQAAAOD+1xI9AAAAANjdEj0AAABgW+QSPQAAAOCS6xI9AAAA4IXzEj0AAAAAOfwSPQAAACCtBRM9AAAAIN8PEz0AAACgxxoTPQAAAGBaJhM9AAAAAIcyEz0AAAAgOT8TPQAAAEBZTBM9AAAAAM5ZEz0="},"shape":[73],"dtype":"float64","order":"little"}],["CGS",{"type":"ndarray","array":{"type":"bytes","data":"AAAAgOsR5jwAAADg/RHmPAAAAMAjEuY8AAAAYHAS5jwAAAAAChPmPAAAAAA9FOY8AAAA4KEW5jwAAABgZxvmPAAAACDoJOY8AAAAwNA35jwAAABgY13mPAAAAGDep+Y8AAAAgNc65zwAAABAU1roPAAAAMAwg+o8AAAAAK6I7jwAAACA18vyPAAAAIDGZPg8AAAAQJj8/zwAAACgzy4EPQAAAACn3wc9AAAAIBiJCj0AAAAAyDEMPQAAAADwIw09AAAA4EGoDT0AAAAAF/ANPQAAAMAcGA49AAAAwMsvDj0AAADALj8OPQAAAIBgSg49AAAA4HNTDj0AAADAc1sOPQAAAKDlYg49AAAAoAtqDj0AAABgBnEOPQAAACDldw49AAAAoK5+Dj0AAADAZIUOPQAAAGAHjA49AAAAgJSSDj0AAACACZkOPQAAAKBinw49AAAAgJulDj0AAAAAr6sOPQAAAACXsQ49AAAAgEy3Dj0AAABAx7wOPQAAAID9wQ49AAAAQOTGDj0AAACgbssOPQAAAICNzw49AAAAADDTDj0AAABgQtYOPQAAAACu2A49AAAAwFnaDj0AAADAKNsOPQAAAGD72g49AAAAgK7ZDj0AAABAHNcOPQAAAIAc0w49AAAA4ITNDj0AAAAgK8YOPQAAAGDlvA49AAAAgIyxDj0AAABA/qMOPQAAAAAflA49AAAA4NuBDj0AAADALG0OPQAAAIAVVg49AAAAoKY8Dj0AAAAA/SAOPQAAAGBBAw49AAAAAKbjDT0="},"shape":[73],"dtype":"float64","order":"little"}],["CGD",{"type":"ndarray","array":{"type":"bytes","data":"AAAAwIUR5jwAAACghRHmPAAAAGCFEeY8AAAAAIUR5jwAAAAghBHmPAAAAGCCEeY8AAAA4H4R5jwAAADgdxHmPAAAAOBpEeY8AAAA4E0R5jwAAABAFhHmPAAAAKCnEOY8AAAAoMwP5jwAAAAAHw7mPAAAAGDiCuY8AAAAINcE5jwAAADgNPrlPAAAAGBQ6eU8AAAAQGXS5TwAAAAgLbnlPAAAAAAqo+U8AAAAAKeT5TwAAABAgIrlPAAAAMDtheU8AAAAQC+E5TwAAABgFITlPAAAACDuhOU8AAAAAGCG5TwAAAAgPYjlPAAAAOBxiuU8AAAAYPiM5TwAAACA0o/lPAAAAGAGk+U8AAAAIJ2W5TwAAABgoprlPAAAAOAjn+U8AAAAoDGk5TwAAADg3anlPAAAAOA9sOU8AAAA4Gm35TwAAACgfb/lPAAAAECZyOU8AAAAYOHS5TwAAAAggN7lPAAAACCm6+U8AAAAAIv65TwAAADAbgvmPAAAAKCaHuY8AAAAwGI05jwAAAAAJ03mPAAAAKBUaeY8AAAA4GeJ5jwAAADg7K3mPAAAAACB1+Y8AAAAgNMG5zwAAAAApjznPAAAAIDLeec8AAAAQCe/5zwAAAAgqQ3oPAAAAKBJZug8AAAAQALK6DwAAABgxTnpPAAAAIBztuk8AAAAYM5A6jwAAACga9nqPAAAAOCngOs8AAAAYJo27DwAAADAC/vsPAAAAIBxze08AAAAwO2s7jwAAACAVJjvPAAAAIAbR/A8AAAAQHnG8Dw="},"shape":[73],"dtype":"float64","order":"little"}],["CGB",{"type":"ndarray","array":{"type":"bytes","data":"AAAAwAnE8jwAAAAA+4XyPAAAAAA6SvI8AAAAQKEQ8jwAAACgC9nxPAAAAGBRo/E8AAAAAERv8TwAAADAozzxPAAAAGAOC/E8AAAA4NrZ8DwAAADA06fwPAAAACCycvA8AAAAACM28DwAAACgENTvPAAAACBp/+48AAAAYGW97TwAAAAgtMnrPAAAAGAn5+g8AAAAgMQk5TwAAADgzBbhPAAAAKCgHds8AAAAQIAG1jwAAABghs7SPAAAACC35dA8AAAAoCmIzzwAAAAg/B3OPAAAAKABJc08AAAAgNllzDwAAAAgCcTLPAAAAOArMcs8AAAAoAmmyjwAAABgBR/KPAAAAKBOmsk8AAAAQPoWyTwAAACgjpTIPAAAAEDLEsg8AAAAYIuRxzwAAAAAuRDHPAAAAKBEkMY8AAAAACMQxjwAAADASpDFPAAAAGCzEMU8AAAAYFWRxDwAAAAAKhLEPAAAAKAqk8M8AAAAgFEUwzwAAACgmZXCPAAAAKD+FsI8AAAAIH2YwTwAAABgExrBPAAAACDBm8A8AAAAAIgdwDwAAABg2T6/PAAAAKDtQr48AAAAgGRHvTwAAACgX0y8PAAAACAMUrs8AAAAgKVYujwAAAAgd2C5PAAAAKDeabg8AAAAwE11tzwAAAAgS4O2PAAAAOBylLU8AAAA4HWptDwAAADAFsOzPAAAACAm4rI8AAAA4HwHsjwAAACg9DOxPAAAAOBfaLA8AAAA4AFLrzwAAACABNitPAAAAODdeKw8AAAAQFwuqzw="},"shape":[73],"dtype":"float64","order":"little"}],["CDD",{"type":"ndarray","array":{"type":"bytes","data":"AAAAYMFb/DwAAABgwVv8PAAAAGDBW/w8AAAAYMFb/DwAAABgwVv8PAAAAGDBW/w8AAAAYMFb/DwAAACAwVv8PAAAAKDBW/w8AAAAAMJb/DwAAACgwlv8PAAAAADEW/w8AAAAoMZb/DwAAADAy1v8PAAAAMDVW/w8AAAAYOlb/DwAAABgDlz8PAAAAKBRXPw8AAAAYMRc/DwAAADAd138PAAAAEB2Xvw8AAAAQMFf/DwAAADAVGH8PAAAAIAsY/w8AAAAQEdl/DwAAAAgp2f8PAAAAGBQavw8AAAAoElt/DwAAABgm3D8PAAAAKBPdPw8AAAA4HF4/DwAAACAD338PAAAAOA3gvw8AAAAQPyH/DwAAADAcI78PAAAACCslfw8AAAAIMid/DwAAACg4qb8PAAAAIAdsfw8AAAA4J+8/DwAAABglsn8PAAAAEA02Pw8AAAAwLTo/DwAAABgW/v8PAAAAOB1EP08AAAAAF4o/TwAAAAAekP9PAAAAABAYv08AAAAoDaF/TwAAADg96z9PAAAAGAz2v08AAAAYLAN/jwAAADAT0j+PAAAAEAOi/48AAAAQAXX/jwAAABgay3/PAAAAKCTj/88AAAAoOr+/zwAAADgeD4APQAAAKCbhQA9AAAAIKbVAD0AAAAAWy8BPQAAACBukwE9AAAAIHsCAj0AAABA+nwCPQAAAMA1AwM9AAAAQECVAz0AAABg7TIEPQAAAODN2wQ9AAAAoC+PBT0AAAAAIkwGPQAAAKB+EQc9AAAAAPXdBz0="},"shape":[73],"dtype":"float64","order":"little"}],["CSS",{"type":"ndarray","array":{"type":"bytes","data":"AAAAIGp8/zwAAACgdXz/PAAAAICMfP88AAAAALp8/zwAAAAgFH3/PAAAAMDGff88AAAAICl//zwAAACg54H/PAAAAABYh/88AAAAIB6S/zwAAACgb6f/PAAAAACG0f88AAAAICASAD0AAADgumIAPQAAAGAu/QA9AAAAAMsbAj0AAACgOhEEPQAAAIAXKgc9AAAAgKRaCz0AAADAEfcPPQAAAED4ARI9AAAAoFt2Ez0AAADg1FwUPQAAAMCK3hQ9AAAAgKYjFT0AAADAY0cVPQAAACCUWRU9AAAAoL9iFT0AAABgVWcVPQAAAMCYaRU9AAAAIK5qFT0AAABAKGsVPQAAAIBQaxU9AAAAwEprFT0AAABgKGsVPQAAACDxahU9AAAA4KdqFT0AAADATGoVPQAAAIDeaRU9AAAA4FppFT0AAADAvmgVPQAAAGAGaBU9AAAAQC1nFT0AAAAALmYVPQAAAIACZRU9AAAAgKNjFT0AAACgCGIVPQAAAAAoYBU9AAAAQPZdFT0AAAAgZlsVPQAAAGBoWBU9AAAAQOtUFT0AAADA2lAVPQAAAIAfTBU9AAAAgJ9GFT0AAABAPUAVPQAAACDYOBU9AAAAAEwwFT0AAAAAciYVPQAAAKAgGxU9AAAA4CwOFT0AAABAa/8UPQAAACCx7hQ9AAAAQNfbFD0AAAAgu8YUPQAAAGBBrxQ9AAAAYFiVFD0AAADg+XgUPQAAACAsWhQ9AAAAwAI5FD0AAACAnhUUPQAAAGAs8BM9AAAAoOPIEz0="},"shape":[73],"dtype":"float64","order":"little"}],["STH",{"type":"ndarray","array":{"type":"bytes","data":"AAAAoJ4P2zkAAABguszqOQAAAODuhvo5AAAAIPM8CjoAAADgBu0ZOgAAAMDMlCk6AAAAQCAxOToAAABg6r1IOgAAAAAFNlg6AAAAoESTZzoAAAAA1s52OgAAACAr4oU6AAAAQK7IlDoAAACgJoKjOgAAAGDyFLI6AAAAIAyOwDoAAADgsfjNOgAAAGC/zto6AAAAICCQ5zoAAAAgihz0OgAAAOCkaAA7AAAAAE8+CTsAAAAgAiwSOwAAAEC/fRg7AAAAoLIXHzsAAAAgycQiOwAAACBoxSU7AAAAQAt/KDsAAADg3fIqOwAAAEBqKi07AAAA4McxLzsAAAAAH4owOwAAAOBsbTE7AAAAgBhGMjsAAAAgWhYzOwAAAECW3zM7AAAAQJyiNDsAAABg2V81OwAAAOB/FzY7AAAAIKLJNjsAAACARXY3OwAAAOBtHTg7AAAAYCW/ODsAAABggFs5OwAAAMCf8jk7AAAAILKEOjsAAADg8xE7OwAAAGCvmjs7AAAAoDwfPDsAAACAAKA8OwAAAIBsHT07AAAAIP2XPTsAAADAOBA+OwAAAOCshj47AAAAIOv7PjsAAACghHA/OwAAAGAE5T87AAAAAPQsQDsAAADgzGdAOwAAAMAzo0A7AAAAID/fQDsAAADg8htBOwAAAOA/WUE7AAAAgBCbQTsAAADgTAFCOwAAAGBRZ0I7AAAAIOjMQjsAAABg2DFDOwAAAMDqlUM7AAAAwOz4QzsAAABAslpEOwAAAEAWu0Q7AAAA4PsZRTs="},"shape":[73],"dtype":"float64","order":"little"}],["SFL",{"type":"ndarray","array":{"type":"bytes","data":"AAAAgH+XxDkAAADA0FXkOQAAAIBkEQQ6AAAAYO3IIzoAAACgonpDOgAAAMAVJGM6AAAAgP/BgjoAAACgA1CiOgAAAMB0yME6AAAAYCok4ToAAAAAlFoAOwAAAECvxB47AAAAIAhmPDsAAADg6JBZOwAAAOCTT3Y7AAAAAJjGkjsAAAAATF+uOwAAAKA9icc7AAAAIM1Y4TsAAADgmfP3OwAAAIBTVA48AAAAgB1LITwAAADgnaQxPAAAAOCfM0A8AAAAICYmSzwAAABAEhNVPAAAAEAJvl48AAAAwNVRZTwAAAAgUGNsPAAAAMDTSHI8AAAAgCTtdjwAAACgix18PAAAAOCz7IA8AAAAIDsQhDwAAAAAVHmHPAAAAMD1J4s8AAAAgP4bjzwAAABAj6qRPAAAACBk6ZM8AAAAwBJKljwAAABgB8yYPAAAAKCCbps8AAAAAJgwnjwAAAAgloigPAAAAEB6B6I8AAAAgDqUozwAAACAAC6lPAAAAIDc06Y8AAAAQMWEqDwAAACAlz+qPAAAAMAVA6w8AAAAQOjNrTwAAACAnZ6vPAAAAKDVubA8AAAAILilsTwAAABAHJKyPAAAAGAgfrM8AAAAgN5otDwAAACgcFG1PAAAACD1NrY8AAAAIJQYtzwAAACAhPW3PAAAAKAQzbg8AAAAwJqeuTwAAADgnmm6PAAAACC0Lbs8AAAA4IvquzwAAADg75+8PAAAAMC/Tb08AAAA4OzzvTwAAABAd5K+PAAAAMBqKb88AAAAINu4vzw="},"shape":[73],"dtype":"float64","order":"little"}],["INFO",{"type":"ndarray","array":["Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3","Stanford EE214B models, 180nm CMOS, BSIM3v3"],"shape":[73],"dtype":"object","order":"little"}],["CORNER",{"type":"ndarray","array":["NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM","NOM"],"shape":[73],"dtype":"object","order":"little"}],["TEMP",{"type":"ndarray","array":{"type":"bytes","data":"LAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAACwBAAAsAQAALAEAAA=="},"shape":[73],"dtype":"int32","order":"little"}],["VGS",{"type":"ndarray","array":{"type":"bytes","data":"AAAAAAAAAACamZmZmZmZP5qZmZmZmak/MzMzMzMzsz+amZmZmZm5PwAAAAAAAMA/MzMzMzMzwz9mZmZmZmbGP5qZmZmZmck/zczMzMzMzD8AAAAAAADQP5qZmZmZmdE/MzMzMzMz0z/NzMzMzMzUP2ZmZmZmZtY/AAAAAAAA2D+amZmZmZnZPzMzMzMzM9s/zczMzMzM3D9mZmZmZmbePwAAAAAAAOA/zczMzMzM4D+amZmZmZnhP2ZmZmZmZuI/MzMzMzMz4z8AAAAAAADkP83MzMzMzOQ/mpmZmZmZ5T9mZmZmZmbmPzMzMzMzM+c/AAAAAAAA6D/NzMzMzMzoP5qZmZmZmek/ZmZmZmZm6j8zMzMzMzPrPwAAAAAAAOw/zczMzMzM7D+amZmZmZntP2ZmZmZmZu4/MzMzMzMz7z8AAAAAAADwP2ZmZmZmZvA/zczMzMzM8D8zMzMzMzPxP5qZmZmZmfE/AAAAAAAA8j9mZmZmZmbyP83MzMzMzPI/MzMzMzMz8z+amZmZmZnzPwAAAAAAAPQ/ZmZmZmZm9D/NzMzMzMz0PzMzMzMzM/U/mpmZmZmZ9T8AAAAAAAD2P2ZmZmZmZvY/zczMzMzM9j8zMzMzMzP3P5qZmZmZmfc/AAAAAAAA+D9mZmZmZmb4P83MzMzMzPg/MzMzMzMz+T+amZmZmZn5PwAAAAAAAPo/ZmZmZmZm+j/NzMzMzMz6PzMzMzMzM/s/mpmZmZmZ+z8AAAAAAAD8P2ZmZmZmZvw/zczMzMzM/D8="},"shape":[73],"dtype":"float64","order":"little"}],["VDS",{"type":"ndarray","array":{"type":"bytes","data":"MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8zMzMzMzPjPzMzMzMzM+M/MzMzMzMz4z8="},"shape":[73],"dtype":"float64","order":"little"}],["VSB",{"type":"ndarray","array":{"type":"bytes","data":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="},"shape":[73],"dtype":"float64","order":"little"}],["L",{"type":"ndarray","array":{"type":"bytes","data":"CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8K16NwPQrXPwrXo3A9Ctc/CtejcD0K1z8="},"shape":[73],"dtype":"float64","order":"little"}],["W",{"type":"ndarray","array":{"type":"bytes","data":"BQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAA=="},"shape":[73],"dtype":"int32","order":"little"}],["NFING",{"type":"ndarray","array":{"type":"bytes","data":"AQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAA=="},"shape":[73],"dtype":"int32","order":"little"}],["GM_ID",{"type":"ndarray","array":{"type":"bytes","data":"rSz0wZAjOUAy3QgORT06QOw/cif80TpAbalqP7MbO0ClsgT1Qjw7QGukbH2QRTtAxCZ0nz1AO0CvfKmxwi87QI8ajl+vFDtAnyeuYOXtOkCPVK11Ybk6QDIa0F/7dDpAxstdQ2cfOkCBENh5krk5QB7SFrvmRzlAFoSOOPzROEAsrQ7GIV44QNh9mXKd5zdAwqsxdIdVN0C6Nghhhn82QIS1b6caRTVAj9WwdwqlM0C2JmgQAr8xQLcx2REGgy9A8csevYysK0BV0tYK4zAoQM8PQ2tyKCVAe4uTDviVIkD2okgu228gQPj2GVeDTh1Am2DML8RYGkCNbH+6auEXQPF210iizxVAfBwrGhUPFEDo821yhI8SQH5c5/4jRBFAClfPLfEiEEBlyNjeNkgOQPzyqWoMgwxAhgfIS8rsCkDmoQye2n0JQLA49RwzMAhAjPRnjvj+BkBv9zz4OuYFQPLK78++4gRADamou9fxA0DixRvaRxEDQPjmW24qPwJASjZyaOF5AUDhB7VVCMAAQOkrythpEABA8us5y+/T/j9FtjCsi5f9P108eHEIavw/bBaABvtJ+z90thAdKDb6P6PMdlyBLfk/TTJJmSMv+D+EEFIgVDr3Pzkm2eV/TvY/w2B64Ddr9T/OhLKAK5D0P6s39mgkvfM/R3Iaxv3x8j87vC5TnS7yPzQZ7SvscvE/HnF8e9C+8D8zOKxoKRLwP0mmQcaZ2e4/GMXSWw6d7T8OZpD9Nm7sP97ap36MTOs/9AvJkH036j8="},"shape":[73],"dtype":"float64","order":"little"}],["JD",{"type":"ndarray","array":{"type":"bytes","data":"mpmZmQfGiD2amZmZkpOXPTMzM7N75qY9MzMzs3R6tj1mZmbmrSzGPQAAAADa6tU9zczMzJ2q5T2amZmZNGX1PTMzMzMxFQU+mpmZGVi1FD4zMzMzIUAkPgAAAIC+rzM+ZmZmZrP+Qj4AAAAACylSPmZmZmYFLmE+MzMzM34RcD7NzMzMOrd9PjMzMzPoKos+mpmZGbWGmD5mZmbmWsOlPs3MzEyJ0rI+ZmZmZrJpvz5mZmZmARPJPmZmZmbGDtM+AAAAAIuU2z4AAAAAvQ/jPjMzM7OPS+k+MzMzs8008D6amZkZ3yn0PpqZmZnLevg+AAAAABYf/T4zMzOzBwgBPwAAAABLpAM/AAAAgFliBj+amZmZnkAJP2ZmZmbFPQw/ZmZmZpxYDz+amZmZAEgRP2ZmZuZp8RI/MzMzs/enFD/NzMzMEmsWP83MzEweOhg/zczMzHcUGj+amZmZdvkbPzMzMzNt6B0/AAAAAKjgHz/NzMzMt/AgPwAAAIAD9SE/mpmZmdb8Ij8zMzMzzgckP5qZmRmFFSU/MzMzs5MlJj/NzMxMkDcnPzMzM7MOSyg/mpmZmaBfKT8AAAAA1nQqP2ZmZmY9iis/mpmZmWSfLD8zMzMz2rMtP83MzMwtxy4/zczMzPHYLz9mZmbmXnQwPzMzMzMX+zA/ZmZm5nOAMT8zMzMzSwQyP5qZmZl3hjI/MzMzM9gGMz+amZmZUIUzP5qZmZnIATQ/zczMzCt8ND9mZmZmafQ0PwAAAIBzajU/ZmZm5j7eNT8="},"shape":[73],"dtype":"float64","order":"little"}],["GM_GDS",{"type":"ndarray","array":{"type":"bytes","data":"o6rekGWKU0Cgf8A1l4lTQKak2Xx1iFNAbaWXEOCGU0DpwTbTqYRTQDd2os2WgVNAAe08NFd9U0B+3n3EhXdTQO2pG0Gnb1NAdShIkDVlU0AbH6Eyu1dTQI47If0TR1NAVCfpk+UzU0CZz3uMZSBTQA8htspIEVNAbquagEUOU0C15BkTxSBTQIbQ83tvT1NASUWWYcKXU0BEQrI34upTQFcUOyLpMVRAncUiwMdWVEAc02Z2CEtUQDixRbKYCVRArqt1myiVU0AFwXTNcfVSQBCOq/qgNFJArJODjkddUUAudazh7nhQQKCCa4OiHk9A45x2B0RMTUDi95AodYJLQOJu2a30xUlAdJFp5WMZSECVftK9A35GQPv9oBlE9ERAJmQtUCd8Q0Cw+8EIfhVCQMdaY7EIwEBAo/uzXg/3PkAPF1yqfo88QMVcbT7vSDpApNvq9PAiOECTokvRDB02QA+booy9NjRALwuUJGtvMkCRh+7vZ8YwQIpem4TedS5ALsOBTEyYK0DXoWzcOPIoQKukO5udgSZAM8T7aVJEJEAkvG88EjgiQCevMz5/WiBA0WkjuE5SHUDC3oHdDUMaQO5ApX4YghdATp4bYzQKFUBzse0bFtYSQN3NIa1p4BBARA054rdHDkB2K3EFTjYLQD2MXi1DgghAcpjxMp4hBkBng3Em4QoEQOBZU2EoNQJAj4Hy30KYAED61zqShVn+PwoDN8oJ2Ps/jLZr+12g+T8b0QntTaj3PzanL3UK5/U/fMUCDAZV9D8="},"shape":[73],"dtype":"float64","order":"little"}],["GM_CGG",{"type":"ndarray","array":{"type":"bytes","data":"DItsEF4Q40DQt7yQxwzzQH+D6/PCBQNBBHCHFFz6EkGr7rJsO+kiQc3b3c+E0DJBirQSequtQkFGtMuiQX1SQVvZ09rCOmJByB0BeWngcUFnzpKDIGeBQfx47A+yxpBB2ZaC5absn0HG33mBQdutQaBDOW8vTLtB5ci6j1g7yEHG91GV7bjUQd5PWh6b++BBReUSkhTC6kHeFHjepHr0QbCCMXo7ov5BxnqL+Js9BkK56szM4PUOQgX3Kk3ffRRCna0BVd/HGUISpknOWf0eQo0aBZ8I8CFCWIb8BDwqJEKq2CIHwywmQlmVCTpn/idCtOM5+2aoKUKctjHwjjMrQlA5P6T0pixC8pz1s7AHLkLy4IQ7GFkvQtZd4VOPTjBCGW/0Kl3qMEKoLomwHIAxQgIQD3u/DzJCFx3uYRmZMkIeiz7Q7hszQiAvb/j9lzNCjsC1WQQNNEJP32A7wno0QltuvwX64DRCf+KFdHE/NUINLEJu8JU1QoKBjY4/5DVCs2HDvycqNkJnGiFwcWc2Qg3k7KnjmzZCD3ppa0THNkKsMLbWWek2QoRmUUTrATdCvGg/wcQQN0JgR9NSuhU3QpQlxwqtEDdCRU8JW5ABN0JKmY0gcOg2Qm0BjkJ1xTZCiQxQKOqYNkJx0v3wO2M2QgTx6db4JDZCt/drPMzeNUIPKqS1d5E1QoQPXQjLPTVClutGApvkNELlz8qOuYY0QoHyDuPvJDRCVxXEUfm/M0KewoXMgFgzQhtV3u0f7zJCPvOUP16EMkI="},"shape":[73],"dtype":"float64","order":"little"}]]}}},"view":{"type":"object","name":"CDSView","id":"p1204","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1205"}}},"glyph":{"type":"object","name":"Line","id":"p1200","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_CGG"},"line_color":"red"}},"nonselection_glyph":{"type":"object","name":"Line","id":"p1201","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_CGG"},"line_color":"red","line_alpha":0.1}},"muted_glyph":{"type":"object","name":"Line","id":"p1202","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_CGG"},"line_color":"red","line_alpha":0.2}}}},{"type":"object","name":"GlyphRenderer","id":"p1253","attributes":{"y_range_name":"gain","data_source":{"id":"p1194"},"view":{"type":"object","name":"CDSView","id":"p1254","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1255"}}},"glyph":{"type":"object","name":"Line","id":"p1250","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_GDS"},"line_color":"red","line_dash":[6]}},"nonselection_glyph":{"type":"object","name":"Line","id":"p1251","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_GDS"},"line_color":"red","line_alpha":0.1,"line_dash":[6]}},"muted_glyph":{"type":"object","name":"Line","id":"p1252","attributes":{"x":{"type":"field","field":"GM_ID"},"y":{"type":"field","field":"GM_GDS"},"line_color":"red","line_alpha":0.2,"line_dash":[6]}}}}],"toolbar":{"type":"object","name":"Toolbar","id":"p1010","attributes":{"tools":[{"type":"object","name":"PanTool","id":"p1033"},{"type":"object","name":"WheelZoomTool","id":"p1034"},{"type":"object","name":"BoxZoomTool","id":"p1035","attributes":{"overlay":{"type":"object","name":"BoxAnnotation","id":"p1036","attributes":{"syncable":false,"level":"overlay","visible":false,"left_units":"canvas","right_units":"canvas","bottom_units":"canvas","top_units":"canvas","line_color":"black","line_alpha":1.0,"line_width":2,"line_dash":[4,4],"fill_color":"lightgrey","fill_alpha":0.5}}}},{"type":"object","name":"SaveTool","id":"p1037"},{"type":"object","name":"ResetTool","id":"p1038"},{"type":"object","name":"HelpTool","id":"p1039"},{"type":"object","name":"HoverTool","id":"p1041","attributes":{"renderers":"auto","tooltips":[["x","$x"],["y","$y"]]}}]}},"left":[{"type":"object","name":"LinearAxis","id":"p1026","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1029","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"BasicTickFormatter","id":"p1027"},"axis_label":"ft (GHz)","major_label_policy":{"type":"object","name":"AllLabels","id":"p1028"}}}],"right":[{"type":"object","name":"LinearAxis","id":"p1051","attributes":{"y_range_name":"gain","ticker":{"type":"object","name":"BasicTicker","id":"p1054","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"BasicTickFormatter","id":"p1052"},"axis_label":"Intrinsic Gain","major_label_policy":{"type":"object","name":"AllLabels","id":"p1053"}}}],"below":[{"type":"object","name":"LinearAxis","id":"p1019","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1022","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"BasicTickFormatter","id":"p1020"},"axis_label":"gm / Id (S/A)","major_label_policy":{"type":"object","name":"AllLabels","id":"p1021"}}}],"center":[{"type":"object","name":"Grid","id":"p1025","attributes":{"axis":{"id":"p1019"}}},{"type":"object","name":"Grid","id":"p1032","attributes":{"dimension":1,"axis":{"id":"p1026"}}},{"type":"object","name":"Legend","id":"p1083","attributes":{"items":[{"type":"object","name":"LegendItem","id":"p1084","attributes":{"label":{"type":"value","value":"l=0.18"},"renderers":[{"id":"p1064"}]}},{"type":"object","name":"LegendItem","id":"p1130","attributes":{"label":{"type":"value","value":"l=0.24"},"renderers":[{"id":"p1103"}]}},{"type":"object","name":"LegendItem","id":"p1184","attributes":{"label":{"type":"value","value":"l=0.3"},"renderers":[{"id":"p1149"}]}},{"type":"object","name":"LegendItem","id":"p1246","attributes":{"label":{"type":"value","value":"l=0.36"},"renderers":[{"id":"p1203"}]}}]}}]}}]}};
+  const render_items = [{"docid":"afafbdb0-9428-4372-91ef-4f47bb50fff2","roots":{"p1001":"a07f558a-a414-4ba2-8e9b-5e55e6b0e34a"},"root_ids":["p1001"]}];
+  root.Bokeh.embed.embed_items_notebook(docs_json, render_items);
+  }
+  if (root.Bokeh !== undefined) {
+    embed_document(root);
+  } else {
+    let attempts = 0;
+    const timer = setInterval(function(root) {
+      if (root.Bokeh !== undefined) {
+        clearInterval(timer);
+        embed_document(root);
+      } else {
+        attempts++;
+        if (attempts > 100) {
+          clearInterval(timer);
+          console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+        }
+      }
+    }, 10, root)
+  }
+})(window);</script></div>
+</div>
+<br>
+<p>From the plot, we can see two things very clearly:</p>
+<ul class="simple">
+<li><p>Transit frequency drops off with increasing <span class="math notranslate nohighlight">\(\frac{g_m}{I_d}\)</span></p></li>
+<li><p>Intrinsic gain trades off with transit frequency as we vary the device length</p></li>
+</ul>
+<p>In general, we’ll have to manage these tradeoffs to meet design / system specs.</p>
+<p>That’s where modeling comes in - we should explore how to budget the system through
+models and system-level simulations to help us hone in on how to
+balance [speed / gain / power / area / etc.]</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chap3_basic_sizing"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Systematic design of analog ICs with Python and Jupyter</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="ex3.2_igs_const_gmid.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Example 3.2: Intrinsic Gain Stage, with constant <span class="math notranslate nohighlight">\(g_m / I_d\)</span></p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#circuit-analysis">Circuit analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sizing-considerations">Sizing considerations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sizing-for-given-l-and-g-m-over-i-d">Sizing for given L and <span class="math notranslate nohighlight">\(g_m\over{I_d}\)</span></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-basic-igs-sizing">Example: basic IGS sizing</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solution">Solution:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tradeoff-exploration">Tradeoff exploration</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Sean Baker
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
