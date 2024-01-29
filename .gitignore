@@ -2,4 +2,5 @@ __pycache__/
 _build/
 hide_all_cells.py
 symbolic_analysis.ipynb
-unpack_mat_nch180.ipyng
+unpack_mat_nch180.ipynb
+.DS_store
