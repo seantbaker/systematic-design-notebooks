@@ -148,7 +148,7 @@ def scale(df, scale_factor, cols=None):
     """
 
     if cols is None:
-        cols = ['W', 'ID', 'GM', 'GDS', 'CGG', 'CGS', 'CGD']
+        cols = ['W', 'ID', 'GM', 'GDS', 'CGG', 'CGS', 'CGD',  'CGB', 'CDD', 'CSS',]
 
     # make a copy of the input dataframe. I'm still not 100% when this is
     # truly needed, but the datasets aren't large enough that copying would
