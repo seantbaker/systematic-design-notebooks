@@ -1,0 +1,2337 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Example 3.7: Iterative sizing to account for self-loading &#8212; Systematic analog IC design with Python and Jupyter</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=949a1ff5" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=ff8fa330"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=afe5de03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chap3_basic_sizing/ex3.7_igs_self_loading';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Example 3.5: Sizing in weak inversion with a width constraint" href="ex3.5_igs_weak_invrsn.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Systematic analog IC design with Python and Jupyter</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Systematic design of analog ICs with Python and Jupyter
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="ex3.1_igs.html">Example 3.1: Intrinsic Gain Stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex3.2_igs_const_gmid.html">Example 3.2: Intrinsic Gain Stage, with constant <span class="math notranslate nohighlight">\(g_m / I_d\)</span></a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex3.3_igs_const_ft.html">Example 3.3: Intrinsic Gain Stage, with constant <span class="math notranslate nohighlight">\(f_t\)</span></a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex3.4_igs_const_gain.html">Example 3.4: Intrinsic Gain Stage, with constant <span class="math notranslate nohighlight">\(A_{v0}\)</span></a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex3.5_igs_weak_invrsn.html">Example 3.5: Sizing in weak inversion with a width constraint</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Example 3.7: Iterative sizing to account for self-loading</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/seantbaker/systematic-design-notebooks" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/seantbaker/systematic-design-notebooks/issues/new?title=Issue%20on%20page%20%2Fchap3_basic_sizing/ex3.7_igs_self_loading.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chap3_basic_sizing/ex3.7_igs_self_loading.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Example 3.7: Iterative sizing to account for self-loading</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solution">Solution</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">schemdraw</span>
+
+<span class="c1"># use engineering format in pandas tables</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_eng_float_format</span><span class="p">(</span><span class="n">accuracy</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">use_eng_prefix</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># import my helper functions</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../helpers&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">xtor_data_helpers</span> <span class="kn">import</span> <span class="n">load_mat_data</span><span class="p">,</span> <span class="n">lookup</span><span class="p">,</span> <span class="n">scale</span>
+<span class="kn">import</span> <span class="nn">bokeh_helpers</span> <span class="k">as</span> <span class="nn">bh</span>
+<span class="kn">from</span> <span class="nn">pandas_helpers</span> <span class="kn">import</span> <span class="n">pretty_table</span>
+
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="kn">import</span> <span class="n">output_notebook</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="kn">import</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">LinearAxis</span><span class="p">,</span> <span class="n">Range1d</span>
+<span class="kn">from</span> <span class="nn">bokeh.palettes</span> <span class="kn">import</span> <span class="n">Turbo10</span><span class="p">,</span> <span class="n">Turbo256</span><span class="p">,</span> <span class="n">linear_palette</span>
+<span class="kn">from</span> <span class="nn">bokeh.transform</span> <span class="kn">import</span> <span class="n">linear_cmap</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="kn">import</span> <span class="n">LogAxis</span><span class="p">,</span> <span class="n">Span</span><span class="p">,</span> <span class="n">LinearScale</span>
+<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="kn">import</span> <span class="n">layout</span>
+<span class="n">output_notebook</span><span class="p">(</span><span class="n">hide_banner</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># load up device data</span>
+<span class="n">nch_data_df</span> <span class="o">=</span> <span class="n">load_mat_data</span><span class="p">(</span><span class="s2">&quot;../../Book-on-gm-ID-design-main/starter_kit/180nch.mat&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<script type="application/javascript">(function(root) {
+  function now() {
+    return new Date();
+  }
+
+  const force = true;
+
+  if (typeof root._bokeh_onload_callbacks === "undefined" || force === true) {
+    root._bokeh_onload_callbacks = [];
+    root._bokeh_is_loading = undefined;
+  }
+
+const JS_MIME_TYPE = 'application/javascript';
+  const HTML_MIME_TYPE = 'text/html';
+  const EXEC_MIME_TYPE = 'application/vnd.bokehjs_exec.v0+json';
+  const CLASS_NAME = 'output_bokeh rendered_html';
+
+  /**
+   * Render data to the DOM node
+   */
+  function render(props, node) {
+    const script = document.createElement("script");
+    node.appendChild(script);
+  }
+
+  /**
+   * Handle when an output is cleared or removed
+   */
+  function handleClearOutput(event, handle) {
+    const cell = handle.cell;
+
+    const id = cell.output_area._bokeh_element_id;
+    const server_id = cell.output_area._bokeh_server_id;
+    // Clean up Bokeh references
+    if (id != null && id in Bokeh.index) {
+      Bokeh.index[id].model.document.clear();
+      delete Bokeh.index[id];
+    }
+
+    if (server_id !== undefined) {
+      // Clean up Bokeh references
+      const cmd_clean = "from bokeh.io.state import curstate; print(curstate().uuid_to_server['" + server_id + "'].get_sessions()[0].document.roots[0]._id)";
+      cell.notebook.kernel.execute(cmd_clean, {
+        iopub: {
+          output: function(msg) {
+            const id = msg.content.text.trim();
+            if (id in Bokeh.index) {
+              Bokeh.index[id].model.document.clear();
+              delete Bokeh.index[id];
+            }
+          }
+        }
+      });
+      // Destroy server and session
+      const cmd_destroy = "import bokeh.io.notebook as ion; ion.destroy_server('" + server_id + "')";
+      cell.notebook.kernel.execute(cmd_destroy);
+    }
+  }
+
+  /**
+   * Handle when a new output is added
+   */
+  function handleAddOutput(event, handle) {
+    const output_area = handle.output_area;
+    const output = handle.output;
+
+    // limit handleAddOutput to display_data with EXEC_MIME_TYPE content only
+    if ((output.output_type != "display_data") || (!Object.prototype.hasOwnProperty.call(output.data, EXEC_MIME_TYPE))) {
+      return
+    }
+
+    const toinsert = output_area.element.find("." + CLASS_NAME.split(' ')[0]);
+
+    if (output.metadata[EXEC_MIME_TYPE]["id"] !== undefined) {
+      toinsert[toinsert.length - 1].firstChild.textContent = output.data[JS_MIME_TYPE];
+      // store reference to embed id on output_area
+      output_area._bokeh_element_id = output.metadata[EXEC_MIME_TYPE]["id"];
+    }
+    if (output.metadata[EXEC_MIME_TYPE]["server_id"] !== undefined) {
+      const bk_div = document.createElement("div");
+      bk_div.innerHTML = output.data[HTML_MIME_TYPE];
+      const script_attrs = bk_div.children[0].attributes;
+      for (let i = 0; i < script_attrs.length; i++) {
+        toinsert[toinsert.length - 1].firstChild.setAttribute(script_attrs[i].name, script_attrs[i].value);
+        toinsert[toinsert.length - 1].firstChild.textContent = bk_div.children[0].textContent
+      }
+      // store reference to server id on output_area
+      output_area._bokeh_server_id = output.metadata[EXEC_MIME_TYPE]["server_id"];
+    }
+  }
+
+  function register_renderer(events, OutputArea) {
+
+    function append_mime(data, metadata, element) {
+      // create a DOM node to render to
+      const toinsert = this.create_output_subarea(
+        metadata,
+        CLASS_NAME,
+        EXEC_MIME_TYPE
+      );
+      this.keyboard_manager.register_events(toinsert);
+      // Render to node
+      const props = {data: data, metadata: metadata[EXEC_MIME_TYPE]};
+      render(props, toinsert[toinsert.length - 1]);
+      element.append(toinsert);
+      return toinsert
+    }
+
+    /* Handle when an output is cleared or removed */
+    events.on('clear_output.CodeCell', handleClearOutput);
+    events.on('delete.Cell', handleClearOutput);
+
+    /* Handle when a new output is added */
+    events.on('output_added.OutputArea', handleAddOutput);
+
+    /**
+     * Register the mime type and append_mime function with output_area
+     */
+    OutputArea.prototype.register_mime_type(EXEC_MIME_TYPE, append_mime, {
+      /* Is output safe? */
+      safe: true,
+      /* Index of renderer in `output_area.display_order` */
+      index: 0
+    });
+  }
+
+  // register the mime type if in Jupyter Notebook environment and previously unregistered
+  if (root.Jupyter !== undefined) {
+    const events = require('base/js/events');
+    const OutputArea = require('notebook/js/outputarea').OutputArea;
+
+    if (OutputArea.prototype.mime_types().indexOf(EXEC_MIME_TYPE) == -1) {
+      register_renderer(events, OutputArea);
+    }
+  }
+  if (typeof (root._bokeh_timeout) === "undefined" || force === true) {
+    root._bokeh_timeout = Date.now() + 5000;
+    root._bokeh_failed_load = false;
+  }
+
+  const NB_LOAD_WARNING = {'data': {'text/html':
+     "<div style='background-color: #fdd'>\n"+
+     "<p>\n"+
+     "BokehJS does not appear to have successfully loaded. If loading BokehJS from CDN, this \n"+
+     "may be due to a slow or bad network connection. Possible fixes:\n"+
+     "</p>\n"+
+     "<ul>\n"+
+     "<li>re-rerun `output_notebook()` to attempt to load from CDN again, or</li>\n"+
+     "<li>use INLINE resources instead, as so:</li>\n"+
+     "</ul>\n"+
+     "<code>\n"+
+     "from bokeh.resources import INLINE\n"+
+     "output_notebook(resources=INLINE)\n"+
+     "</code>\n"+
+     "</div>"}};
+
+  function display_loaded() {
+    const el = document.getElementById(null);
+    if (el != null) {
+      el.textContent = "BokehJS is loading...";
+    }
+    if (root.Bokeh !== undefined) {
+      if (el != null) {
+        el.textContent = "BokehJS " + root.Bokeh.version + " successfully loaded.";
+      }
+    } else if (Date.now() < root._bokeh_timeout) {
+      setTimeout(display_loaded, 100)
+    }
+  }
+
+  function run_callbacks() {
+    try {
+      root._bokeh_onload_callbacks.forEach(function(callback) {
+        if (callback != null)
+          callback();
+      });
+    } finally {
+      delete root._bokeh_onload_callbacks
+    }
+    console.debug("Bokeh: all callbacks have finished");
+  }
+
+  function load_libs(css_urls, js_urls, callback) {
+    if (css_urls == null) css_urls = [];
+    if (js_urls == null) js_urls = [];
+
+    root._bokeh_onload_callbacks.push(callback);
+    if (root._bokeh_is_loading > 0) {
+      console.debug("Bokeh: BokehJS is being loaded, scheduling callback at", now());
+      return null;
+    }
+    if (js_urls == null || js_urls.length === 0) {
+      run_callbacks();
+      return null;
+    }
+    console.debug("Bokeh: BokehJS not loaded, scheduling load and callback at", now());
+    root._bokeh_is_loading = css_urls.length + js_urls.length;
+
+    function on_load() {
+      root._bokeh_is_loading--;
+      if (root._bokeh_is_loading === 0) {
+        console.debug("Bokeh: all BokehJS libraries/stylesheets loaded");
+        run_callbacks()
+      }
+    }
+
+    function on_error(url) {
+      console.error("failed to load " + url);
+    }
+
+    for (let i = 0; i < css_urls.length; i++) {
+      const url = css_urls[i];
+      const element = document.createElement("link");
+      element.onload = on_load;
+      element.onerror = on_error.bind(null, url);
+      element.rel = "stylesheet";
+      element.type = "text/css";
+      element.href = url;
+      console.debug("Bokeh: injecting link tag for BokehJS stylesheet: ", url);
+      document.body.appendChild(element);
+    }
+
+    for (let i = 0; i < js_urls.length; i++) {
+      const url = js_urls[i];
+      const element = document.createElement('script');
+      element.onload = on_load;
+      element.onerror = on_error.bind(null, url);
+      element.async = false;
+      element.src = url;
+      console.debug("Bokeh: injecting script tag for BokehJS library: ", url);
+      document.head.appendChild(element);
+    }
+  };
+
+  function inject_raw_css(css) {
+    const element = document.createElement("style");
+    element.appendChild(document.createTextNode(css));
+    document.body.appendChild(element);
+  }
+
+  const js_urls = ["https://cdn.bokeh.org/bokeh/release/bokeh-3.0.3.min.js", "https://cdn.bokeh.org/bokeh/release/bokeh-gl-3.0.3.min.js", "https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.0.3.min.js", "https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.0.3.min.js", "https://cdn.bokeh.org/bokeh/release/bokeh-mathjax-3.0.3.min.js"];
+  const css_urls = [];
+
+  const inline_js = [    function(Bokeh) {
+      Bokeh.set_log_level("info");
+    },
+function(Bokeh) {
+    }
+  ];
+
+  function run_inline_js() {
+    if (root.Bokeh !== undefined || force === true) {
+          for (let i = 0; i < inline_js.length; i++) {
+      inline_js[i].call(root, root.Bokeh);
+    }
+} else if (Date.now() < root._bokeh_timeout) {
+      setTimeout(run_inline_js, 100);
+    } else if (!root._bokeh_failed_load) {
+      console.log("Bokeh: BokehJS failed to load within specified timeout.");
+      root._bokeh_failed_load = true;
+    } else if (force !== true) {
+      const cell = $(document.getElementById(null)).parents('.cell').data().cell;
+      cell.output_area.append_execute_result(NB_LOAD_WARNING)
+    }
+  }
+
+  if (root._bokeh_is_loading === 0) {
+    console.debug("Bokeh: BokehJS loaded, going straight to plotting");
+    run_inline_js();
+  } else {
+    load_libs(css_urls, js_urls, function() {
+      console.debug("Bokeh: BokehJS plotting callback run at", now());
+      run_inline_js();
+    });
+  }
+}(window));</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Loading data from ../../Book-on-gm-ID-design-main/starter_kit/180nch.mat
+Found the following columns: [&#39;ID&#39;, &#39;VT&#39;, &#39;GM&#39;, &#39;GMB&#39;, &#39;GDS&#39;, &#39;CGG&#39;, &#39;CGS&#39;, &#39;CGD&#39;, &#39;CGB&#39;, &#39;CDD&#39;, &#39;CSS&#39;, &#39;STH&#39;, &#39;SFL&#39;, &#39;INFO&#39;, &#39;CORNER&#39;, &#39;TEMP&#39;, &#39;VGS&#39;, &#39;VDS&#39;, &#39;VSB&#39;, &#39;L&#39;, &#39;W&#39;, &#39;NFING&#39;]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/sean/.pyenv/versions/3.10.4/lib/python3.10/site-packages/pandas/core/internals/construction.py:576: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify &#39;dtype=object&#39; when creating the ndarray.
+  values = np.array([convert(v) for v in values])
+</pre></div>
+</div>
+</div>
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="example-3-7-iterative-sizing-to-account-for-self-loading">
+<h1>Example 3.7: Iterative sizing to account for self-loading<a class="headerlink" href="#example-3-7-iterative-sizing-to-account-for-self-loading" title="Link to this heading">#</a></h1>
+<p>Thus far, we’ve ignored the effect of extrinsic caps (i.e., caps that aren’t needed for device
+operation, like $C_{db}, C_{sb}, C_{gd}). But in reality, these caps will effect our device’s
+transit frequency, and the IGS’ unity gain bandwidth.</p>
+<p>For low-frequency designs, it might not matter much, but it’ll play a major role for higher-speed
+designs.</p>
+<p>For what we’re doing, we’ll be concerned with <span class="math notranslate nohighlight">\(C_{db}\)</span> and <span class="math notranslate nohighlight">\(C_{gd}\)</span> (<span class="math notranslate nohighlight">\(C_{gs}\)</span> and <span class="math notranslate nohighlight">\(C_{gb}\)</span> are
+shorted by our ideal input source). And we’ll ignore the feedforward path created by <span class="math notranslate nohighlight">\(C_{gd}\)</span>, since
+that only plays a part at frequencies past the device’s transit frequency.</p>
+<p>We’ll call the drain capacitances <span class="math notranslate nohighlight">\(C_{dd}\)</span>:
+$<span class="math notranslate nohighlight">\( C_{dd} = C_{gd} + C_{db} \)</span>$</p>
+<p>The tricky bit here is that we don’t know the value of these caps until we’ve sized the device, so
+we can’t include them in the initial sizing. So, we’ll take a 3 step approach:</p>
+<ol class="arabic simple">
+<li><p>Initial sizing without extrinsic caps</p></li>
+<li><p>Find the value of <span class="math notranslate nohighlight">\(C_{dd}\)</span> (we’ll call this <span class="math notranslate nohighlight">\(C_{dd1}\)</span>)</p></li>
+<li><p>Scale the device width and current by this scaling factor:</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[ S = \frac{1}{1-\frac{C_{dd1}}{C_L}} \]</div>
+<p>We can derive <span class="math notranslate nohighlight">\(S\)</span> by examing how <span class="math notranslate nohighlight">\(\omega_u\)</span> scales with device width and current:</p>
+<div class="math notranslate nohighlight">
+\[ \omega_u = \frac{g_m}{C_L} = \frac{Sg_m}{C_L + SC_{dd}} \]</div>
+<p>Solving for S, we get the equation from a few lines up.</p>
+<p>This works well for circuits were device width (and associated parasitic caps) scale linearly
+with the device transconductance that sets the UGF. But that’s not always going to be the case;
+more complicated circuits will require an iterative approach instead:</p>
+<ol class="arabic simple">
+<li><p>Start by assuming <span class="math notranslate nohighlight">\(C_{dd}\)</span> is 0</p></li>
+<li><p>Size the circuit to meet BW specs for <span class="math notranslate nohighlight">\(C + C_{dd}\)</span> (we’re assuming <span class="math notranslate nohighlight">\(C_{dd}=0\)</span>)</p></li>
+<li><p>Estimate <span class="math notranslate nohighlight">\(C_{dd}\)</span> for the obtained design, using device width from step 2</p></li>
+<li><p>Repeat step two with new <span class="math notranslate nohighlight">\(C_{dd}\)</span> estimate</p></li>
+<li><p>Repeat until convergence, i.e. until resulting gain, BW, etc. settle to some value</p></li>
+</ol>
+<p>So, let’s repeat example 3.3 using this approach:</p>
+<p>Consider an IGS, similar to example 3.1 &amp; 3.2, with:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(C_L\)</span> = 1 pF</p></li>
+<li><p><span class="math notranslate nohighlight">\(f_u\)</span> = 1 GHz</p></li>
+</ul>
+<p>Find the combination of <span class="math notranslate nohighlight">\(L\)</span> and <span class="math notranslate nohighlight">\(g_m\over{I_d}\)</span> that achieves minimum current consumption.</p>
+<p>Assume:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(V_{ds}\)</span> = 0.6V</p></li>
+<li><p><span class="math notranslate nohighlight">\(V_{sb}\)</span> = 0.0V</p></li>
+<li><p><span class="math notranslate nohighlight">\(FO\)</span> = 10</p></li>
+</ul>
+<section id="solution">
+<h2>Solution<a class="headerlink" href="#solution" title="Link to this heading">#</a></h2>
+<p>As before, let’s find design points that satisfy our <span class="math notranslate nohighlight">\(f_u\)</span> spec given <span class="math notranslate nohighlight">\(C_L\)</span> = 1pF:</p>
+<div class="math notranslate nohighlight">
+\[ f_u = \frac{g_m}{2 * \pi * C_L} \]</div>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f_u</span> <span class="o">=</span> <span class="mf">1e9</span>
+<span class="n">c_l</span> <span class="o">=</span> <span class="mf">1e-12</span>
+<span class="n">gm_spec</span> <span class="o">=</span> <span class="n">f_u</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="mf">3.14159</span> <span class="o">*</span> <span class="n">c_l</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The required gm is: </span><span class="si">{</span><span class="n">gm_spec</span><span class="o">*</span><span class="mf">1e3</span><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> mS&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The required gm is: 6.28 mS
+</pre></div>
+</div>
+</div>
+</div>
+<p>Additionally, if <span class="math notranslate nohighlight">\(f_u\)</span> is 1 GHz and <span class="math notranslate nohighlight">\(FO\)</span> is 10, then <span class="math notranslate nohighlight">\(f_t\)</span> is 10 GHz.</p>
+<p>So, we can:</p>
+<ol class="arabic simple">
+<li><p>Lookup data points with <span class="math notranslate nohighlight">\(f_t &gt;= 10 GHz\)</span>, then</p></li>
+<li><p>scale those data points to find combinations with <span class="math notranslate nohighlight">\(g_m\)</span> equal to our spec,
+and pick the one with minimum current:</p></li>
+</ol>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f_t</span> <span class="o">=</span> <span class="mf">10e9</span>
+
+<span class="c1"># filter by our assumptions. Also filtering out very low</span>
+<span class="c1"># values of gm/id, because things get weird for low values.</span>
+<span class="n">biasing_mask</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="n">nch_data_df</span><span class="p">[</span><span class="s1">&#39;VDS&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.6</span><span class="p">)</span> <span class="o">&amp;</span>
+    <span class="p">(</span><span class="n">nch_data_df</span><span class="p">[</span><span class="s1">&#39;VSB&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">&amp;</span>
+    <span class="p">(</span><span class="n">nch_data_df</span><span class="p">[</span><span class="s1">&#39;GM_ID&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">2.5</span><span class="p">)</span>
+    <span class="p">)</span>
+
+<span class="n">filtered_df</span> <span class="o">=</span> <span class="n">nch_data_df</span><span class="p">[</span><span class="n">biasing_mask</span><span class="p">]</span>
+
+<span class="n">lookup_df</span><span class="p">,</span> <span class="n">interp_df</span> <span class="o">=</span> <span class="n">lookup</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">filtered_df</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="s1">&#39;GM_CGG&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">f_t</span><span class="p">)</span>
+<span class="n">lookup_df</span> <span class="o">=</span> <span class="n">lookup_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">caption</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Design points that satisfy f_t = </span><span class="si">{</span><span class="n">f_t</span><span class="o">/</span><span class="mf">1e6</span><span class="si">}</span><span class="s2"> MHz&quot;</span>
+<span class="n">show_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;W&#39;</span><span class="p">,</span> <span class="s1">&#39;VGS&#39;</span><span class="p">,</span> <span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="s1">&#39;GM&#39;</span><span class="p">,</span> <span class="s1">&#39;GM_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;GM_GDS&#39;</span><span class="p">,</span> <span class="s1">&#39;GM_CGG&#39;</span><span class="p">,</span> <span class="s1">&#39;CDD&#39;</span><span class="p">]</span>
+<span class="n">display</span><span class="p">(</span><span class="n">pretty_table</span><span class="p">(</span>
+    <span class="n">df</span><span class="o">=</span><span class="n">lookup_df</span><span class="p">,</span>
+    <span class="n">cols</span><span class="o">=</span><span class="n">show_cols</span><span class="p">,</span>
+    <span class="n">caption</span><span class="o">=</span><span class="n">caption</span>
+<span class="p">))</span>
+
+<span class="n">scale_factors</span> <span class="o">=</span> <span class="n">gm_spec</span> <span class="o">/</span> <span class="n">lookup_df</span><span class="p">[</span><span class="s1">&#39;GM&#39;</span><span class="p">]</span>
+<span class="c1"># display(lookup_df)</span>
+<span class="c1"># display(scale_factors)</span>
+<span class="n">scaled_df</span> <span class="o">=</span> <span class="n">scale</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">lookup_df</span><span class="p">,</span> <span class="n">scale_factor</span><span class="o">=</span><span class="n">scale_factors</span><span class="p">)</span>
+
+<span class="n">caption</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Design points that satisfy f_t = </span><span class="si">{</span><span class="n">f_t</span><span class="o">/</span><span class="mf">1e6</span><span class="si">}</span><span class="s2"> MHz, scaled to give gm=</span><span class="si">{</span><span class="n">gm_spec</span><span class="o">*</span><span class="mf">1e3</span><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> mS&quot;</span>
+<span class="n">display</span><span class="p">(</span><span class="n">pretty_table</span><span class="p">(</span>
+    <span class="n">df</span><span class="o">=</span><span class="n">scaled_df</span><span class="p">,</span>
+    <span class="n">cols</span><span class="o">=</span><span class="n">show_cols</span><span class="p">,</span>
+    <span class="n">caption</span><span class="o">=</span><span class="n">caption</span>
+<span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The target of 1.00e+10 for GM_CGG is outside                  the existing data for length 1.4; skipping
+The target of 1.00e+10 for GM_CGG is outside                  the existing data for length 1.5; skipping
+The target of 1.00e+10 for GM_CGG is outside                  the existing data for length 1.6; skipping
+The target of 1.00e+10 for GM_CGG is outside                  the existing data for length 1.7; skipping
+The target of 1.00e+10 for GM_CGG is outside                  the existing data for length 1.8; skipping
+The target of 1.00e+10 for GM_CGG is outside                  the existing data for length 1.9; skipping
+The target of 1.00e+10 for GM_CGG is outside                  the existing data for length 2.0; skipping
+</pre></div>
+</div>
+<div class="output text_html"><style type="text/css">
+</style>
+<table id="T_19681">
+  <caption>Design points that satisfy f_t = 10000.0 MHz</caption>
+  <thead>
+    <tr>
+      <th id="T_19681_level0_col0" class="col_heading level0 col0" >L</th>
+      <th id="T_19681_level0_col1" class="col_heading level0 col1" >W</th>
+      <th id="T_19681_level0_col2" class="col_heading level0 col2" >VGS</th>
+      <th id="T_19681_level0_col3" class="col_heading level0 col3" >ID</th>
+      <th id="T_19681_level0_col4" class="col_heading level0 col4" >GM</th>
+      <th id="T_19681_level0_col5" class="col_heading level0 col5" >GM_ID</th>
+      <th id="T_19681_level0_col6" class="col_heading level0 col6" >A_v0</th>
+      <th id="T_19681_level0_col7" class="col_heading level0 col7" >f_t</th>
+      <th id="T_19681_level0_col8" class="col_heading level0 col8" >CDD</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td id="T_19681_row0_col0" class="data row0 col0" >0.180</td>
+      <td id="T_19681_row0_col1" class="data row0 col1" >5.000000</td>
+      <td id="T_19681_row0_col2" class="data row0 col2" >454.69m</td>
+      <td id="T_19681_row0_col3" class="data row0 col3" >3.30u</td>
+      <td id="T_19681_row0_col4" class="data row0 col4" >76.39u</td>
+      <td id="T_19681_row0_col5" class="data row0 col5" >23</td>
+      <td id="T_19681_row0_col6" class="data row0 col6" >37</td>
+      <td id="T_19681_row0_col7" class="data row0 col7" >10.00G</td>
+      <td id="T_19681_row0_col8" class="data row0 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row1_col0" class="data row1 col0" >0.200</td>
+      <td id="T_19681_row1_col1" class="data row1 col1" >5.000000</td>
+      <td id="T_19681_row1_col2" class="data row1 col2" >462.33m</td>
+      <td id="T_19681_row1_col3" class="data row1 col3" >3.63u</td>
+      <td id="T_19681_row1_col4" class="data row1 col4" >83.20u</td>
+      <td id="T_19681_row1_col5" class="data row1 col5" >23</td>
+      <td id="T_19681_row1_col6" class="data row1 col6" >42</td>
+      <td id="T_19681_row1_col7" class="data row1 col7" >10.00G</td>
+      <td id="T_19681_row1_col8" class="data row1 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row2_col0" class="data row2 col0" >0.220</td>
+      <td id="T_19681_row2_col1" class="data row2 col1" >5.000000</td>
+      <td id="T_19681_row2_col2" class="data row2 col2" >470.80m</td>
+      <td id="T_19681_row2_col3" class="data row2 col3" >3.96u</td>
+      <td id="T_19681_row2_col4" class="data row2 col4" >90.25u</td>
+      <td id="T_19681_row2_col5" class="data row2 col5" >23</td>
+      <td id="T_19681_row2_col6" class="data row2 col6" >47</td>
+      <td id="T_19681_row2_col7" class="data row2 col7" >10.00G</td>
+      <td id="T_19681_row2_col8" class="data row2 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row3_col0" class="data row3 col0" >0.240</td>
+      <td id="T_19681_row3_col1" class="data row3 col1" >5.000000</td>
+      <td id="T_19681_row3_col2" class="data row3 col2" >478.27m</td>
+      <td id="T_19681_row3_col3" class="data row3 col3" >4.36u</td>
+      <td id="T_19681_row3_col4" class="data row3 col4" >98.17u</td>
+      <td id="T_19681_row3_col5" class="data row3 col5" >23</td>
+      <td id="T_19681_row3_col6" class="data row3 col6" >52</td>
+      <td id="T_19681_row3_col7" class="data row3 col7" >10.00G</td>
+      <td id="T_19681_row3_col8" class="data row3 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row4_col0" class="data row4 col0" >0.260</td>
+      <td id="T_19681_row4_col1" class="data row4 col1" >5.000000</td>
+      <td id="T_19681_row4_col2" class="data row4 col2" >484.60m</td>
+      <td id="T_19681_row4_col3" class="data row4 col3" >4.81u</td>
+      <td id="T_19681_row4_col4" class="data row4 col4" >106.73u</td>
+      <td id="T_19681_row4_col5" class="data row4 col5" >22</td>
+      <td id="T_19681_row4_col6" class="data row4 col6" >58</td>
+      <td id="T_19681_row4_col7" class="data row4 col7" >10.00G</td>
+      <td id="T_19681_row4_col8" class="data row4 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row5_col0" class="data row5 col0" >0.280</td>
+      <td id="T_19681_row5_col1" class="data row5 col1" >5.000000</td>
+      <td id="T_19681_row5_col2" class="data row5 col2" >490.99m</td>
+      <td id="T_19681_row5_col3" class="data row5 col3" >5.27u</td>
+      <td id="T_19681_row5_col4" class="data row5 col4" >115.29u</td>
+      <td id="T_19681_row5_col5" class="data row5 col5" >22</td>
+      <td id="T_19681_row5_col6" class="data row5 col6" >63</td>
+      <td id="T_19681_row5_col7" class="data row5 col7" >10.00G</td>
+      <td id="T_19681_row5_col8" class="data row5 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row6_col0" class="data row6 col0" >0.300</td>
+      <td id="T_19681_row6_col1" class="data row6 col1" >5.000000</td>
+      <td id="T_19681_row6_col2" class="data row6 col2" >497.37m</td>
+      <td id="T_19681_row6_col3" class="data row6 col3" >5.72u</td>
+      <td id="T_19681_row6_col4" class="data row6 col4" >123.85u</td>
+      <td id="T_19681_row6_col5" class="data row6 col5" >22</td>
+      <td id="T_19681_row6_col6" class="data row6 col6" >68</td>
+      <td id="T_19681_row6_col7" class="data row6 col7" >10.00G</td>
+      <td id="T_19681_row6_col8" class="data row6 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row7_col0" class="data row7 col0" >0.320</td>
+      <td id="T_19681_row7_col1" class="data row7 col1" >5.000000</td>
+      <td id="T_19681_row7_col2" class="data row7 col2" >502.70m</td>
+      <td id="T_19681_row7_col3" class="data row7 col3" >6.25u</td>
+      <td id="T_19681_row7_col4" class="data row7 col4" >132.63u</td>
+      <td id="T_19681_row7_col5" class="data row7 col5" >21</td>
+      <td id="T_19681_row7_col6" class="data row7 col6" >73</td>
+      <td id="T_19681_row7_col7" class="data row7 col7" >10.00G</td>
+      <td id="T_19681_row7_col8" class="data row7 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row8_col0" class="data row8 col0" >0.340</td>
+      <td id="T_19681_row8_col1" class="data row8 col1" >5.000000</td>
+      <td id="T_19681_row8_col2" class="data row8 col2" >507.31m</td>
+      <td id="T_19681_row8_col3" class="data row8 col3" >6.82u</td>
+      <td id="T_19681_row8_col4" class="data row8 col4" >141.47u</td>
+      <td id="T_19681_row8_col5" class="data row8 col5" >21</td>
+      <td id="T_19681_row8_col6" class="data row8 col6" >77</td>
+      <td id="T_19681_row8_col7" class="data row8 col7" >10.00G</td>
+      <td id="T_19681_row8_col8" class="data row8 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row9_col0" class="data row9 col0" >0.360</td>
+      <td id="T_19681_row9_col1" class="data row9 col1" >5.000000</td>
+      <td id="T_19681_row9_col2" class="data row9 col2" >511.95m</td>
+      <td id="T_19681_row9_col3" class="data row9 col3" >7.40u</td>
+      <td id="T_19681_row9_col4" class="data row9 col4" >150.19u</td>
+      <td id="T_19681_row9_col5" class="data row9 col5" >20</td>
+      <td id="T_19681_row9_col6" class="data row9 col6" >81</td>
+      <td id="T_19681_row9_col7" class="data row9 col7" >10.00G</td>
+      <td id="T_19681_row9_col8" class="data row9 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row10_col0" class="data row10 col0" >0.380</td>
+      <td id="T_19681_row10_col1" class="data row10 col1" >5.000000</td>
+      <td id="T_19681_row10_col2" class="data row10 col2" >516.64m</td>
+      <td id="T_19681_row10_col3" class="data row10 col3" >7.99u</td>
+      <td id="T_19681_row10_col4" class="data row10 col4" >158.80u</td>
+      <td id="T_19681_row10_col5" class="data row10 col5" >20</td>
+      <td id="T_19681_row10_col6" class="data row10 col6" >85</td>
+      <td id="T_19681_row10_col7" class="data row10 col7" >10.00G</td>
+      <td id="T_19681_row10_col8" class="data row10 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row11_col0" class="data row11 col0" >0.400</td>
+      <td id="T_19681_row11_col1" class="data row11 col1" >5.000000</td>
+      <td id="T_19681_row11_col2" class="data row11 col2" >521.39m</td>
+      <td id="T_19681_row11_col3" class="data row11 col3" >8.59u</td>
+      <td id="T_19681_row11_col4" class="data row11 col4" >167.32u</td>
+      <td id="T_19681_row11_col5" class="data row11 col5" >20</td>
+      <td id="T_19681_row11_col6" class="data row11 col6" >88</td>
+      <td id="T_19681_row11_col7" class="data row11 col7" >10.00G</td>
+      <td id="T_19681_row11_col8" class="data row11 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row12_col0" class="data row12 col0" >0.420</td>
+      <td id="T_19681_row12_col1" class="data row12 col1" >5.000000</td>
+      <td id="T_19681_row12_col2" class="data row12 col2" >526.00m</td>
+      <td id="T_19681_row12_col3" class="data row12 col3" >9.23u</td>
+      <td id="T_19681_row12_col4" class="data row12 col4" >175.73u</td>
+      <td id="T_19681_row12_col5" class="data row12 col5" >19</td>
+      <td id="T_19681_row12_col6" class="data row12 col6" >90</td>
+      <td id="T_19681_row12_col7" class="data row12 col7" >10.00G</td>
+      <td id="T_19681_row12_col8" class="data row12 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row13_col0" class="data row13 col0" >0.440</td>
+      <td id="T_19681_row13_col1" class="data row13 col1" >5.000000</td>
+      <td id="T_19681_row13_col2" class="data row13 col2" >530.06m</td>
+      <td id="T_19681_row13_col3" class="data row13 col3" >9.99u</td>
+      <td id="T_19681_row13_col4" class="data row13 col4" >183.99u</td>
+      <td id="T_19681_row13_col5" class="data row13 col5" >19</td>
+      <td id="T_19681_row13_col6" class="data row13 col6" >92</td>
+      <td id="T_19681_row13_col7" class="data row13 col7" >10.00G</td>
+      <td id="T_19681_row13_col8" class="data row13 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row14_col0" class="data row14 col0" >0.460</td>
+      <td id="T_19681_row14_col1" class="data row14 col1" >5.000000</td>
+      <td id="T_19681_row14_col2" class="data row14 col2" >534.29m</td>
+      <td id="T_19681_row14_col3" class="data row14 col3" >10.75u</td>
+      <td id="T_19681_row14_col4" class="data row14 col4" >192.16u</td>
+      <td id="T_19681_row14_col5" class="data row14 col5" >18</td>
+      <td id="T_19681_row14_col6" class="data row14 col6" >94</td>
+      <td id="T_19681_row14_col7" class="data row14 col7" >10.00G</td>
+      <td id="T_19681_row14_col8" class="data row14 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row15_col0" class="data row15 col0" >0.480</td>
+      <td id="T_19681_row15_col1" class="data row15 col1" >5.000000</td>
+      <td id="T_19681_row15_col2" class="data row15 col2" >538.70m</td>
+      <td id="T_19681_row15_col3" class="data row15 col3" >11.54u</td>
+      <td id="T_19681_row15_col4" class="data row15 col4" >200.24u</td>
+      <td id="T_19681_row15_col5" class="data row15 col5" >18</td>
+      <td id="T_19681_row15_col6" class="data row15 col6" >96</td>
+      <td id="T_19681_row15_col7" class="data row15 col7" >10.00G</td>
+      <td id="T_19681_row15_col8" class="data row15 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row16_col0" class="data row16 col0" >0.500</td>
+      <td id="T_19681_row16_col1" class="data row16 col1" >5.000000</td>
+      <td id="T_19681_row16_col2" class="data row16 col2" >543.31m</td>
+      <td id="T_19681_row16_col3" class="data row16 col3" >12.34u</td>
+      <td id="T_19681_row16_col4" class="data row16 col4" >208.23u</td>
+      <td id="T_19681_row16_col5" class="data row16 col5" >17</td>
+      <td id="T_19681_row16_col6" class="data row16 col6" >98</td>
+      <td id="T_19681_row16_col7" class="data row16 col7" >10.00G</td>
+      <td id="T_19681_row16_col8" class="data row16 col8" >6.30f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row17_col0" class="data row17 col0" >0.600</td>
+      <td id="T_19681_row17_col1" class="data row17 col1" >5.000000</td>
+      <td id="T_19681_row17_col2" class="data row17 col2" >568.42m</td>
+      <td id="T_19681_row17_col3" class="data row17 col3" >17.36u</td>
+      <td id="T_19681_row17_col4" class="data row17 col4" >246.75u</td>
+      <td id="T_19681_row17_col5" class="data row17 col5" >14</td>
+      <td id="T_19681_row17_col6" class="data row17 col6" >103</td>
+      <td id="T_19681_row17_col7" class="data row17 col7" >10.00G</td>
+      <td id="T_19681_row17_col8" class="data row17 col8" >6.31f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row18_col0" class="data row18 col0" >0.700</td>
+      <td id="T_19681_row18_col1" class="data row18 col1" >5.000000</td>
+      <td id="T_19681_row18_col2" class="data row18 col2" >600.15m</td>
+      <td id="T_19681_row18_col3" class="data row18 col3" >24.40u</td>
+      <td id="T_19681_row18_col4" class="data row18 col4" >283.55u</td>
+      <td id="T_19681_row18_col5" class="data row18 col5" >12</td>
+      <td id="T_19681_row18_col6" class="data row18 col6" >104</td>
+      <td id="T_19681_row18_col7" class="data row18 col7" >10.00G</td>
+      <td id="T_19681_row18_col8" class="data row18 col8" >6.32f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row19_col0" class="data row19 col0" >0.800</td>
+      <td id="T_19681_row19_col1" class="data row19 col1" >5.000000</td>
+      <td id="T_19681_row19_col2" class="data row19 col2" >643.04m</td>
+      <td id="T_19681_row19_col3" class="data row19 col3" >35.28u</td>
+      <td id="T_19681_row19_col4" class="data row19 col4" >319.12u</td>
+      <td id="T_19681_row19_col5" class="data row19 col5" >9</td>
+      <td id="T_19681_row19_col6" class="data row19 col6" >103</td>
+      <td id="T_19681_row19_col7" class="data row19 col7" >10.00G</td>
+      <td id="T_19681_row19_col8" class="data row19 col8" >6.34f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row20_col0" class="data row20 col0" >0.900</td>
+      <td id="T_19681_row20_col1" class="data row20 col1" >5.000000</td>
+      <td id="T_19681_row20_col2" class="data row20 col2" >700.47m</td>
+      <td id="T_19681_row20_col3" class="data row20 col3" >51.14u</td>
+      <td id="T_19681_row20_col4" class="data row20 col4" >354.05u</td>
+      <td id="T_19681_row20_col5" class="data row20 col5" >7</td>
+      <td id="T_19681_row20_col6" class="data row20 col6" >97</td>
+      <td id="T_19681_row20_col7" class="data row20 col7" >10.00G</td>
+      <td id="T_19681_row20_col8" class="data row20 col8" >6.37f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row21_col0" class="data row21 col0" >1.000</td>
+      <td id="T_19681_row21_col1" class="data row21 col1" >5.000000</td>
+      <td id="T_19681_row21_col2" class="data row21 col2" >772.38m</td>
+      <td id="T_19681_row21_col3" class="data row21 col3" >72.88u</td>
+      <td id="T_19681_row21_col4" class="data row21 col4" >388.69u</td>
+      <td id="T_19681_row21_col5" class="data row21 col5" >5</td>
+      <td id="T_19681_row21_col6" class="data row21 col6" >87</td>
+      <td id="T_19681_row21_col7" class="data row21 col7" >10.00G</td>
+      <td id="T_19681_row21_col8" class="data row21 col8" >6.42f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row22_col0" class="data row22 col0" >1.100</td>
+      <td id="T_19681_row22_col1" class="data row22 col1" >5.000000</td>
+      <td id="T_19681_row22_col2" class="data row22 col2" >854.89m</td>
+      <td id="T_19681_row22_col3" class="data row22 col3" >99.63u</td>
+      <td id="T_19681_row22_col4" class="data row22 col4" >423.32u</td>
+      <td id="T_19681_row22_col5" class="data row22 col5" >4</td>
+      <td id="T_19681_row22_col6" class="data row22 col6" >72</td>
+      <td id="T_19681_row22_col7" class="data row22 col7" >10.00G</td>
+      <td id="T_19681_row22_col8" class="data row22 col8" >6.53f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row23_col0" class="data row23 col0" >1.200</td>
+      <td id="T_19681_row23_col1" class="data row23 col1" >5.000000</td>
+      <td id="T_19681_row23_col2" class="data row23 col2" >947.82m</td>
+      <td id="T_19681_row23_col3" class="data row23 col3" >131.97u</td>
+      <td id="T_19681_row23_col4" class="data row23 col4" >458.10u</td>
+      <td id="T_19681_row23_col5" class="data row23 col5" >3</td>
+      <td id="T_19681_row23_col6" class="data row23 col6" >54</td>
+      <td id="T_19681_row23_col7" class="data row23 col7" >10.00G</td>
+      <td id="T_19681_row23_col8" class="data row23 col8" >6.73f</td>
+    </tr>
+    <tr>
+      <td id="T_19681_row24_col0" class="data row24 col0" >1.300</td>
+      <td id="T_19681_row24_col1" class="data row24 col1" >5.000000</td>
+      <td id="T_19681_row24_col2" class="data row24 col2" >1,058.81m</td>
+      <td id="T_19681_row24_col3" class="data row24 col3" >174.20u</td>
+      <td id="T_19681_row24_col4" class="data row24 col4" >493.36u</td>
+      <td id="T_19681_row24_col5" class="data row24 col5" >3</td>
+      <td id="T_19681_row24_col6" class="data row24 col6" >32</td>
+      <td id="T_19681_row24_col7" class="data row24 col7" >10.00G</td>
+      <td id="T_19681_row24_col8" class="data row24 col8" >7.20f</td>
+    </tr>
+  </tbody>
+</table>
+</div><div class="output text_html"><style type="text/css">
+</style>
+<table id="T_9a31f">
+  <caption>Design points that satisfy f_t = 10000.0 MHz, scaled to give gm=6.28 mS</caption>
+  <thead>
+    <tr>
+      <th id="T_9a31f_level0_col0" class="col_heading level0 col0" >L</th>
+      <th id="T_9a31f_level0_col1" class="col_heading level0 col1" >W</th>
+      <th id="T_9a31f_level0_col2" class="col_heading level0 col2" >VGS</th>
+      <th id="T_9a31f_level0_col3" class="col_heading level0 col3" >ID</th>
+      <th id="T_9a31f_level0_col4" class="col_heading level0 col4" >GM</th>
+      <th id="T_9a31f_level0_col5" class="col_heading level0 col5" >GM_ID</th>
+      <th id="T_9a31f_level0_col6" class="col_heading level0 col6" >A_v0</th>
+      <th id="T_9a31f_level0_col7" class="col_heading level0 col7" >f_t</th>
+      <th id="T_9a31f_level0_col8" class="col_heading level0 col8" >CDD</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td id="T_9a31f_row0_col0" class="data row0 col0" >0.180</td>
+      <td id="T_9a31f_row0_col1" class="data row0 col1" >411.254728</td>
+      <td id="T_9a31f_row0_col2" class="data row0 col2" >454.69m</td>
+      <td id="T_9a31f_row0_col3" class="data row0 col3" >271.29u</td>
+      <td id="T_9a31f_row0_col4" class="data row0 col4" >6,283.18u</td>
+      <td id="T_9a31f_row0_col5" class="data row0 col5" >23</td>
+      <td id="T_9a31f_row0_col6" class="data row0 col6" >37</td>
+      <td id="T_9a31f_row0_col7" class="data row0 col7" >10.00G</td>
+      <td id="T_9a31f_row0_col8" class="data row0 col8" >517.94f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row1_col0" class="data row1 col0" >0.200</td>
+      <td id="T_9a31f_row1_col1" class="data row1 col1" >377.575952</td>
+      <td id="T_9a31f_row1_col2" class="data row1 col2" >462.33m</td>
+      <td id="T_9a31f_row1_col3" class="data row1 col3" >273.86u</td>
+      <td id="T_9a31f_row1_col4" class="data row1 col4" >6,283.18u</td>
+      <td id="T_9a31f_row1_col5" class="data row1 col5" >23</td>
+      <td id="T_9a31f_row1_col6" class="data row1 col6" >42</td>
+      <td id="T_9a31f_row1_col7" class="data row1 col7" >10.00G</td>
+      <td id="T_9a31f_row1_col8" class="data row1 col8" >475.53f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row2_col0" class="data row2 col0" >0.220</td>
+      <td id="T_9a31f_row2_col1" class="data row2 col1" >348.083584</td>
+      <td id="T_9a31f_row2_col2" class="data row2 col2" >470.80m</td>
+      <td id="T_9a31f_row2_col3" class="data row2 col3" >275.81u</td>
+      <td id="T_9a31f_row2_col4" class="data row2 col4" >6,283.18u</td>
+      <td id="T_9a31f_row2_col5" class="data row2 col5" >23</td>
+      <td id="T_9a31f_row2_col6" class="data row2 col6" >47</td>
+      <td id="T_9a31f_row2_col7" class="data row2 col7" >10.00G</td>
+      <td id="T_9a31f_row2_col8" class="data row2 col8" >438.40f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row3_col0" class="data row3 col0" >0.240</td>
+      <td id="T_9a31f_row3_col1" class="data row3 col1" >320.029146</td>
+      <td id="T_9a31f_row3_col2" class="data row3 col2" >478.27m</td>
+      <td id="T_9a31f_row3_col3" class="data row3 col3" >279.10u</td>
+      <td id="T_9a31f_row3_col4" class="data row3 col4" >6,283.18u</td>
+      <td id="T_9a31f_row3_col5" class="data row3 col5" >23</td>
+      <td id="T_9a31f_row3_col6" class="data row3 col6" >52</td>
+      <td id="T_9a31f_row3_col7" class="data row3 col7" >10.00G</td>
+      <td id="T_9a31f_row3_col8" class="data row3 col8" >403.08f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row4_col0" class="data row4 col0" >0.260</td>
+      <td id="T_9a31f_row4_col1" class="data row4 col1" >294.351016</td>
+      <td id="T_9a31f_row4_col2" class="data row4 col2" >484.60m</td>
+      <td id="T_9a31f_row4_col3" class="data row4 col3" >283.28u</td>
+      <td id="T_9a31f_row4_col4" class="data row4 col4" >6,283.18u</td>
+      <td id="T_9a31f_row4_col5" class="data row4 col5" >22</td>
+      <td id="T_9a31f_row4_col6" class="data row4 col6" >58</td>
+      <td id="T_9a31f_row4_col7" class="data row4 col7" >10.00G</td>
+      <td id="T_9a31f_row4_col8" class="data row4 col8" >370.75f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row5_col0" class="data row5 col0" >0.280</td>
+      <td id="T_9a31f_row5_col1" class="data row5 col1" >272.496703</td>
+      <td id="T_9a31f_row5_col2" class="data row5 col2" >490.99m</td>
+      <td id="T_9a31f_row5_col3" class="data row5 col3" >286.96u</td>
+      <td id="T_9a31f_row5_col4" class="data row5 col4" >6,283.18u</td>
+      <td id="T_9a31f_row5_col5" class="data row5 col5" >22</td>
+      <td id="T_9a31f_row5_col6" class="data row5 col6" >63</td>
+      <td id="T_9a31f_row5_col7" class="data row5 col7" >10.00G</td>
+      <td id="T_9a31f_row5_col8" class="data row5 col8" >343.24f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row6_col0" class="data row6 col0" >0.300</td>
+      <td id="T_9a31f_row6_col1" class="data row6 col1" >253.658337</td>
+      <td id="T_9a31f_row6_col2" class="data row6 col2" >497.37m</td>
+      <td id="T_9a31f_row6_col3" class="data row6 col3" >290.39u</td>
+      <td id="T_9a31f_row6_col4" class="data row6 col4" >6,283.18u</td>
+      <td id="T_9a31f_row6_col5" class="data row6 col5" >22</td>
+      <td id="T_9a31f_row6_col6" class="data row6 col6" >68</td>
+      <td id="T_9a31f_row6_col7" class="data row6 col7" >10.00G</td>
+      <td id="T_9a31f_row6_col8" class="data row6 col8" >319.53f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row7_col0" class="data row7 col0" >0.320</td>
+      <td id="T_9a31f_row7_col1" class="data row7 col1" >236.862237</td>
+      <td id="T_9a31f_row7_col2" class="data row7 col2" >502.70m</td>
+      <td id="T_9a31f_row7_col3" class="data row7 col3" >296.09u</td>
+      <td id="T_9a31f_row7_col4" class="data row7 col4" >6,283.18u</td>
+      <td id="T_9a31f_row7_col5" class="data row7 col5" >21</td>
+      <td id="T_9a31f_row7_col6" class="data row7 col6" >73</td>
+      <td id="T_9a31f_row7_col7" class="data row7 col7" >10.00G</td>
+      <td id="T_9a31f_row7_col8" class="data row7 col8" >298.39f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row8_col0" class="data row8 col0" >0.340</td>
+      <td id="T_9a31f_row8_col1" class="data row8 col1" >222.067833</td>
+      <td id="T_9a31f_row8_col2" class="data row8 col2" >507.31m</td>
+      <td id="T_9a31f_row8_col3" class="data row8 col3" >303.05u</td>
+      <td id="T_9a31f_row8_col4" class="data row8 col4" >6,283.18u</td>
+      <td id="T_9a31f_row8_col5" class="data row8 col5" >21</td>
+      <td id="T_9a31f_row8_col6" class="data row8 col6" >77</td>
+      <td id="T_9a31f_row8_col7" class="data row8 col7" >10.00G</td>
+      <td id="T_9a31f_row8_col8" class="data row8 col8" >279.77f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row9_col0" class="data row9 col0" >0.360</td>
+      <td id="T_9a31f_row9_col1" class="data row9 col1" >209.173583</td>
+      <td id="T_9a31f_row9_col2" class="data row9 col2" >511.95m</td>
+      <td id="T_9a31f_row9_col3" class="data row9 col3" >309.71u</td>
+      <td id="T_9a31f_row9_col4" class="data row9 col4" >6,283.18u</td>
+      <td id="T_9a31f_row9_col5" class="data row9 col5" >20</td>
+      <td id="T_9a31f_row9_col6" class="data row9 col6" >81</td>
+      <td id="T_9a31f_row9_col7" class="data row9 col7" >10.00G</td>
+      <td id="T_9a31f_row9_col8" class="data row9 col8" >263.55f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row10_col0" class="data row10 col0" >0.380</td>
+      <td id="T_9a31f_row10_col1" class="data row10 col1" >197.827028</td>
+      <td id="T_9a31f_row10_col2" class="data row10 col2" >516.64m</td>
+      <td id="T_9a31f_row10_col3" class="data row10 col3" >316.19u</td>
+      <td id="T_9a31f_row10_col4" class="data row10 col4" >6,283.18u</td>
+      <td id="T_9a31f_row10_col5" class="data row10 col5" >20</td>
+      <td id="T_9a31f_row10_col6" class="data row10 col6" >85</td>
+      <td id="T_9a31f_row10_col7" class="data row10 col7" >10.00G</td>
+      <td id="T_9a31f_row10_col8" class="data row10 col8" >249.27f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row11_col0" class="data row11 col0" >0.400</td>
+      <td id="T_9a31f_row11_col1" class="data row11 col1" >187.759733</td>
+      <td id="T_9a31f_row11_col2" class="data row11 col2" >521.39m</td>
+      <td id="T_9a31f_row11_col3" class="data row11 col3" >322.58u</td>
+      <td id="T_9a31f_row11_col4" class="data row11 col4" >6,283.18u</td>
+      <td id="T_9a31f_row11_col5" class="data row11 col5" >20</td>
+      <td id="T_9a31f_row11_col6" class="data row11 col6" >88</td>
+      <td id="T_9a31f_row11_col7" class="data row11 col7" >10.00G</td>
+      <td id="T_9a31f_row11_col8" class="data row11 col8" >236.61f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row12_col0" class="data row12 col0" >0.420</td>
+      <td id="T_9a31f_row12_col1" class="data row12 col1" >178.776067</td>
+      <td id="T_9a31f_row12_col2" class="data row12 col2" >526.00m</td>
+      <td id="T_9a31f_row12_col3" class="data row12 col3" >330.11u</td>
+      <td id="T_9a31f_row12_col4" class="data row12 col4" >6,283.18u</td>
+      <td id="T_9a31f_row12_col5" class="data row12 col5" >19</td>
+      <td id="T_9a31f_row12_col6" class="data row12 col6" >90</td>
+      <td id="T_9a31f_row12_col7" class="data row12 col7" >10.00G</td>
+      <td id="T_9a31f_row12_col8" class="data row12 col8" >225.31f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row13_col0" class="data row13 col0" >0.440</td>
+      <td id="T_9a31f_row13_col1" class="data row13 col1" >170.743339</td>
+      <td id="T_9a31f_row13_col2" class="data row13 col2" >530.06m</td>
+      <td id="T_9a31f_row13_col3" class="data row13 col3" >341.00u</td>
+      <td id="T_9a31f_row13_col4" class="data row13 col4" >6,283.18u</td>
+      <td id="T_9a31f_row13_col5" class="data row13 col5" >19</td>
+      <td id="T_9a31f_row13_col6" class="data row13 col6" >92</td>
+      <td id="T_9a31f_row13_col7" class="data row13 col7" >10.00G</td>
+      <td id="T_9a31f_row13_col8" class="data row13 col8" >215.21f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row14_col0" class="data row14 col0" >0.460</td>
+      <td id="T_9a31f_row14_col1" class="data row14 col1" >163.487305</td>
+      <td id="T_9a31f_row14_col2" class="data row14 col2" >534.29m</td>
+      <td id="T_9a31f_row14_col3" class="data row14 col3" >351.62u</td>
+      <td id="T_9a31f_row14_col4" class="data row14 col4" >6,283.18u</td>
+      <td id="T_9a31f_row14_col5" class="data row14 col5" >18</td>
+      <td id="T_9a31f_row14_col6" class="data row14 col6" >94</td>
+      <td id="T_9a31f_row14_col7" class="data row14 col7" >10.00G</td>
+      <td id="T_9a31f_row14_col8" class="data row14 col8" >206.09f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row15_col0" class="data row15 col0" >0.480</td>
+      <td id="T_9a31f_row15_col1" class="data row15 col1" >156.894660</td>
+      <td id="T_9a31f_row15_col2" class="data row15 col2" >538.70m</td>
+      <td id="T_9a31f_row15_col3" class="data row15 col3" >362.02u</td>
+      <td id="T_9a31f_row15_col4" class="data row15 col4" >6,283.18u</td>
+      <td id="T_9a31f_row15_col5" class="data row15 col5" >18</td>
+      <td id="T_9a31f_row15_col6" class="data row15 col6" >96</td>
+      <td id="T_9a31f_row15_col7" class="data row15 col7" >10.00G</td>
+      <td id="T_9a31f_row15_col8" class="data row15 col8" >197.81f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row16_col0" class="data row16 col0" >0.500</td>
+      <td id="T_9a31f_row16_col1" class="data row16 col1" >150.873484</td>
+      <td id="T_9a31f_row16_col2" class="data row16 col2" >543.31m</td>
+      <td id="T_9a31f_row16_col3" class="data row16 col3" >372.23u</td>
+      <td id="T_9a31f_row16_col4" class="data row16 col4" >6,283.18u</td>
+      <td id="T_9a31f_row16_col5" class="data row16 col5" >17</td>
+      <td id="T_9a31f_row16_col6" class="data row16 col6" >98</td>
+      <td id="T_9a31f_row16_col7" class="data row16 col7" >10.00G</td>
+      <td id="T_9a31f_row16_col8" class="data row16 col8" >190.25f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row17_col0" class="data row17 col0" >0.600</td>
+      <td id="T_9a31f_row17_col1" class="data row17 col1" >127.320088</td>
+      <td id="T_9a31f_row17_col2" class="data row17 col2" >568.42m</td>
+      <td id="T_9a31f_row17_col3" class="data row17 col3" >442.11u</td>
+      <td id="T_9a31f_row17_col4" class="data row17 col4" >6,283.18u</td>
+      <td id="T_9a31f_row17_col5" class="data row17 col5" >14</td>
+      <td id="T_9a31f_row17_col6" class="data row17 col6" >103</td>
+      <td id="T_9a31f_row17_col7" class="data row17 col7" >10.00G</td>
+      <td id="T_9a31f_row17_col8" class="data row17 col8" >160.70f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row18_col0" class="data row18 col0" >0.700</td>
+      <td id="T_9a31f_row18_col1" class="data row18 col1" >110.794612</td>
+      <td id="T_9a31f_row18_col2" class="data row18 col2" >600.15m</td>
+      <td id="T_9a31f_row18_col3" class="data row18 col3" >540.65u</td>
+      <td id="T_9a31f_row18_col4" class="data row18 col4" >6,283.18u</td>
+      <td id="T_9a31f_row18_col5" class="data row18 col5" >12</td>
+      <td id="T_9a31f_row18_col6" class="data row18 col6" >104</td>
+      <td id="T_9a31f_row18_col7" class="data row18 col7" >10.00G</td>
+      <td id="T_9a31f_row18_col8" class="data row18 col8" >140.06f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row19_col0" class="data row19 col0" >0.800</td>
+      <td id="T_9a31f_row19_col1" class="data row19 col1" >98.444169</td>
+      <td id="T_9a31f_row19_col2" class="data row19 col2" >643.04m</td>
+      <td id="T_9a31f_row19_col3" class="data row19 col3" >694.60u</td>
+      <td id="T_9a31f_row19_col4" class="data row19 col4" >6,283.18u</td>
+      <td id="T_9a31f_row19_col5" class="data row19 col5" >9</td>
+      <td id="T_9a31f_row19_col6" class="data row19 col6" >103</td>
+      <td id="T_9a31f_row19_col7" class="data row19 col7" >10.00G</td>
+      <td id="T_9a31f_row19_col8" class="data row19 col8" >124.78f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row20_col0" class="data row20 col0" >0.900</td>
+      <td id="T_9a31f_row20_col1" class="data row20 col1" >88.733698</td>
+      <td id="T_9a31f_row20_col2" class="data row20 col2" >700.47m</td>
+      <td id="T_9a31f_row20_col3" class="data row20 col3" >907.65u</td>
+      <td id="T_9a31f_row20_col4" class="data row20 col4" >6,283.18u</td>
+      <td id="T_9a31f_row20_col5" class="data row20 col5" >7</td>
+      <td id="T_9a31f_row20_col6" class="data row20 col6" >97</td>
+      <td id="T_9a31f_row20_col7" class="data row20 col7" >10.00G</td>
+      <td id="T_9a31f_row20_col8" class="data row20 col8" >113.00f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row21_col0" class="data row21 col0" >1.000</td>
+      <td id="T_9a31f_row21_col1" class="data row21 col1" >80.824454</td>
+      <td id="T_9a31f_row21_col2" class="data row21 col2" >772.38m</td>
+      <td id="T_9a31f_row21_col3" class="data row21 col3" >1,178.15u</td>
+      <td id="T_9a31f_row21_col4" class="data row21 col4" >6,283.18u</td>
+      <td id="T_9a31f_row21_col5" class="data row21 col5" >5</td>
+      <td id="T_9a31f_row21_col6" class="data row21 col6" >87</td>
+      <td id="T_9a31f_row21_col7" class="data row21 col7" >10.00G</td>
+      <td id="T_9a31f_row21_col8" class="data row21 col8" >103.84f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row22_col0" class="data row22 col0" >1.100</td>
+      <td id="T_9a31f_row22_col1" class="data row22 col1" >74.212692</td>
+      <td id="T_9a31f_row22_col2" class="data row22 col2" >854.89m</td>
+      <td id="T_9a31f_row22_col3" class="data row22 col3" >1,478.78u</td>
+      <td id="T_9a31f_row22_col4" class="data row22 col4" >6,283.18u</td>
+      <td id="T_9a31f_row22_col5" class="data row22 col5" >4</td>
+      <td id="T_9a31f_row22_col6" class="data row22 col6" >72</td>
+      <td id="T_9a31f_row22_col7" class="data row22 col7" >10.00G</td>
+      <td id="T_9a31f_row22_col8" class="data row22 col8" >96.89f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row23_col0" class="data row23 col0" >1.200</td>
+      <td id="T_9a31f_row23_col1" class="data row23 col1" >68.578667</td>
+      <td id="T_9a31f_row23_col2" class="data row23 col2" >947.82m</td>
+      <td id="T_9a31f_row23_col3" class="data row23 col3" >1,810.04u</td>
+      <td id="T_9a31f_row23_col4" class="data row23 col4" >6,283.18u</td>
+      <td id="T_9a31f_row23_col5" class="data row23 col5" >3</td>
+      <td id="T_9a31f_row23_col6" class="data row23 col6" >54</td>
+      <td id="T_9a31f_row23_col7" class="data row23 col7" >10.00G</td>
+      <td id="T_9a31f_row23_col8" class="data row23 col8" >92.34f</td>
+    </tr>
+    <tr>
+      <td id="T_9a31f_row24_col0" class="data row24 col0" >1.300</td>
+      <td id="T_9a31f_row24_col1" class="data row24 col1" >63.676820</td>
+      <td id="T_9a31f_row24_col2" class="data row24 col2" >1,058.81m</td>
+      <td id="T_9a31f_row24_col3" class="data row24 col3" >2,218.46u</td>
+      <td id="T_9a31f_row24_col4" class="data row24 col4" >6,283.18u</td>
+      <td id="T_9a31f_row24_col5" class="data row24 col5" >3</td>
+      <td id="T_9a31f_row24_col6" class="data row24 col6" >32</td>
+      <td id="T_9a31f_row24_col7" class="data row24 col7" >10.00G</td>
+      <td id="T_9a31f_row24_col8" class="data row24 col8" >91.67f</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>The minimum current solution is in the first row, with <span class="math notranslate nohighlight">\(I_d = 271.29uA\)</span> and <span class="math notranslate nohighlight">\(L = 180 nm\)</span>.</p>
+<p>Let’s see what happens if we include that design points’ <span class="math notranslate nohighlight">\(C_{dd}\)</span>:</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f_u_self</span> <span class="o">=</span> <span class="n">gm_spec</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mf">3.14159</span> <span class="o">*</span> <span class="p">(</span><span class="n">c_l</span> <span class="o">+</span> <span class="n">scaled_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;CDD&#39;</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Including self loading, the unity gain bandwidth drops to </span><span class="si">{</span><span class="n">f_u_self</span><span class="o">/</span><span class="mf">1e9</span><span class="si">:</span><span class="s2">0.3f</span><span class="si">}</span><span class="s2"> GHz&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Including self loading, the unity gain bandwidth drops to 0.659 GHz
+</pre></div>
+</div>
+</div>
+</div>
+<p>Quite a drop in UGBW! To get that back, we’ll have to scale up the device’s
+width and drain current.</p>
+<p>We’d probably write a loop to do this a few times, but first let’s just
+walk through the initial iteration:</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gm_spec_mk2</span> <span class="o">=</span> <span class="n">f_u</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mf">3.14159</span> <span class="o">*</span> <span class="p">(</span><span class="n">c_l</span> <span class="o">+</span> <span class="n">scaled_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;CDD&#39;</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Including self loading, the required gm becomes: </span><span class="si">{</span><span class="n">gm_spec_mk2</span><span class="o">*</span><span class="mf">1e3</span><span class="si">:</span><span class="s2">0.3f</span><span class="si">}</span><span class="s2"> mS&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Including self loading, the required gm becomes: 9.537 mS
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># scale up the design points that we previously found with</span>
+<span class="c1"># our updated gm spec</span>
+
+<span class="n">scale_factors_mk2</span> <span class="o">=</span> <span class="n">gm_spec_mk2</span> <span class="o">/</span> <span class="n">lookup_df</span><span class="p">[</span><span class="s1">&#39;GM&#39;</span><span class="p">]</span>
+<span class="c1"># display(lookup_df)</span>
+<span class="c1"># display(scale_factors)</span>
+<span class="n">scaled_mk2_df</span> <span class="o">=</span> <span class="n">scale</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">lookup_df</span><span class="p">,</span> <span class="n">scale_factor</span><span class="o">=</span><span class="n">scale_factors_mk2</span><span class="p">)</span>
+
+<span class="n">caption</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Design points that satisfy f_t = </span><span class="si">{</span><span class="n">f_t</span><span class="o">/</span><span class="mf">1e6</span><span class="si">}</span><span class="s2"> MHz, scaled to give gm=</span><span class="si">{</span><span class="n">gm_spec_mk2</span><span class="o">*</span><span class="mf">1e3</span><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> mS&quot;</span>
+<span class="n">display</span><span class="p">(</span><span class="n">pretty_table</span><span class="p">(</span>
+    <span class="n">df</span><span class="o">=</span><span class="n">scaled_mk2_df</span><span class="p">,</span>
+    <span class="n">cols</span><span class="o">=</span><span class="n">show_cols</span><span class="p">,</span>
+    <span class="n">caption</span><span class="o">=</span><span class="n">caption</span>
+<span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_html"><style type="text/css">
+</style>
+<table id="T_023b7">
+  <caption>Design points that satisfy f_t = 10000.0 MHz, scaled to give gm=9.54 mS</caption>
+  <thead>
+    <tr>
+      <th id="T_023b7_level0_col0" class="col_heading level0 col0" >L</th>
+      <th id="T_023b7_level0_col1" class="col_heading level0 col1" >W</th>
+      <th id="T_023b7_level0_col2" class="col_heading level0 col2" >VGS</th>
+      <th id="T_023b7_level0_col3" class="col_heading level0 col3" >ID</th>
+      <th id="T_023b7_level0_col4" class="col_heading level0 col4" >GM</th>
+      <th id="T_023b7_level0_col5" class="col_heading level0 col5" >GM_ID</th>
+      <th id="T_023b7_level0_col6" class="col_heading level0 col6" >A_v0</th>
+      <th id="T_023b7_level0_col7" class="col_heading level0 col7" >f_t</th>
+      <th id="T_023b7_level0_col8" class="col_heading level0 col8" >CDD</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td id="T_023b7_row0_col0" class="data row0 col0" >0.180</td>
+      <td id="T_023b7_row0_col1" class="data row0 col1" >624.260438</td>
+      <td id="T_023b7_row0_col2" class="data row0 col2" >454.69m</td>
+      <td id="T_023b7_row0_col3" class="data row0 col3" >411.80u</td>
+      <td id="T_023b7_row0_col4" class="data row0 col4" >9,537.50u</td>
+      <td id="T_023b7_row0_col5" class="data row0 col5" >23</td>
+      <td id="T_023b7_row0_col6" class="data row0 col6" >37</td>
+      <td id="T_023b7_row0_col7" class="data row0 col7" >10.00G</td>
+      <td id="T_023b7_row0_col8" class="data row0 col8" >786.20f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row1_col0" class="data row1 col0" >0.200</td>
+      <td id="T_023b7_row1_col1" class="data row1 col1" >573.138041</td>
+      <td id="T_023b7_row1_col2" class="data row1 col2" >462.33m</td>
+      <td id="T_023b7_row1_col3" class="data row1 col3" >415.71u</td>
+      <td id="T_023b7_row1_col4" class="data row1 col4" >9,537.50u</td>
+      <td id="T_023b7_row1_col5" class="data row1 col5" >23</td>
+      <td id="T_023b7_row1_col6" class="data row1 col6" >42</td>
+      <td id="T_023b7_row1_col7" class="data row1 col7" >10.00G</td>
+      <td id="T_023b7_row1_col8" class="data row1 col8" >721.83f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row2_col0" class="data row2 col0" >0.220</td>
+      <td id="T_023b7_row2_col1" class="data row2 col1" >528.370365</td>
+      <td id="T_023b7_row2_col2" class="data row2 col2" >470.80m</td>
+      <td id="T_023b7_row2_col3" class="data row2 col3" >418.66u</td>
+      <td id="T_023b7_row2_col4" class="data row2 col4" >9,537.50u</td>
+      <td id="T_023b7_row2_col5" class="data row2 col5" >23</td>
+      <td id="T_023b7_row2_col6" class="data row2 col6" >47</td>
+      <td id="T_023b7_row2_col7" class="data row2 col7" >10.00G</td>
+      <td id="T_023b7_row2_col8" class="data row2 col8" >665.47f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row3_col0" class="data row3 col0" >0.240</td>
+      <td id="T_023b7_row3_col1" class="data row3 col1" >485.785381</td>
+      <td id="T_023b7_row3_col2" class="data row3 col2" >478.27m</td>
+      <td id="T_023b7_row3_col3" class="data row3 col3" >423.66u</td>
+      <td id="T_023b7_row3_col4" class="data row3 col4" >9,537.50u</td>
+      <td id="T_023b7_row3_col5" class="data row3 col5" >23</td>
+      <td id="T_023b7_row3_col6" class="data row3 col6" >52</td>
+      <td id="T_023b7_row3_col7" class="data row3 col7" >10.00G</td>
+      <td id="T_023b7_row3_col8" class="data row3 col8" >611.85f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row4_col0" class="data row4 col0" >0.260</td>
+      <td id="T_023b7_row4_col1" class="data row4 col1" >446.807492</td>
+      <td id="T_023b7_row4_col2" class="data row4 col2" >484.60m</td>
+      <td id="T_023b7_row4_col3" class="data row4 col3" >430.00u</td>
+      <td id="T_023b7_row4_col4" class="data row4 col4" >9,537.50u</td>
+      <td id="T_023b7_row4_col5" class="data row4 col5" >22</td>
+      <td id="T_023b7_row4_col6" class="data row4 col6" >58</td>
+      <td id="T_023b7_row4_col7" class="data row4 col7" >10.00G</td>
+      <td id="T_023b7_row4_col8" class="data row4 col8" >562.78f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row5_col0" class="data row5 col0" >0.280</td>
+      <td id="T_023b7_row5_col1" class="data row5 col1" >413.633933</td>
+      <td id="T_023b7_row5_col2" class="data row5 col2" >490.99m</td>
+      <td id="T_023b7_row5_col3" class="data row5 col3" >435.59u</td>
+      <td id="T_023b7_row5_col4" class="data row5 col4" >9,537.50u</td>
+      <td id="T_023b7_row5_col5" class="data row5 col5" >22</td>
+      <td id="T_023b7_row5_col6" class="data row5 col6" >63</td>
+      <td id="T_023b7_row5_col7" class="data row5 col7" >10.00G</td>
+      <td id="T_023b7_row5_col8" class="data row5 col8" >521.02f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row6_col0" class="data row6 col0" >0.300</td>
+      <td id="T_023b7_row6_col1" class="data row6 col1" >385.038405</td>
+      <td id="T_023b7_row6_col2" class="data row6 col2" >497.37m</td>
+      <td id="T_023b7_row6_col3" class="data row6 col3" >440.80u</td>
+      <td id="T_023b7_row6_col4" class="data row6 col4" >9,537.50u</td>
+      <td id="T_023b7_row6_col5" class="data row6 col5" >22</td>
+      <td id="T_023b7_row6_col6" class="data row6 col6" >68</td>
+      <td id="T_023b7_row6_col7" class="data row6 col7" >10.00G</td>
+      <td id="T_023b7_row6_col8" class="data row6 col8" >485.03f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row7_col0" class="data row7 col0" >0.320</td>
+      <td id="T_023b7_row7_col1" class="data row7 col1" >359.542915</td>
+      <td id="T_023b7_row7_col2" class="data row7 col2" >502.70m</td>
+      <td id="T_023b7_row7_col3" class="data row7 col3" >449.44u</td>
+      <td id="T_023b7_row7_col4" class="data row7 col4" >9,537.50u</td>
+      <td id="T_023b7_row7_col5" class="data row7 col5" >21</td>
+      <td id="T_023b7_row7_col6" class="data row7 col6" >73</td>
+      <td id="T_023b7_row7_col7" class="data row7 col7" >10.00G</td>
+      <td id="T_023b7_row7_col8" class="data row7 col8" >452.94f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row8_col0" class="data row8 col0" >0.340</td>
+      <td id="T_023b7_row8_col1" class="data row8 col1" >337.085882</td>
+      <td id="T_023b7_row8_col2" class="data row8 col2" >507.31m</td>
+      <td id="T_023b7_row8_col3" class="data row8 col3" >460.01u</td>
+      <td id="T_023b7_row8_col4" class="data row8 col4" >9,537.50u</td>
+      <td id="T_023b7_row8_col5" class="data row8 col5" >21</td>
+      <td id="T_023b7_row8_col6" class="data row8 col6" >77</td>
+      <td id="T_023b7_row8_col7" class="data row8 col7" >10.00G</td>
+      <td id="T_023b7_row8_col8" class="data row8 col8" >424.68f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row9_col0" class="data row9 col0" >0.360</td>
+      <td id="T_023b7_row9_col1" class="data row9 col1" >317.513170</td>
+      <td id="T_023b7_row9_col2" class="data row9 col2" >511.95m</td>
+      <td id="T_023b7_row9_col3" class="data row9 col3" >470.12u</td>
+      <td id="T_023b7_row9_col4" class="data row9 col4" >9,537.50u</td>
+      <td id="T_023b7_row9_col5" class="data row9 col5" >20</td>
+      <td id="T_023b7_row9_col6" class="data row9 col6" >81</td>
+      <td id="T_023b7_row9_col7" class="data row9 col7" >10.00G</td>
+      <td id="T_023b7_row9_col8" class="data row9 col8" >400.05f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row10_col0" class="data row10 col0" >0.380</td>
+      <td id="T_023b7_row10_col1" class="data row10 col1" >300.289769</td>
+      <td id="T_023b7_row10_col2" class="data row10 col2" >516.64m</td>
+      <td id="T_023b7_row10_col3" class="data row10 col3" >479.96u</td>
+      <td id="T_023b7_row10_col4" class="data row10 col4" >9,537.50u</td>
+      <td id="T_023b7_row10_col5" class="data row10 col5" >20</td>
+      <td id="T_023b7_row10_col6" class="data row10 col6" >85</td>
+      <td id="T_023b7_row10_col7" class="data row10 col7" >10.00G</td>
+      <td id="T_023b7_row10_col8" class="data row10 col8" >378.38f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row11_col0" class="data row11 col0" >0.400</td>
+      <td id="T_023b7_row11_col1" class="data row11 col1" >285.008207</td>
+      <td id="T_023b7_row11_col2" class="data row11 col2" >521.39m</td>
+      <td id="T_023b7_row11_col3" class="data row11 col3" >489.66u</td>
+      <td id="T_023b7_row11_col4" class="data row11 col4" >9,537.50u</td>
+      <td id="T_023b7_row11_col5" class="data row11 col5" >20</td>
+      <td id="T_023b7_row11_col6" class="data row11 col6" >88</td>
+      <td id="T_023b7_row11_col7" class="data row11 col7" >10.00G</td>
+      <td id="T_023b7_row11_col8" class="data row11 col8" >359.16f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row12_col0" class="data row12 col0" >0.420</td>
+      <td id="T_023b7_row12_col1" class="data row12 col1" >271.371532</td>
+      <td id="T_023b7_row12_col2" class="data row12 col2" >526.00m</td>
+      <td id="T_023b7_row12_col3" class="data row12 col3" >501.09u</td>
+      <td id="T_023b7_row12_col4" class="data row12 col4" >9,537.50u</td>
+      <td id="T_023b7_row12_col5" class="data row12 col5" >19</td>
+      <td id="T_023b7_row12_col6" class="data row12 col6" >90</td>
+      <td id="T_023b7_row12_col7" class="data row12 col7" >10.00G</td>
+      <td id="T_023b7_row12_col8" class="data row12 col8" >342.01f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row13_col0" class="data row13 col0" >0.440</td>
+      <td id="T_023b7_row13_col1" class="data row13 col1" >259.178324</td>
+      <td id="T_023b7_row13_col2" class="data row13 col2" >530.06m</td>
+      <td id="T_023b7_row13_col3" class="data row13 col3" >517.62u</td>
+      <td id="T_023b7_row13_col4" class="data row13 col4" >9,537.50u</td>
+      <td id="T_023b7_row13_col5" class="data row13 col5" >19</td>
+      <td id="T_023b7_row13_col6" class="data row13 col6" >92</td>
+      <td id="T_023b7_row13_col7" class="data row13 col7" >10.00G</td>
+      <td id="T_023b7_row13_col8" class="data row13 col8" >326.68f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row14_col0" class="data row14 col0" >0.460</td>
+      <td id="T_023b7_row14_col1" class="data row14 col1" >248.164093</td>
+      <td id="T_023b7_row14_col2" class="data row14 col2" >534.29m</td>
+      <td id="T_023b7_row14_col3" class="data row14 col3" >533.73u</td>
+      <td id="T_023b7_row14_col4" class="data row14 col4" >9,537.50u</td>
+      <td id="T_023b7_row14_col5" class="data row14 col5" >18</td>
+      <td id="T_023b7_row14_col6" class="data row14 col6" >94</td>
+      <td id="T_023b7_row14_col7" class="data row14 col7" >10.00G</td>
+      <td id="T_023b7_row14_col8" class="data row14 col8" >312.84f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row15_col0" class="data row15 col0" >0.480</td>
+      <td id="T_023b7_row15_col1" class="data row15 col1" >238.156847</td>
+      <td id="T_023b7_row15_col2" class="data row15 col2" >538.70m</td>
+      <td id="T_023b7_row15_col3" class="data row15 col3" >549.52u</td>
+      <td id="T_023b7_row15_col4" class="data row15 col4" >9,537.50u</td>
+      <td id="T_023b7_row15_col5" class="data row15 col5" >18</td>
+      <td id="T_023b7_row15_col6" class="data row15 col6" >96</td>
+      <td id="T_023b7_row15_col7" class="data row15 col7" >10.00G</td>
+      <td id="T_023b7_row15_col8" class="data row15 col8" >300.26f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row16_col0" class="data row16 col0" >0.500</td>
+      <td id="T_023b7_row16_col1" class="data row16 col1" >229.017056</td>
+      <td id="T_023b7_row16_col2" class="data row16 col2" >543.31m</td>
+      <td id="T_023b7_row16_col3" class="data row16 col3" >565.02u</td>
+      <td id="T_023b7_row16_col4" class="data row16 col4" >9,537.50u</td>
+      <td id="T_023b7_row16_col5" class="data row16 col5" >17</td>
+      <td id="T_023b7_row16_col6" class="data row16 col6" >98</td>
+      <td id="T_023b7_row16_col7" class="data row16 col7" >10.00G</td>
+      <td id="T_023b7_row16_col8" class="data row16 col8" >288.78f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row17_col0" class="data row17 col0" >0.600</td>
+      <td id="T_023b7_row17_col1" class="data row17 col1" >193.264389</td>
+      <td id="T_023b7_row17_col2" class="data row17 col2" >568.42m</td>
+      <td id="T_023b7_row17_col3" class="data row17 col3" >671.09u</td>
+      <td id="T_023b7_row17_col4" class="data row17 col4" >9,537.50u</td>
+      <td id="T_023b7_row17_col5" class="data row17 col5" >14</td>
+      <td id="T_023b7_row17_col6" class="data row17 col6" >103</td>
+      <td id="T_023b7_row17_col7" class="data row17 col7" >10.00G</td>
+      <td id="T_023b7_row17_col8" class="data row17 col8" >243.94f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row18_col0" class="data row18 col0" >0.700</td>
+      <td id="T_023b7_row18_col1" class="data row18 col1" >168.179691</td>
+      <td id="T_023b7_row18_col2" class="data row18 col2" >600.15m</td>
+      <td id="T_023b7_row18_col3" class="data row18 col3" >820.68u</td>
+      <td id="T_023b7_row18_col4" class="data row18 col4" >9,537.50u</td>
+      <td id="T_023b7_row18_col5" class="data row18 col5" >12</td>
+      <td id="T_023b7_row18_col6" class="data row18 col6" >104</td>
+      <td id="T_023b7_row18_col7" class="data row18 col7" >10.00G</td>
+      <td id="T_023b7_row18_col8" class="data row18 col8" >212.61f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row19_col0" class="data row19 col0" >0.800</td>
+      <td id="T_023b7_row19_col1" class="data row19 col1" >149.432447</td>
+      <td id="T_023b7_row19_col2" class="data row19 col2" >643.04m</td>
+      <td id="T_023b7_row19_col3" class="data row19 col3" >1,054.37u</td>
+      <td id="T_023b7_row19_col4" class="data row19 col4" >9,537.50u</td>
+      <td id="T_023b7_row19_col5" class="data row19 col5" >9</td>
+      <td id="T_023b7_row19_col6" class="data row19 col6" >103</td>
+      <td id="T_023b7_row19_col7" class="data row19 col7" >10.00G</td>
+      <td id="T_023b7_row19_col8" class="data row19 col8" >189.41f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row20_col0" class="data row20 col0" >0.900</td>
+      <td id="T_023b7_row20_col1" class="data row20 col1" >134.692523</td>
+      <td id="T_023b7_row20_col2" class="data row20 col2" >700.47m</td>
+      <td id="T_023b7_row20_col3" class="data row20 col3" >1,377.76u</td>
+      <td id="T_023b7_row20_col4" class="data row20 col4" >9,537.50u</td>
+      <td id="T_023b7_row20_col5" class="data row20 col5" >7</td>
+      <td id="T_023b7_row20_col6" class="data row20 col6" >97</td>
+      <td id="T_023b7_row20_col7" class="data row20 col7" >10.00G</td>
+      <td id="T_023b7_row20_col8" class="data row20 col8" >171.53f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row21_col0" class="data row21 col0" >1.000</td>
+      <td id="T_023b7_row21_col1" class="data row21 col1" >122.686757</td>
+      <td id="T_023b7_row21_col2" class="data row21 col2" >772.38m</td>
+      <td id="T_023b7_row21_col3" class="data row21 col3" >1,788.36u</td>
+      <td id="T_023b7_row21_col4" class="data row21 col4" >9,537.50u</td>
+      <td id="T_023b7_row21_col5" class="data row21 col5" >5</td>
+      <td id="T_023b7_row21_col6" class="data row21 col6" >87</td>
+      <td id="T_023b7_row21_col7" class="data row21 col7" >10.00G</td>
+      <td id="T_023b7_row21_col8" class="data row21 col8" >157.62f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row22_col0" class="data row22 col0" >1.100</td>
+      <td id="T_023b7_row22_col1" class="data row22 col1" >112.650492</td>
+      <td id="T_023b7_row22_col2" class="data row22 col2" >854.89m</td>
+      <td id="T_023b7_row22_col3" class="data row22 col3" >2,244.71u</td>
+      <td id="T_023b7_row22_col4" class="data row22 col4" >9,537.50u</td>
+      <td id="T_023b7_row22_col5" class="data row22 col5" >4</td>
+      <td id="T_023b7_row22_col6" class="data row22 col6" >72</td>
+      <td id="T_023b7_row22_col7" class="data row22 col7" >10.00G</td>
+      <td id="T_023b7_row22_col8" class="data row22 col8" >147.08f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row23_col0" class="data row23 col0" >1.200</td>
+      <td id="T_023b7_row23_col1" class="data row23 col1" >104.098375</td>
+      <td id="T_023b7_row23_col2" class="data row23 col2" >947.82m</td>
+      <td id="T_023b7_row23_col3" class="data row23 col3" >2,747.54u</td>
+      <td id="T_023b7_row23_col4" class="data row23 col4" >9,537.50u</td>
+      <td id="T_023b7_row23_col5" class="data row23 col5" >3</td>
+      <td id="T_023b7_row23_col6" class="data row23 col6" >54</td>
+      <td id="T_023b7_row23_col7" class="data row23 col7" >10.00G</td>
+      <td id="T_023b7_row23_col8" class="data row23 col8" >140.16f</td>
+    </tr>
+    <tr>
+      <td id="T_023b7_row24_col0" class="data row24 col0" >1.300</td>
+      <td id="T_023b7_row24_col1" class="data row24 col1" >96.657659</td>
+      <td id="T_023b7_row24_col2" class="data row24 col2" >1,058.81m</td>
+      <td id="T_023b7_row24_col3" class="data row24 col3" >3,367.49u</td>
+      <td id="T_023b7_row24_col4" class="data row24 col4" >9,537.50u</td>
+      <td id="T_023b7_row24_col5" class="data row24 col5" >3</td>
+      <td id="T_023b7_row24_col6" class="data row24 col6" >32</td>
+      <td id="T_023b7_row24_col7" class="data row24 col7" >10.00G</td>
+      <td id="T_023b7_row24_col8" class="data row24 col8" >139.15f</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Again, the minimum current solution is in the first row, with <span class="math notranslate nohighlight">\(I_d = 411.8uA\)</span> and <span class="math notranslate nohighlight">\(L = 180 nm\)</span>.</p>
+<p>Let’s run a few iterations of the sizing routine in a loop, and see if we converge on something:</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># iterate 5 times and hopefully converge on a design point</span>
+<span class="n">gm_specs</span> <span class="o">=</span> <span class="p">[</span><span class="n">gm_spec</span><span class="p">]</span>
+<span class="n">num_iters</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_iters</span><span class="p">):</span>
+    <span class="n">soln_col</span> <span class="o">=</span> <span class="n">scaled_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span>
+    <span class="n">self_load_cap</span> <span class="o">=</span> <span class="n">soln_col</span><span class="p">[</span><span class="s1">&#39;CDD&#39;</span><span class="p">]</span>
+    <span class="n">gm_spec</span> <span class="o">=</span> <span class="n">f_u</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="mf">3.14159</span><span class="o">*</span><span class="p">(</span><span class="n">c_l</span> <span class="o">+</span> <span class="n">self_load_cap</span><span class="p">))</span>
+    <span class="n">gm_specs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gm_spec</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The new gm_spec is: </span><span class="si">{</span><span class="n">gm_spec</span><span class="o">*</span><span class="mf">1e3</span><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2">, scaling devices...&quot;</span><span class="p">)</span>
+
+    <span class="n">scaling_factor</span> <span class="o">=</span> <span class="n">gm_spec</span> <span class="o">/</span> <span class="n">lookup_df</span><span class="p">[</span><span class="s1">&#39;GM&#39;</span><span class="p">]</span>
+    <span class="n">scaled_df</span> <span class="o">=</span> <span class="n">scale</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">lookup_df</span><span class="p">,</span> <span class="n">scale_factor</span><span class="o">=</span><span class="n">scaling_factor</span><span class="p">)</span>
+
+    <span class="c1"># print(f&quot;The updated solution is:&quot;)</span>
+
+    <span class="c1"># caption = f&quot;Design points that satisfy f_t = {f_t/1e6} MHz, scaled to give gm={gm_spec*1e3:0.2f} mS&quot;</span>
+    <span class="c1"># display(pretty_table(</span>
+    <span class="c1">#     df=scaled_df,</span>
+    <span class="c1">#     cols=show_cols,</span>
+    <span class="c1">#     caption=caption</span>
+    <span class="c1"># ))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;After </span><span class="si">{</span><span class="n">num_iters</span><span class="si">}</span><span class="s2"> iterations the solution is:&quot;</span><span class="p">)</span>
+
+<span class="n">caption</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Design points that satisfy f_t = </span><span class="si">{</span><span class="n">f_t</span><span class="o">/</span><span class="mf">1e6</span><span class="si">}</span><span class="s2"> MHz, scaled to give gm=</span><span class="si">{</span><span class="n">gm_spec</span><span class="o">*</span><span class="mf">1e3</span><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> mS&quot;</span>
+<span class="n">display</span><span class="p">(</span><span class="n">pretty_table</span><span class="p">(</span>
+    <span class="n">df</span><span class="o">=</span><span class="n">scaled_df</span><span class="p">,</span>
+    <span class="n">cols</span><span class="o">=</span><span class="n">show_cols</span><span class="p">,</span>
+    <span class="n">caption</span><span class="o">=</span><span class="n">caption</span>
+<span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The new gm_spec is: 9.54, scaling devices...
+The new gm_spec is: 11.22, scaling devices...
+The new gm_spec is: 12.10, scaling devices...
+The new gm_spec is: 12.55, scaling devices...
+The new gm_spec is: 12.78, scaling devices...
+The new gm_spec is: 12.90, scaling devices...
+The new gm_spec is: 12.97, scaling devices...
+The new gm_spec is: 13.00, scaling devices...
+The new gm_spec is: 13.02, scaling devices...
+The new gm_spec is: 13.02, scaling devices...
+After 10 iterations the solution is:
+</pre></div>
+</div>
+<div class="output text_html"><style type="text/css">
+</style>
+<table id="T_b900a">
+  <caption>Design points that satisfy f_t = 10000.0 MHz, scaled to give gm=13.02 mS</caption>
+  <thead>
+    <tr>
+      <th id="T_b900a_level0_col0" class="col_heading level0 col0" >L</th>
+      <th id="T_b900a_level0_col1" class="col_heading level0 col1" >W</th>
+      <th id="T_b900a_level0_col2" class="col_heading level0 col2" >VGS</th>
+      <th id="T_b900a_level0_col3" class="col_heading level0 col3" >ID</th>
+      <th id="T_b900a_level0_col4" class="col_heading level0 col4" >GM</th>
+      <th id="T_b900a_level0_col5" class="col_heading level0 col5" >GM_ID</th>
+      <th id="T_b900a_level0_col6" class="col_heading level0 col6" >A_v0</th>
+      <th id="T_b900a_level0_col7" class="col_heading level0 col7" >f_t</th>
+      <th id="T_b900a_level0_col8" class="col_heading level0 col8" >CDD</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td id="T_b900a_row0_col0" class="data row0 col0" >0.180</td>
+      <td id="T_b900a_row0_col1" class="data row0 col1" >852.507358</td>
+      <td id="T_b900a_row0_col2" class="data row0 col2" >454.69m</td>
+      <td id="T_b900a_row0_col3" class="data row0 col3" >562.37u</td>
+      <td id="T_b900a_row0_col4" class="data row0 col4" >13,024.67u</td>
+      <td id="T_b900a_row0_col5" class="data row0 col5" >23</td>
+      <td id="T_b900a_row0_col6" class="data row0 col6" >37</td>
+      <td id="T_b900a_row0_col7" class="data row0 col7" >10.00G</td>
+      <td id="T_b900a_row0_col8" class="data row0 col8" >1,073.66f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row1_col0" class="data row1 col0" >0.200</td>
+      <td id="T_b900a_row1_col1" class="data row1 col1" >782.693196</td>
+      <td id="T_b900a_row1_col2" class="data row1 col2" >462.33m</td>
+      <td id="T_b900a_row1_col3" class="data row1 col3" >567.70u</td>
+      <td id="T_b900a_row1_col4" class="data row1 col4" >13,024.67u</td>
+      <td id="T_b900a_row1_col5" class="data row1 col5" >23</td>
+      <td id="T_b900a_row1_col6" class="data row1 col6" >42</td>
+      <td id="T_b900a_row1_col7" class="data row1 col7" >10.00G</td>
+      <td id="T_b900a_row1_col8" class="data row1 col8" >985.76f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row2_col0" class="data row2 col0" >0.220</td>
+      <td id="T_b900a_row2_col1" class="data row2 col1" >721.557216</td>
+      <td id="T_b900a_row2_col2" class="data row2 col2" >470.80m</td>
+      <td id="T_b900a_row2_col3" class="data row2 col3" >571.74u</td>
+      <td id="T_b900a_row2_col4" class="data row2 col4" >13,024.67u</td>
+      <td id="T_b900a_row2_col5" class="data row2 col5" >23</td>
+      <td id="T_b900a_row2_col6" class="data row2 col6" >47</td>
+      <td id="T_b900a_row2_col7" class="data row2 col7" >10.00G</td>
+      <td id="T_b900a_row2_col8" class="data row2 col8" >908.78f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row3_col0" class="data row3 col0" >0.240</td>
+      <td id="T_b900a_row3_col1" class="data row3 col1" >663.401982</td>
+      <td id="T_b900a_row3_col2" class="data row3 col2" >478.27m</td>
+      <td id="T_b900a_row3_col3" class="data row3 col3" >578.57u</td>
+      <td id="T_b900a_row3_col4" class="data row3 col4" >13,024.67u</td>
+      <td id="T_b900a_row3_col5" class="data row3 col5" >23</td>
+      <td id="T_b900a_row3_col6" class="data row3 col6" >52</td>
+      <td id="T_b900a_row3_col7" class="data row3 col7" >10.00G</td>
+      <td id="T_b900a_row3_col8" class="data row3 col8" >835.56f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row4_col0" class="data row4 col0" >0.260</td>
+      <td id="T_b900a_row4_col1" class="data row4 col1" >610.172697</td>
+      <td id="T_b900a_row4_col2" class="data row4 col2" >484.60m</td>
+      <td id="T_b900a_row4_col3" class="data row4 col3" >587.23u</td>
+      <td id="T_b900a_row4_col4" class="data row4 col4" >13,024.67u</td>
+      <td id="T_b900a_row4_col5" class="data row4 col5" >22</td>
+      <td id="T_b900a_row4_col6" class="data row4 col6" >58</td>
+      <td id="T_b900a_row4_col7" class="data row4 col7" >10.00G</td>
+      <td id="T_b900a_row4_col8" class="data row4 col8" >768.55f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row5_col0" class="data row5 col0" >0.280</td>
+      <td id="T_b900a_row5_col1" class="data row5 col1" >564.869965</td>
+      <td id="T_b900a_row5_col2" class="data row5 col2" >490.99m</td>
+      <td id="T_b900a_row5_col3" class="data row5 col3" >594.85u</td>
+      <td id="T_b900a_row5_col4" class="data row5 col4" >13,024.67u</td>
+      <td id="T_b900a_row5_col5" class="data row5 col5" >22</td>
+      <td id="T_b900a_row5_col6" class="data row5 col6" >63</td>
+      <td id="T_b900a_row5_col7" class="data row5 col7" >10.00G</td>
+      <td id="T_b900a_row5_col8" class="data row5 col8" >711.52f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row6_col0" class="data row6 col0" >0.300</td>
+      <td id="T_b900a_row6_col1" class="data row6 col1" >525.819119</td>
+      <td id="T_b900a_row6_col2" class="data row6 col2" >497.37m</td>
+      <td id="T_b900a_row6_col3" class="data row6 col3" >601.97u</td>
+      <td id="T_b900a_row6_col4" class="data row6 col4" >13,024.67u</td>
+      <td id="T_b900a_row6_col5" class="data row6 col5" >22</td>
+      <td id="T_b900a_row6_col6" class="data row6 col6" >68</td>
+      <td id="T_b900a_row6_col7" class="data row6 col7" >10.00G</td>
+      <td id="T_b900a_row6_col8" class="data row6 col8" >662.37f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row7_col0" class="data row7 col0" >0.320</td>
+      <td id="T_b900a_row7_col1" class="data row7 col1" >491.001772</td>
+      <td id="T_b900a_row7_col2" class="data row7 col2" >502.70m</td>
+      <td id="T_b900a_row7_col3" class="data row7 col3" >613.77u</td>
+      <td id="T_b900a_row7_col4" class="data row7 col4" >13,024.67u</td>
+      <td id="T_b900a_row7_col5" class="data row7 col5" >21</td>
+      <td id="T_b900a_row7_col6" class="data row7 col6" >73</td>
+      <td id="T_b900a_row7_col7" class="data row7 col7" >10.00G</td>
+      <td id="T_b900a_row7_col8" class="data row7 col8" >618.54f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row8_col0" class="data row8 col0" >0.340</td>
+      <td id="T_b900a_row8_col1" class="data row8 col1" >460.333824</td>
+      <td id="T_b900a_row8_col2" class="data row8 col2" >507.31m</td>
+      <td id="T_b900a_row8_col3" class="data row8 col3" >628.20u</td>
+      <td id="T_b900a_row8_col4" class="data row8 col4" >13,024.67u</td>
+      <td id="T_b900a_row8_col5" class="data row8 col5" >21</td>
+      <td id="T_b900a_row8_col6" class="data row8 col6" >77</td>
+      <td id="T_b900a_row8_col7" class="data row8 col7" >10.00G</td>
+      <td id="T_b900a_row8_col8" class="data row8 col8" >579.95f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row9_col0" class="data row9 col0" >0.360</td>
+      <td id="T_b900a_row9_col1" class="data row9 col1" >433.604786</td>
+      <td id="T_b900a_row9_col2" class="data row9 col2" >511.95m</td>
+      <td id="T_b900a_row9_col3" class="data row9 col3" >642.00u</td>
+      <td id="T_b900a_row9_col4" class="data row9 col4" >13,024.67u</td>
+      <td id="T_b900a_row9_col5" class="data row9 col5" >20</td>
+      <td id="T_b900a_row9_col6" class="data row9 col6" >81</td>
+      <td id="T_b900a_row9_col7" class="data row9 col7" >10.00G</td>
+      <td id="T_b900a_row9_col8" class="data row9 col8" >546.32f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row10_col0" class="data row10 col0" >0.380</td>
+      <td id="T_b900a_row10_col1" class="data row10 col1" >410.084032</td>
+      <td id="T_b900a_row10_col2" class="data row10 col2" >516.64m</td>
+      <td id="T_b900a_row10_col3" class="data row10 col3" >655.44u</td>
+      <td id="T_b900a_row10_col4" class="data row10 col4" >13,024.67u</td>
+      <td id="T_b900a_row10_col5" class="data row10 col5" >20</td>
+      <td id="T_b900a_row10_col6" class="data row10 col6" >85</td>
+      <td id="T_b900a_row10_col7" class="data row10 col7" >10.00G</td>
+      <td id="T_b900a_row10_col8" class="data row10 col8" >516.73f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row11_col0" class="data row11 col0" >0.400</td>
+      <td id="T_b900a_row11_col1" class="data row11 col1" >389.215108</td>
+      <td id="T_b900a_row11_col2" class="data row11 col2" >521.39m</td>
+      <td id="T_b900a_row11_col3" class="data row11 col3" >668.69u</td>
+      <td id="T_b900a_row11_col4" class="data row11 col4" >13,024.67u</td>
+      <td id="T_b900a_row11_col5" class="data row11 col5" >20</td>
+      <td id="T_b900a_row11_col6" class="data row11 col6" >88</td>
+      <td id="T_b900a_row11_col7" class="data row11 col7" >10.00G</td>
+      <td id="T_b900a_row11_col8" class="data row11 col8" >490.48f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row12_col0" class="data row12 col0" >0.420</td>
+      <td id="T_b900a_row12_col1" class="data row12 col1" >370.592487</td>
+      <td id="T_b900a_row12_col2" class="data row12 col2" >526.00m</td>
+      <td id="T_b900a_row12_col3" class="data row12 col3" >684.31u</td>
+      <td id="T_b900a_row12_col4" class="data row12 col4" >13,024.67u</td>
+      <td id="T_b900a_row12_col5" class="data row12 col5" >19</td>
+      <td id="T_b900a_row12_col6" class="data row12 col6" >90</td>
+      <td id="T_b900a_row12_col7" class="data row12 col7" >10.00G</td>
+      <td id="T_b900a_row12_col8" class="data row12 col8" >467.06f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row13_col0" class="data row13 col0" >0.440</td>
+      <td id="T_b900a_row13_col1" class="data row13 col1" >353.941104</td>
+      <td id="T_b900a_row13_col2" class="data row13 col2" >530.06m</td>
+      <td id="T_b900a_row13_col3" class="data row13 col3" >706.87u</td>
+      <td id="T_b900a_row13_col4" class="data row13 col4" >13,024.67u</td>
+      <td id="T_b900a_row13_col5" class="data row13 col5" >19</td>
+      <td id="T_b900a_row13_col6" class="data row13 col6" >92</td>
+      <td id="T_b900a_row13_col7" class="data row13 col7" >10.00G</td>
+      <td id="T_b900a_row13_col8" class="data row13 col8" >446.12f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row14_col0" class="data row14 col0" >0.460</td>
+      <td id="T_b900a_row14_col1" class="data row14 col1" >338.899764</td>
+      <td id="T_b900a_row14_col2" class="data row14 col2" >534.29m</td>
+      <td id="T_b900a_row14_col3" class="data row14 col3" >728.88u</td>
+      <td id="T_b900a_row14_col4" class="data row14 col4" >13,024.67u</td>
+      <td id="T_b900a_row14_col5" class="data row14 col5" >18</td>
+      <td id="T_b900a_row14_col6" class="data row14 col6" >94</td>
+      <td id="T_b900a_row14_col7" class="data row14 col7" >10.00G</td>
+      <td id="T_b900a_row14_col8" class="data row14 col8" >427.22f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row15_col0" class="data row15 col0" >0.480</td>
+      <td id="T_b900a_row15_col1" class="data row15 col1" >325.233591</td>
+      <td id="T_b900a_row15_col2" class="data row15 col2" >538.70m</td>
+      <td id="T_b900a_row15_col3" class="data row15 col3" >750.44u</td>
+      <td id="T_b900a_row15_col4" class="data row15 col4" >13,024.67u</td>
+      <td id="T_b900a_row15_col5" class="data row15 col5" >18</td>
+      <td id="T_b900a_row15_col6" class="data row15 col6" >96</td>
+      <td id="T_b900a_row15_col7" class="data row15 col7" >10.00G</td>
+      <td id="T_b900a_row15_col8" class="data row15 col8" >410.05f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row16_col0" class="data row16 col0" >0.500</td>
+      <td id="T_b900a_row16_col1" class="data row16 col1" >312.752039</td>
+      <td id="T_b900a_row16_col2" class="data row16 col2" >543.31m</td>
+      <td id="T_b900a_row16_col3" class="data row16 col3" >771.61u</td>
+      <td id="T_b900a_row16_col4" class="data row16 col4" >13,024.67u</td>
+      <td id="T_b900a_row16_col5" class="data row16 col5" >17</td>
+      <td id="T_b900a_row16_col6" class="data row16 col6" >98</td>
+      <td id="T_b900a_row16_col7" class="data row16 col7" >10.00G</td>
+      <td id="T_b900a_row16_col8" class="data row16 col8" >394.37f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row17_col0" class="data row17 col0" >0.600</td>
+      <td id="T_b900a_row17_col1" class="data row17 col1" >263.927207</td>
+      <td id="T_b900a_row17_col2" class="data row17 col2" >568.42m</td>
+      <td id="T_b900a_row17_col3" class="data row17 col3" >916.46u</td>
+      <td id="T_b900a_row17_col4" class="data row17 col4" >13,024.67u</td>
+      <td id="T_b900a_row17_col5" class="data row17 col5" >14</td>
+      <td id="T_b900a_row17_col6" class="data row17 col6" >103</td>
+      <td id="T_b900a_row17_col7" class="data row17 col7" >10.00G</td>
+      <td id="T_b900a_row17_col8" class="data row17 col8" >333.13f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row18_col0" class="data row18 col0" >0.700</td>
+      <td id="T_b900a_row18_col1" class="data row18 col1" >229.670848</td>
+      <td id="T_b900a_row18_col2" class="data row18 col2" >600.15m</td>
+      <td id="T_b900a_row18_col3" class="data row18 col3" >1,120.74u</td>
+      <td id="T_b900a_row18_col4" class="data row18 col4" >13,024.67u</td>
+      <td id="T_b900a_row18_col5" class="data row18 col5" >12</td>
+      <td id="T_b900a_row18_col6" class="data row18 col6" >104</td>
+      <td id="T_b900a_row18_col7" class="data row18 col7" >10.00G</td>
+      <td id="T_b900a_row18_col8" class="data row18 col8" >290.34f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row19_col0" class="data row19 col0" >0.800</td>
+      <td id="T_b900a_row19_col1" class="data row19 col1" >204.069092</td>
+      <td id="T_b900a_row19_col2" class="data row19 col2" >643.04m</td>
+      <td id="T_b900a_row19_col3" class="data row19 col3" >1,439.87u</td>
+      <td id="T_b900a_row19_col4" class="data row19 col4" >13,024.67u</td>
+      <td id="T_b900a_row19_col5" class="data row19 col5" >9</td>
+      <td id="T_b900a_row19_col6" class="data row19 col6" >103</td>
+      <td id="T_b900a_row19_col7" class="data row19 col7" >10.00G</td>
+      <td id="T_b900a_row19_col8" class="data row19 col8" >258.66f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row20_col0" class="data row20 col0" >0.900</td>
+      <td id="T_b900a_row20_col1" class="data row20 col1" >183.939843</td>
+      <td id="T_b900a_row20_col2" class="data row20 col2" >700.47m</td>
+      <td id="T_b900a_row20_col3" class="data row20 col3" >1,881.51u</td>
+      <td id="T_b900a_row20_col4" class="data row20 col4" >13,024.67u</td>
+      <td id="T_b900a_row20_col5" class="data row20 col5" >7</td>
+      <td id="T_b900a_row20_col6" class="data row20 col6" >97</td>
+      <td id="T_b900a_row20_col7" class="data row20 col7" >10.00G</td>
+      <td id="T_b900a_row20_col8" class="data row20 col8" >234.25f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row21_col0" class="data row21 col0" >1.000</td>
+      <td id="T_b900a_row21_col1" class="data row21 col1" >167.544436</td>
+      <td id="T_b900a_row21_col2" class="data row21 col2" >772.38m</td>
+      <td id="T_b900a_row21_col3" class="data row21 col3" >2,442.23u</td>
+      <td id="T_b900a_row21_col4" class="data row21 col4" >13,024.67u</td>
+      <td id="T_b900a_row21_col5" class="data row21 col5" >5</td>
+      <td id="T_b900a_row21_col6" class="data row21 col6" >87</td>
+      <td id="T_b900a_row21_col7" class="data row21 col7" >10.00G</td>
+      <td id="T_b900a_row21_col8" class="data row21 col8" >215.25f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row22_col0" class="data row22 col0" >1.100</td>
+      <td id="T_b900a_row22_col1" class="data row22 col1" >153.838634</td>
+      <td id="T_b900a_row22_col2" class="data row22 col2" >854.89m</td>
+      <td id="T_b900a_row22_col3" class="data row22 col3" >3,065.43u</td>
+      <td id="T_b900a_row22_col4" class="data row22 col4" >13,024.67u</td>
+      <td id="T_b900a_row22_col5" class="data row22 col5" >4</td>
+      <td id="T_b900a_row22_col6" class="data row22 col6" >72</td>
+      <td id="T_b900a_row22_col7" class="data row22 col7" >10.00G</td>
+      <td id="T_b900a_row22_col8" class="data row22 col8" >200.85f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row23_col0" class="data row23 col0" >1.200</td>
+      <td id="T_b900a_row23_col1" class="data row23 col1" >142.159627</td>
+      <td id="T_b900a_row23_col2" class="data row23 col2" >947.82m</td>
+      <td id="T_b900a_row23_col3" class="data row23 col3" >3,752.12u</td>
+      <td id="T_b900a_row23_col4" class="data row23 col4" >13,024.67u</td>
+      <td id="T_b900a_row23_col5" class="data row23 col5" >3</td>
+      <td id="T_b900a_row23_col6" class="data row23 col6" >54</td>
+      <td id="T_b900a_row23_col7" class="data row23 col7" >10.00G</td>
+      <td id="T_b900a_row23_col8" class="data row23 col8" >191.41f</td>
+    </tr>
+    <tr>
+      <td id="T_b900a_row24_col0" class="data row24 col0" >1.300</td>
+      <td id="T_b900a_row24_col1" class="data row24 col1" >131.998378</td>
+      <td id="T_b900a_row24_col2" class="data row24 col2" >1,058.81m</td>
+      <td id="T_b900a_row24_col3" class="data row24 col3" >4,598.74u</td>
+      <td id="T_b900a_row24_col4" class="data row24 col4" >13,024.67u</td>
+      <td id="T_b900a_row24_col5" class="data row24 col5" >3</td>
+      <td id="T_b900a_row24_col6" class="data row24 col6" >32</td>
+      <td id="T_b900a_row24_col7" class="data row24 col7" >10.00G</td>
+      <td id="T_b900a_row24_col8" class="data row24 col8" >190.02f</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Let’s take a look at the gm spec across iterations:</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gm_spec_plot</span> <span class="o">=</span> <span class="n">bh</span><span class="o">.</span><span class="n">create_bokeh_plot</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;gm spec across iterations&quot;</span><span class="p">,</span>
+    <span class="n">x_axis_label</span><span class="o">=</span><span class="s1">&#39;Iteration&#39;</span><span class="p">,</span>
+    <span class="n">y_axis_label</span><span class="o">=</span><span class="s1">&#39;gm spec (S)&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_iters</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+<span class="n">gm_spec_plot</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">xs</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">gm_specs</span><span class="p">,)</span>
+
+<span class="n">show</span><span class="p">(</span><span class="n">gm_spec_plot</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_html">
+  <div id="cbc5e1f3-bb08-4949-b78e-e83cba7ae057" data-root-id="p1492" style="display: contents;"></div>
+</div><script type="application/javascript">(function(root) {
+  function embed_document(root) {
+  const docs_json = {"daa34d24-7170-420b-9998-d583325c7155":{"version":"3.0.3","title":"Bokeh Application","defs":[],"roots":[{"type":"object","name":"Figure","id":"p1492","attributes":{"x_range":{"type":"object","name":"DataRange1d","id":"p1493"},"y_range":{"type":"object","name":"DataRange1d","id":"p1494"},"x_scale":{"type":"object","name":"LinearScale","id":"p1506"},"y_scale":{"type":"object","name":"LinearScale","id":"p1508"},"title":{"type":"object","name":"Title","id":"p1495","attributes":{"text":"gm spec across iterations"}},"renderers":[{"type":"object","name":"GlyphRenderer","id":"p1547","attributes":{"data_source":{"type":"object","name":"ColumnDataSource","id":"p1541","attributes":{"selected":{"type":"object","name":"Selection","id":"p1543","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1542"},"data":{"type":"map","entries":[["x",[0,1,2,3,4,5,6,7,8,9,10]],["y",[0.00628318,0.009537496901238911,0.011223041242430669,0.012096053863003045,0.012548222943965797,0.012782419876473662,0.01290372008364243,0.01296654644136465,0.012999086791597923,0.013015940775048399,0.01302467014508015]]]}}},"view":{"type":"object","name":"CDSView","id":"p1548","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1549"}}},"glyph":{"type":"object","name":"Line","id":"p1544","attributes":{"x":{"type":"field","field":"x"},"y":{"type":"field","field":"y"},"line_color":"#1f77b4"}},"nonselection_glyph":{"type":"object","name":"Line","id":"p1545","attributes":{"x":{"type":"field","field":"x"},"y":{"type":"field","field":"y"},"line_color":"#1f77b4","line_alpha":0.1}},"muted_glyph":{"type":"object","name":"Line","id":"p1546","attributes":{"x":{"type":"field","field":"x"},"y":{"type":"field","field":"y"},"line_color":"#1f77b4","line_alpha":0.2}}}}],"toolbar":{"type":"object","name":"Toolbar","id":"p1498","attributes":{"tools":[{"type":"object","name":"PanTool","id":"p1524"},{"type":"object","name":"WheelZoomTool","id":"p1525"},{"type":"object","name":"BoxZoomTool","id":"p1526","attributes":{"overlay":{"type":"object","name":"BoxAnnotation","id":"p1527","attributes":{"syncable":false,"level":"overlay","visible":false,"left_units":"canvas","right_units":"canvas","bottom_units":"canvas","top_units":"canvas","line_color":"black","line_alpha":1.0,"line_width":2,"line_dash":[4,4],"fill_color":"lightgrey","fill_alpha":0.5}}}},{"type":"object","name":"SaveTool","id":"p1528"},{"type":"object","name":"ResetTool","id":"p1529"},{"type":"object","name":"HelpTool","id":"p1530"},{"type":"object","name":"HoverTool","id":"p1532","attributes":{"renderers":"auto","tooltips":[["x","$x"],["y","$y"]]}}]}},"left":[{"type":"object","name":"LinearAxis","id":"p1517","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1520","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"BasicTickFormatter","id":"p1518"},"axis_label":"gm spec (S)","major_label_policy":{"type":"object","name":"AllLabels","id":"p1519"}}}],"below":[{"type":"object","name":"LinearAxis","id":"p1510","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1513","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"BasicTickFormatter","id":"p1511"},"axis_label":"Iteration","major_label_policy":{"type":"object","name":"AllLabels","id":"p1512"}}}],"center":[{"type":"object","name":"Grid","id":"p1516","attributes":{"axis":{"id":"p1510"}}},{"type":"object","name":"Grid","id":"p1523","attributes":{"dimension":1,"axis":{"id":"p1517"}}}]}}]}};
+  const render_items = [{"docid":"daa34d24-7170-420b-9998-d583325c7155","roots":{"p1492":"cbc5e1f3-bb08-4949-b78e-e83cba7ae057"},"root_ids":["p1492"]}];
+  root.Bokeh.embed.embed_items_notebook(docs_json, render_items);
+  }
+  if (root.Bokeh !== undefined) {
+    embed_document(root);
+  } else {
+    let attempts = 0;
+    const timer = setInterval(function(root) {
+      if (root.Bokeh !== undefined) {
+        clearInterval(timer);
+        embed_document(root);
+      } else {
+        attempts++;
+        if (attempts > 100) {
+          clearInterval(timer);
+          console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+        }
+      }
+    }, 10, root)
+  }
+})(window);</script></div>
+</div>
+<p>Lovely! We’ve converged on a solution!!</p>
+<p>To drive a 1pF loading cap and achive a unity gain frequency of 1 GHz while
+minimizing bias current, we’d need this device:</p>
+<p><span class="math notranslate nohighlight">\(g_m = 13.02 mS\)</span></p>
+<p><span class="math notranslate nohighlight">\(I_d = 562uA\)</span></p>
+<p><span class="math notranslate nohighlight">\(W=852um\)</span></p>
+<p><span class="math notranslate nohighlight">\(L=180nm\)</span></p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chap3_basic_sizing"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="ex3.5_igs_weak_invrsn.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Example 3.5: Sizing in weak inversion with a width constraint</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solution">Solution</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Sean Baker
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
